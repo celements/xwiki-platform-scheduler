@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class entity-name="Celements.ContactClass" table="cel_contactclass">
+  <id name="id" type="integer" unsaved-value="undefined">
+    <column name="CON_ID" not-null="true" />
+    <generator class="assigned" />
+  </id>
+  <property name="title" type="string">
+    <column name="CON_TITLE" length="64"/>
+  </property>
+  <property name="firstname" type="string">
+    <column name="CON_FIRST_NAME" length="128" />
+  </property>
+  <property name="lastname" type="string">
+    <column name="CON_LAST_NAME" length="128"/>
+  </property>
+  <property name="sex" type="string">
+    <column name="CON_SEX" length="16"/>
+  </property>
+</class>
+</hibernate-mapping>
