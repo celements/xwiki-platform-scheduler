@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-  <class entity-name="Celements.ContactClass" table="cel_contactclass">
+<class entity-name="Celements.ContactClass" table="cel_contactclass">
   <id name="id" type="integer" unsaved-value="undefined">
     <column name="CON_ID" not-null="true" />
     <generator class="assigned" />
@@ -18,6 +18,25 @@
   </property>
   <property name="sex" type="string">
     <column name="CON_SEX" length="16"/>
+  </property>
+</class>
+
+<class entity-name="Celements.ContactAddressClass" table="cel_contactaddressclass">
+  <id name="id" type="integer" unsaved-value="undefined">
+    <column name="COA_ID" not-null="true" />
+    <generator class="assigned" />
+  </id>
+  <property name="street_nr" type="string">
+    <column name="COA_STREET_NR" length="255"/>
+  </property>
+  <property name="zip" type="string">
+    <column name="COA_ZIP" length="32" />
+  </property>
+  <property name="place" type="string">
+    <column name="COA_PLACE" length="128"/>
+  </property>
+  <property name="country" type="string">
+    <column name="COA_COUNTRY" length="64"/>
   </property>
 </class>
 </hibernate-mapping>

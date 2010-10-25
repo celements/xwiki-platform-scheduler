@@ -19,6 +19,7 @@ public class ContactClasses extends CelementsClassCollection {
   
   public void initClasses(XWikiContext context) throws XWikiException {
     getContactClass(context);
+    getContactAddressClass(context);
   }
   
   private ContactClasses() {
@@ -54,6 +55,37 @@ public class ContactClasses extends CelementsClassCollection {
     needsUpdate |= bclass.addTextField("lastname", "Last Name", 30);
     needsUpdate |= bclass.addStaticListField("sex", "Sex", 1, false, "female|male", 
         "select", "|");
+    
+    if(!"internal".equals(bclass.getCustomMapping())){
+      needsUpdate = true;
+      bclass.setCustomMapping("internal");
+    }
+    
+    setContentAndSaveClassDocument(doc, needsUpdate, context);
+    return bclass;
+  }
+  
+  protected BaseClass getContactAddressClass(XWikiContext context) throws XWikiException {
+    XWikiDocument doc;
+    XWiki xwiki = context.getWiki();
+    boolean needsUpdate = false;
+    
+    try {
+      doc = xwiki.getDocument("Celements.ContactAddressClass", context);
+    } catch (XWikiException e) {
+      mLogger.error(e);
+      doc = new XWikiDocument();
+      doc.setSpace("Celements");
+      doc.setName("ContactAddressClass");
+      needsUpdate = true;
+    }
+    
+    BaseClass bclass = doc.getxWikiClass();
+    bclass.setName("Celements.ContactAddressClass");
+    needsUpdate |= bclass.addTextField("street_nr", "Street and Number", 30);
+    needsUpdate |= bclass.addTextField("zip", "ZIP", 30);
+    needsUpdate |= bclass.addTextField("place", "Place", 30);
+    needsUpdate |= bclass.addTextField("country", "Country", 30);
     
     if(!"internal".equals(bclass.getCustomMapping())){
       needsUpdate = true;
