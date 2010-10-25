@@ -32,8 +32,8 @@
   <property name="zip" type="string">
     <column name="COA_ZIP" length="32" />
   </property>
-  <property name="place" type="string">
-    <column name="COA_PLACE" length="128"/>
+  <property name="city" type="string">
+    <column name="COA_CITY" length="128"/>
   </property>
   <property name="country" type="string">
     <column name="COA_COUNTRY" length="64"/>

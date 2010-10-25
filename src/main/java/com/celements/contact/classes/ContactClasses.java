@@ -84,7 +84,7 @@ public class ContactClasses extends CelementsClassCollection {
     bclass.setName("Celements.ContactAddressClass");
     needsUpdate |= bclass.addTextField("street_nr", "Street and Number", 30);
     needsUpdate |= bclass.addTextField("zip", "ZIP", 30);
-    needsUpdate |= bclass.addTextField("place", "Place", 30);
+    needsUpdate |= bclass.addTextField("city", "City", 30);
     needsUpdate |= bclass.addTextField("country", "Country", 30);
     
     if(!"internal".equals(bclass.getCustomMapping())){
