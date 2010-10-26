@@ -97,7 +97,7 @@ public class ContactClasses extends CelementsClassCollection {
   }
   
   public String getConfigName() {
-    return "manualizer";
+    return "contact";
   }
   
   @Override
