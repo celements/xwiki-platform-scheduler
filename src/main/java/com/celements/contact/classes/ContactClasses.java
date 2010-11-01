@@ -53,7 +53,7 @@ public class ContactClasses extends CelementsClassCollection {
     needsUpdate |= bclass.addTextField("title", "Title", 30);
     needsUpdate |= bclass.addTextField("firstname", "First Name", 30);
     needsUpdate |= bclass.addTextField("lastname", "Last Name", 30);
-    needsUpdate |= bclass.addStaticListField("sex", "Sex", 1, false, "female|male", 
+    needsUpdate |= bclass.addStaticListField("sex", "Sex", 1, false, "---|female|male", 
         "select", "|");
     
     if(!"internal".equals(bclass.getCustomMapping())){
