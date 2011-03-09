@@ -39,4 +39,86 @@
     <column name="COA_COUNTRY" length="64"/>
   </property>
 </class>
+
+<class entity-name="Classes.MemberClass" table="cel_memberclass">
+  <id name="id" type="integer" unsaved-value="undefined">
+    <column name="MCR_ID" not-null="true" />
+    <generator class="assigned" />
+  </id>
+  <property name="amt" type="string">
+    <column name="MCR_AMT" length="255"/>
+  </property>
+  <property name="titel" type="string">
+    <column name="MCR_TITEL" length="255"/>
+  </property>
+  <property name="status" type="string">
+    <column name="MCR_STATUS" length="255"/>
+  </property>
+  <property name="eintritt" type="string">
+    <column name="MCR_EINTRITT" length="255"/>
+  </property>
+  <property name="austritt" type="string">
+    <column name="MCR_AUSTRITT" length="255"/>
+  </property>
+  <property name="ehepartner" type="string">
+    <column name="MCR_EHEPARTNER" length="255"/>
+  </property>
+  <property name="email_geschaeft" type="string">
+    <column name="MCR_EMAIL_GESCHAEFT" length="255"/>
+  </property>
+  <property name="email_privat" type="string">
+    <column name="MCR_EMAIL_PRIVAT" length="255"/>
+  </property>
+  <property name="fax_geschaeft" type="string">
+    <column name="MCR_FAX_GESCHAEFT" length="255"/>
+  </property>
+  <property name="fax_privat" type="string">
+    <column name="MCR_FAX_PRIVAT" length="255"/>
+  </property>
+  <property name="firmenname_geschaeft" type="string">
+    <column name="MCR_FIRMENNAME_GESCHAEFT" length="255"/>
+  </property>
+  <property name="geburtsdatum" type="string">
+    <column name="MCR_GEBURTSDATUM" length="255"/>
+  </property>
+  <property name="klassifikation" type="string">
+    <column name="MCR_KLASSIFIKATION" length="255"/>
+  </property>
+  <property name="mobile_geschaeft" type="string">
+    <column name="MCR_MOBILE_GESCHAEFT" length="255"/>
+  </property>
+  <property name="mobile_privat" type="string">
+    <column name="MCR_MOBILE_PRIVAT" length="255"/>
+  </property>
+  <property name="ort_geschaeft" type="string">
+    <column name="MCR_ORT_GESCHAEFT" length="255"/>
+  </property>
+  <property name="ort_privat" type="string">
+    <column name="MCR_ORT_PRIVAT" length="255"/>
+  </property>
+  <property name="plz_geschaeft" type="string">
+    <column name="MCR_PLZ_GESCHAEFT" length="255"/>
+  </property>
+  <property name="plz_privat" type="string">
+    <column name="MCR_PLZ_PRIVAT" length="255"/>
+  </property>
+  <property name="position_geschaeft" type="string">
+    <column name="MCR_POSITION_GESCHAEFT" length="255"/>
+  </property>
+  <property name="strasse_geschaeft" type="string">
+    <column name="MCR_STRASSE_GESCHAEFT" length="255"/>
+  </property>
+  <property name="strasse_privat" type="string">
+    <column name="MCR_STRASSE_PRIVAT" length="255"/>
+  </property>
+  <property name="telefon_geschaeft" type="string">
+    <column name="MCR_TEL_GESCHAEFT" length="255"/>
+  </property>
+  <property name="telefon_privat" type="string">
+    <column name="MCR_TEL_PRIVAT" length="255"/>
+  </property>
+  <property name="todestag" type="string">
+    <column name="MCR_TODESTAG" length="255"/>
+  </property>
+</class>
 </hibernate-mapping>
