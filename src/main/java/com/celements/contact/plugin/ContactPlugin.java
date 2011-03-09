@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.celements.contact.classes.ContactClasses;
+import com.celements.contact.classes.RotaryMembersCollsClass;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.api.Api;
@@ -57,6 +58,7 @@ public class ContactPlugin extends XWikiDefaultPlugin{
   public void virtualInit(XWikiContext context) {
     try {
       ContactClasses.getInstance().runUpdate(context);
+      RotaryMembersCollsClass.getInstance().runUpdate(context);
     } catch (Exception e) {
       mLogger.fatal(e);
     }
