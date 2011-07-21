@@ -15,15 +15,15 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.XWikiRequest;
 
-public class ContactPluginTest {
+public class ContactPluginTest extends AbstractBridgedComponentTestCase {
   ContactPlugin plugin;
   XWikiContext context;
   XWiki xwiki;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp_ContactPluginTest() throws Exception {
     xwiki = createMock(XWiki.class);
-    context = new XWikiContext();
+    context = getContext();
     context.setWiki(xwiki);
     plugin = new ContactPlugin("", "", context);
   }
@@ -49,7 +49,7 @@ public class ContactPluginTest {
 
   @Test
   public void testSaveAddress() throws XWikiException {
-    String fullname = "Space.Document";
+//    String fullname = "Space.Document";
     BaseObject obj = new BaseObject();
     XWikiDocument doc = createMock(XWikiDocument.class);
     context.setDoc(doc);
