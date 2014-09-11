@@ -24,7 +24,6 @@
     </dependency>
   </dependencies>
   <scm>
-    https://github.com/celements/celements-core.git
     <connection>scm:git:git@github.com:celements/celements-search.git</connection>
     <developerConnection>scm:git:git@github.com:celements/celements-search.git</developerConnection>
     <url>https://github.com/celements/celements-search</url>
