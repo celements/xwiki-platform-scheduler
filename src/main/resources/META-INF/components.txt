@@ -1,0 +1,2 @@
+com.celements.search.lucene.LuceneSearchService
+com.celements.search.lucene.LuceneSearchScriptService
