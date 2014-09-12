@@ -14,6 +14,7 @@ import org.xwiki.context.Execution;
 import com.celements.search.lucene.query.LuceneQueryApi;
 import com.celements.search.lucene.query.LuceneQueryRestrictionApi;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 
 @Component
 public class LuceneSearchService implements ILuceneSearchService {
@@ -147,6 +148,12 @@ public class LuceneSearchService implements ILuceneSearchService {
   public LuceneSearchResult searchWithoutChecks(LuceneQueryApi query, 
       List<String> sortFields, List<String> languages) {
     return new LuceneSearchResult(query, sortFields, languages, true, getContext());
+  }
+
+  public int getResultLimit(boolean skipChecks) {
+    LucenePlugin lucenePlugin = (LucenePlugin) getContext().getWiki().getPlugin("lucene", 
+        getContext());
+    return lucenePlugin.getResultLimit(skipChecks, getContext());
   }
 
 }

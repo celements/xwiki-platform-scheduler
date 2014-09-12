@@ -59,5 +59,7 @@ public interface ILuceneSearchService {
   
   public LuceneSearchResult searchWithoutChecks(LuceneQueryApi query, 
       List<String> sortFields, List<String> languages);
+  
+  public int getResultLimit(boolean skipChecks);
 
 }
