@@ -72,11 +72,16 @@ public class LuceneSearchScriptService implements ScriptService {
   }
   
   public LuceneSearchResult search(LuceneQueryApi query) {
-    return search(query, null);
+    return service.search(query, null, null);
   }
   
   public LuceneSearchResult search(LuceneQueryApi query, List<String> sortFields) {
-    return service.search(query, sortFields, null, false);
+    return service.search(query, sortFields, null);
+  }
+  
+  public LuceneSearchResult search(LuceneQueryApi query, List<String> sortFields, 
+      List<String> languages) {
+    return service.search(query, sortFields, languages);
   }
   
 }

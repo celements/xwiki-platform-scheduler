@@ -140,8 +140,13 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
   
   public LuceneSearchResult search(LuceneQueryApi query, List<String> sortFields, 
-      List<String> languages, boolean skipChecks) {
-    return new LuceneSearchResult(query, sortFields, languages, skipChecks, getContext());
+      List<String> languages) {
+    return new LuceneSearchResult(query, sortFields, languages, false, getContext());
+  }
+  
+  public LuceneSearchResult searchWithoutChecks(LuceneQueryApi query, 
+      List<String> sortFields, List<String> languages) {
+    return new LuceneSearchResult(query, sortFields, languages, true, getContext());
   }
 
 }

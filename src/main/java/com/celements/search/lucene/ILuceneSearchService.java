@@ -55,6 +55,9 @@ public interface ILuceneSearchService {
       Date fromDate, Date toDate, boolean inclusive);
   
   public LuceneSearchResult search(LuceneQueryApi query, List<String> sortFields, 
-      List<String> languages, boolean skipChecks);
+      List<String> languages);
+  
+  public LuceneSearchResult searchWithoutChecks(LuceneQueryApi query, 
+      List<String> sortFields, List<String> languages);
 
 }
