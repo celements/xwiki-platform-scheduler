@@ -80,16 +80,23 @@ public class LuceneSearchResult {
     return offset;
   }
 
-  public void setOffset(int offset) {
+  public LuceneSearchResult setOffset(int offset) {
     this.offset = offset;
+    return this;
   }
 
   public int getLimit() {
     return limit;
   }
 
-  public void setLimit(int limit) {
+  public LuceneSearchResult setLimit(int limit) {
     this.limit = limit;
+    return this;
+  }
+
+  public List<DocumentReference> getResults(int offset, int limit
+      ) throws LuceneSearchException {
+    return this.setOffset(offset).setLimit(limit).getResults();
   }
 
   public List<DocumentReference> getResults() throws LuceneSearchException {
