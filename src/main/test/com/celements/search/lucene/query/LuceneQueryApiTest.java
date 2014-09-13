@@ -11,16 +11,16 @@ import org.junit.Test;
 import com.celements.common.test.AbstractBridgedComponentTestCase;
 
 public class LuceneQueryApiTest extends AbstractBridgedComponentTestCase {
-  LuceneQueryApi apiObj;
+  LuceneQuery apiObj;
   
   @Before
   public void setUp_LuceneQueryApiTest() throws Exception {
-    apiObj = new LuceneQueryApi(getContext().getDatabase());
+    apiObj = new LuceneQuery(getContext().getDatabase());
   }
 
   @Test
   public void testAddRestriction() {
-    apiObj.addRestriction(new LuceneQueryRestrictionApi("object", "XWiki.XWikiUsers"));
+    apiObj.addRestriction(new QueryRestriction("object", "XWiki.XWikiUsers"));
     assertEquals("object:(+XWiki.XWikiUsers*) AND wiki:" + getContext().getDatabase(), apiObj.getQueryString());
   }
   
@@ -31,15 +31,15 @@ public class LuceneQueryApiTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testGetQueryString_withEmptyRestriction() {
-    apiObj.addRestriction(new LuceneQueryRestrictionApi("object", ""));
+    apiObj.addRestriction(new QueryRestriction("object", ""));
     assertEquals("wiki:" + getContext().getDatabase(), apiObj.getQueryString());
   }
   
   @Test
   public void testAddOrRestrictionList() {
-    List<LuceneQueryRestrictionApi> list = new ArrayList<LuceneQueryRestrictionApi>();
-    list.add(new LuceneQueryRestrictionApi("object", "XWiki.XWikiUsers"));
-    list.add(new LuceneQueryRestrictionApi("object", "XWiki.XWikiGroups"));
+    List<QueryRestriction> list = new ArrayList<QueryRestriction>();
+    list.add(new QueryRestriction("object", "XWiki.XWikiUsers"));
+    list.add(new QueryRestriction("object", "XWiki.XWikiGroups"));
     apiObj.addOrRestrictionList(list);
     assertEquals("(object:(+XWiki.XWikiUsers*) OR object:(+XWiki.XWikiGroups*)) AND wiki:" 
         + getContext().getDatabase(), apiObj.getQueryString());
@@ -47,10 +47,10 @@ public class LuceneQueryApiTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testGetQueryString_andOnly() {
-    apiObj.addRestriction(new LuceneQueryRestrictionApi("object", "XWiki.XWikiUsers"));
-    apiObj.addRestriction(new LuceneQueryRestrictionApi("XWiki.XWikiUsers.first_name",
+    apiObj.addRestriction(new QueryRestriction("object", "XWiki.XWikiUsers"));
+    apiObj.addRestriction(new QueryRestriction("XWiki.XWikiUsers.first_name",
         "Hans Peter"));
-    apiObj.addRestriction(new LuceneQueryRestrictionApi("XWiki.XWikiUsers.last_name", 
+    apiObj.addRestriction(new QueryRestriction("XWiki.XWikiUsers.last_name", 
         "+Meier -Mueller"));
     assertEquals("object:(+XWiki.XWikiUsers*) AND XWiki.XWikiUsers.first_name:(+Hans* " +
         "+Peter*) AND XWiki.XWikiUsers.last_name:(+Meier* -Mueller*) AND wiki:" 
@@ -59,9 +59,9 @@ public class LuceneQueryApiTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testGetQueryString_orOnly() {
-    List<LuceneQueryRestrictionApi> list = new ArrayList<LuceneQueryRestrictionApi>();
-    list.add(new LuceneQueryRestrictionApi("object", "XWiki.XWikiUsers"));
-    list.add(new LuceneQueryRestrictionApi("object", "XWiki.XWikiGroups"));
+    List<QueryRestriction> list = new ArrayList<QueryRestriction>();
+    list.add(new QueryRestriction("object", "XWiki.XWikiUsers"));
+    list.add(new QueryRestriction("object", "XWiki.XWikiGroups"));
     apiObj.addOrRestrictionList(list);
     apiObj.addOrRestrictionList(list);
     assertEquals("(object:(+XWiki.XWikiUsers*) OR object:(+XWiki.XWikiGroups*)) AND " +
@@ -78,7 +78,7 @@ public class LuceneQueryApiTest extends AbstractBridgedComponentTestCase {
   @Test
   public void testGetQueryString_copy() {
     String compareString = setFullQuery();
-    LuceneQueryApi apiObjCopy = new LuceneQueryApi(apiObj);
+    LuceneQuery apiObjCopy = new LuceneQuery(apiObj);
     assertEquals(compareString, apiObjCopy.getQueryString());
   }
   
@@ -88,15 +88,15 @@ public class LuceneQueryApiTest extends AbstractBridgedComponentTestCase {
         "(object:(+XWiki.XWikiUsers*) OR object:(+XWiki.XWikiGroups*)) AND " +
         "(object:(+XWiki.XWikiUsers*) OR object:(+XWiki.XWikiGroups*)) AND wiki:" 
         + getContext().getDatabase();
-    List<LuceneQueryRestrictionApi> list = new ArrayList<LuceneQueryRestrictionApi>();
-    list.add(new LuceneQueryRestrictionApi("object", "XWiki.XWikiUsers"));
-    list.add(new LuceneQueryRestrictionApi("object", "XWiki.XWikiGroups"));
+    List<QueryRestriction> list = new ArrayList<QueryRestriction>();
+    list.add(new QueryRestriction("object", "XWiki.XWikiUsers"));
+    list.add(new QueryRestriction("object", "XWiki.XWikiGroups"));
     apiObj.addOrRestrictionList(list);
     apiObj.addOrRestrictionList(list);
-    apiObj.addRestriction(new LuceneQueryRestrictionApi("object", "XWiki.XWikiUsers"));
-    apiObj.addRestriction(new LuceneQueryRestrictionApi("XWiki.XWikiUsers.first_name",
+    apiObj.addRestriction(new QueryRestriction("object", "XWiki.XWikiUsers"));
+    apiObj.addRestriction(new QueryRestriction("XWiki.XWikiUsers.first_name",
         "Hans Peter"));
-    apiObj.addRestriction(new LuceneQueryRestrictionApi("XWiki.XWikiUsers.last_name", 
+    apiObj.addRestriction(new QueryRestriction("XWiki.XWikiUsers.last_name", 
         "+Meier -Mueller"));
     return compareString;
   }

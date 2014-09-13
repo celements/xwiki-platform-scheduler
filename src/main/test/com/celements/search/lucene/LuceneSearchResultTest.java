@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.common.test.AbstractBridgedComponentTestCase;
-import com.celements.search.lucene.query.LuceneQueryApi;
+import com.celements.search.lucene.query.LuceneQuery;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 import com.xpn.xwiki.plugin.lucene.SearchResult;
@@ -33,13 +33,13 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   public void setUp_LuceneSearchResultTest() throws Exception {
     context = getContext();
     lucenePluginMock = createMockAndAddToDefault(LucenePlugin.class);
-    newResult(new LuceneQueryApi("db"), null, null, false);
+    newResult(new LuceneQuery("db"), null, null, false);
     result.injectLucenePlugin(lucenePluginMock);
   }
   
   @Test
   public void testGetters() {
-    LuceneQueryApi query = new LuceneQueryApi("db");
+    LuceneQuery query = new LuceneQuery("db");
     List<String> sortFields = Arrays.asList("sort1", "sort2");
     List<String> languages = Arrays.asList("lang1", "lang2");
     boolean skipChecks = false;
@@ -66,7 +66,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testGetResults() throws Exception {
-    LuceneQueryApi query = new LuceneQueryApi("db");
+    LuceneQuery query = new LuceneQuery("db");
     boolean skipChecks = true;
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
@@ -89,7 +89,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testGetResults_negativeOffsetLimit() throws Exception {
-    LuceneQueryApi query = new LuceneQueryApi("db");
+    LuceneQuery query = new LuceneQuery("db");
     boolean skipChecks = true;
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
@@ -113,7 +113,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testGetSize() throws Exception {
-    LuceneQueryApi query = new LuceneQueryApi("db");
+    LuceneQuery query = new LuceneQuery("db");
     boolean skipChecks = true;
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
@@ -130,7 +130,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testLuceneSearch_alreadySet() throws Exception {
-    LuceneQueryApi query = new LuceneQueryApi("db");
+    LuceneQuery query = new LuceneQuery("db");
     boolean skipChecks = true;
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
@@ -145,7 +145,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testLuceneSearch_withChecks() throws Exception {
-    LuceneQueryApi query = new LuceneQueryApi("db");
+    LuceneQuery query = new LuceneQuery("db");
     List<String> sortFields = Arrays.asList("sort1", "sort2");
     List<String> languages = Arrays.asList("lang1", "lang2");
     boolean skipChecks = false;
@@ -167,7 +167,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testLuceneSearch_withoutChecks() throws Exception {
-    LuceneQueryApi query = new LuceneQueryApi("db");
+    LuceneQuery query = new LuceneQuery("db");
     boolean skipChecks = true;
     newResult(query, null, null, skipChecks);
     Capture<String[]> sortFieldsCapture = new Capture<String[]>();
@@ -187,7 +187,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testLuceneSearch_IOException() throws Exception {
-    LuceneQueryApi query = new LuceneQueryApi("db");
+    LuceneQuery query = new LuceneQuery("db");
     boolean skipChecks = false;
     newResult(query, null, null, skipChecks);
     
@@ -207,7 +207,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testLuceneSearch_ParseException() throws Exception {
-    LuceneQueryApi query = new LuceneQueryApi("db");
+    LuceneQuery query = new LuceneQuery("db");
     boolean skipChecks = false;
     newResult(query, null, null, skipChecks);
     
@@ -225,7 +225,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     verifyDefault();
   }
   
-  private LuceneSearchResult newResult(LuceneQueryApi query, List<String> sortFields, 
+  private LuceneSearchResult newResult(LuceneQuery query, List<String> sortFields, 
       List<String> languages, boolean skipChecks) {
     result = new LuceneSearchResult(query, sortFields, languages, skipChecks, context);
     result.injectLucenePlugin(lucenePluginMock);

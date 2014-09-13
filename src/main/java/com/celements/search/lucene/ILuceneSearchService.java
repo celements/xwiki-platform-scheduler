@@ -7,73 +7,68 @@ import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
 
-import com.celements.search.lucene.query.LuceneQueryApi;
-import com.celements.search.lucene.query.LuceneQueryRestrictionApi;
+import com.celements.search.lucene.query.LuceneQuery;
+import com.celements.search.lucene.query.QueryRestriction;
 
 @ComponentRole
 public interface ILuceneSearchService {
 
-  public LuceneQueryApi createQuery();
+  public LuceneQuery createQuery();
 
-  public LuceneQueryApi createQuery(String database);
+  public LuceneQuery createQuery(String database);
 
-  public LuceneQueryApi createQuery(LuceneQueryApi query);
+  public LuceneQuery createQuery(LuceneQuery query);
 
-  public LuceneQueryRestrictionApi createRestriction(String field, String value);
+  public QueryRestriction createRestriction(String field, String value);
 
-  public LuceneQueryRestrictionApi createRestriction(String field, String value,
-      boolean tokenize);
+  public QueryRestriction createRestriction(String field, String value, boolean tokenize);
   
-  public LuceneQueryRestrictionApi createRestriction(String field, String value,
-      boolean tokenize, boolean fuzzy);
+  public QueryRestriction createRestriction(String field, String value, boolean tokenize, 
+      boolean fuzzy);
 
-  public LuceneQueryRestrictionApi createSpaceRestriction(SpaceReference spaceRef);
+  public QueryRestriction createSpaceRestriction(SpaceReference spaceRef);
   
-  public List<LuceneQueryRestrictionApi> createSpaceRestrictionList(
-      List<SpaceReference> spaceRefs);
+  public List<QueryRestriction> createSpaceRestrictionList(List<SpaceReference> spaceRefs);
 
-  public LuceneQueryRestrictionApi createObjectRestriction(DocumentReference classRef);
+  public QueryRestriction createObjectRestriction(DocumentReference classRef);
 
-  public LuceneQueryRestrictionApi createFieldRestriction(DocumentReference classRef,
-      String field, String value);
-
-  public LuceneQueryRestrictionApi createFieldRestriction(DocumentReference classRef,
-      String field, String value, boolean tokenize);
-
-  public List<LuceneQueryRestrictionApi> createRestrictionList(List<String> fields, 
+  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
       String value);
 
-  public List<LuceneQueryRestrictionApi> createRestrictionList(List<String> fields, 
-      String value, boolean tokenize, boolean fuzzy);
+  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
+      String value, boolean tokenize);
 
-  public List<LuceneQueryRestrictionApi> createRestrictionList(String field, 
-      List<String> values);
+  public List<QueryRestriction> createRestrictionList(List<String> fields, String value);
 
-  public List<LuceneQueryRestrictionApi> createRestrictionList(String field, 
-      List<String> values, boolean tokenize, boolean fuzzy);
+  public List<QueryRestriction> createRestrictionList(List<String> fields, String value, 
+      boolean tokenize, boolean fuzzy);
+
+  public List<QueryRestriction> createRestrictionList(String field, List<String> values);
+
+  public List<QueryRestriction> createRestrictionList(String field, List<String> values, 
+      boolean tokenize, boolean fuzzy);
   
-  public LuceneQueryRestrictionApi createRangeRestriction(String field, String from, 
-      String to);
+  public QueryRestriction createRangeRestriction(String field, String from, String to);
 
-  public LuceneQueryRestrictionApi createRangeRestriction(String field, String from,
-      String to, boolean inclusive);
+  public QueryRestriction createRangeRestriction(String field, String from, String to, 
+      boolean inclusive);
   
-  public LuceneQueryRestrictionApi createDateRestriction(String field, Date date);
+  public QueryRestriction createDateRestriction(String field, Date date);
 
-  public LuceneQueryRestrictionApi createFromDateRestriction(String field, Date fromDate, 
+  public QueryRestriction createFromDateRestriction(String field, Date fromDate, 
       boolean inclusive);
 
-  public LuceneQueryRestrictionApi createToDateRestriction(String field, Date toDate, 
+  public QueryRestriction createToDateRestriction(String field, Date toDate, 
       boolean inclusive);
 
-  public LuceneQueryRestrictionApi createFromToDateRestriction(String field, 
-      Date fromDate, Date toDate, boolean inclusive);
+  public QueryRestriction createFromToDateRestriction(String field, Date fromDate, 
+      Date toDate, boolean inclusive);
   
-  public LuceneSearchResult search(LuceneQueryApi query, List<String> sortFields, 
+  public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
       List<String> languages);
   
-  public LuceneSearchResult searchWithoutChecks(LuceneQueryApi query, 
-      List<String> sortFields, List<String> languages);
+  public LuceneSearchResult searchWithoutChecks(LuceneQuery query, List<String> sortFields, 
+      List<String> languages);
   
   public int getResultLimit(boolean skipChecks);
 

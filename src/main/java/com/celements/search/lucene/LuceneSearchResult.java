@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.queryParser.ParseException;
 import org.xwiki.model.reference.DocumentReference;
 
-import com.celements.search.lucene.query.LuceneQueryApi;
+import com.celements.search.lucene.query.LuceneQuery;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 import com.xpn.xwiki.plugin.lucene.SearchResult;
@@ -35,8 +35,8 @@ public class LuceneSearchResult {
   private int offset = 0;
   private int limit = 0;
 
-  LuceneSearchResult(LuceneQueryApi query, List<String> sortFields, 
-      List<String> languages, boolean skipChecks, XWikiContext context) {
+  LuceneSearchResult(LuceneQuery query, List<String> sortFields, List<String> languages, 
+      boolean skipChecks, XWikiContext context) {
     this.queryString = query.getQueryString();
     this.sortFields = getList(sortFields);
     this.languages = getList(languages);

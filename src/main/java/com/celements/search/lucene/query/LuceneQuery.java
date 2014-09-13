@@ -7,25 +7,25 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 
-public class LuceneQueryApi {
+public class LuceneQuery {
   
-  private List<LuceneQueryRestrictionApi> andRestrictions;
-  private List<List<LuceneQueryRestrictionApi>> orRestrictions;
+  private List<QueryRestriction> andRestrictions;
+  private List<List<QueryRestriction>> orRestrictions;
   private String database;
 
-  public LuceneQueryApi(String database) {
+  public LuceneQuery(String database) {
     this.database = database;
   }
 
-  public LuceneQueryApi(LuceneQueryApi query) {
+  public LuceneQuery(LuceneQuery query) {
     andRestrictions = copyRestrictionList(query.andRestrictions);
     orRestrictions = copyRestrictionListList(query.orRestrictions);
     database = query.database;
   }
 
-  public LuceneQueryApi addRestriction(LuceneQueryRestrictionApi restriction) {
+  public LuceneQuery addRestriction(QueryRestriction restriction) {
     if (andRestrictions == null) {
-      andRestrictions = new ArrayList<LuceneQueryRestrictionApi>();
+      andRestrictions = new ArrayList<QueryRestriction>();
     }
     if (restriction != null) {
       andRestrictions.add(restriction);
@@ -33,20 +33,20 @@ public class LuceneQueryApi {
     return this;
   }
 
-  public LuceneQueryApi addRestrictionList(
-      List<LuceneQueryRestrictionApi> restrictionsList) {
+  public LuceneQuery addRestrictionList(
+      List<QueryRestriction> restrictionsList) {
     if (restrictionsList != null) {
-      for (LuceneQueryRestrictionApi restriction : restrictionsList) {
+      for (QueryRestriction restriction : restrictionsList) {
         addRestriction(restriction);
       }
     }
     return this;
   }
 
-  public LuceneQueryApi addOrRestrictionList(
-      List<LuceneQueryRestrictionApi> restrictionsList) {
+  public LuceneQuery addOrRestrictionList(
+      List<QueryRestriction> restrictionsList) {
     if (orRestrictions == null) {
-      orRestrictions = new ArrayList<List<LuceneQueryRestrictionApi>>();
+      orRestrictions = new ArrayList<List<QueryRestriction>>();
     }
     if ((restrictionsList != null) && (restrictionsList.size() > 0)) {
       orRestrictions.add(restrictionsList);
@@ -57,7 +57,7 @@ public class LuceneQueryApi {
   public String getQueryString() {
     String queryString = "";
     if (andRestrictions != null) {
-      for (LuceneQueryRestrictionApi restriction : andRestrictions) {
+      for (QueryRestriction restriction : andRestrictions) {
         String restrStr = restriction.getRestriction();
         if (!"".equals(restrStr.trim())) {
           queryString += restrStr + " AND ";
@@ -65,9 +65,9 @@ public class LuceneQueryApi {
       }
     }
     if(orRestrictions != null) {
-      for (List<LuceneQueryRestrictionApi> restrictions : orRestrictions) {
+      for (List<QueryRestriction> restrictions : orRestrictions) {
         String orQuery = new String();
-        for (LuceneQueryRestrictionApi restriction : restrictions) {
+        for (QueryRestriction restriction : restrictions) {
           if (orQuery.length() > 0) {
             orQuery += " OR ";
           }
@@ -79,24 +79,24 @@ public class LuceneQueryApi {
     return queryString + "wiki:" + database;
   }
 
-  private static List<LuceneQueryRestrictionApi> copyRestrictionList(
-      List<LuceneQueryRestrictionApi> list) {
-    List<LuceneQueryRestrictionApi> ret = null;
+  private static List<QueryRestriction> copyRestrictionList(
+      List<QueryRestriction> list) {
+    List<QueryRestriction> ret = null;
     if (list != null){
-      ret = new ArrayList<LuceneQueryRestrictionApi>();
-      for (LuceneQueryRestrictionApi restriction : list) {
-        ret.add(new LuceneQueryRestrictionApi(restriction));
+      ret = new ArrayList<QueryRestriction>();
+      for (QueryRestriction restriction : list) {
+        ret.add(new QueryRestriction(restriction));
       }
     }
     return ret;
   }
 
-  private static List<List<LuceneQueryRestrictionApi>> copyRestrictionListList(
-      List<List<LuceneQueryRestrictionApi>> list) {
-    List<List<LuceneQueryRestrictionApi>> ret = null;
+  private static List<List<QueryRestriction>> copyRestrictionListList(
+      List<List<QueryRestriction>> list) {
+    List<List<QueryRestriction>> ret = null;
     if (list != null) {
-      ret = new ArrayList<List<LuceneQueryRestrictionApi>>();
-      for (List<LuceneQueryRestrictionApi> restrictions : list) {
+      ret = new ArrayList<List<QueryRestriction>>();
+      for (List<QueryRestriction> restrictions : list) {
         ret.add(copyRestrictionList(restrictions));
       }
     }
@@ -112,8 +112,8 @@ public class LuceneQueryApi {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof LuceneQueryApi) {
-      LuceneQueryApi other = (LuceneQueryApi) obj;
+    if (obj instanceof LuceneQuery) {
+      LuceneQuery other = (LuceneQuery) obj;
       return new EqualsBuilder().append(database, other.database).append(andRestrictions, 
           other.andRestrictions).append(orRestrictions, other.orRestrictions).isEquals();
     } else {

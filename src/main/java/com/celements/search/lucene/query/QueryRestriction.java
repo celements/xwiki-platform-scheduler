@@ -12,10 +12,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.queryParser.QueryParser;
 
-public class LuceneQueryRestrictionApi {
+public class QueryRestriction {
 
   private static Log LOGGER = LogFactory.getFactory().getInstance(
-      LuceneQueryRestrictionApi.class);
+      QueryRestriction.class);
 
   private String specifier = null;
   private String query = null;
@@ -25,9 +25,9 @@ public class LuceneQueryRestrictionApi {
   private Float boost = null;
   private boolean negate = false;
 
-  public LuceneQueryRestrictionApi() { }
+  public QueryRestriction() { }
 
-  public LuceneQueryRestrictionApi(LuceneQueryRestrictionApi restriction) {
+  public QueryRestriction(QueryRestriction restriction) {
     specifier = restriction.specifier;
     query = restriction.query;
     tokenizeQuery = restriction.tokenizeQuery;
@@ -37,24 +37,24 @@ public class LuceneQueryRestrictionApi {
     negate = restriction.negate;
   }
 
-  public LuceneQueryRestrictionApi(String specifier, String query) {
+  public QueryRestriction(String specifier, String query) {
     this.specifier = specifier;
     this.query = query;
   }
 
-  public LuceneQueryRestrictionApi(String specifier, String query, boolean tokenizeQuery
+  public QueryRestriction(String specifier, String query, boolean tokenizeQuery
       ) {
     this.specifier = specifier;
     this.query = query;
     this.tokenizeQuery = tokenizeQuery;
   }
 
-  public LuceneQueryRestrictionApi setSpecifier(String specifier) {
+  public QueryRestriction setSpecifier(String specifier) {
     this.specifier = specifier;
     return this;
   }
 
-  public LuceneQueryRestrictionApi setQuery(String query) {
+  public QueryRestriction setQuery(String query) {
     this.query = query;
     return this;
   }
@@ -65,7 +65,7 @@ public class LuceneQueryRestrictionApi {
    * @param tokenizeQuery
    * @return
    */
-  public LuceneQueryRestrictionApi setTokenizeQuery(boolean tokenizeQuery) {
+  public QueryRestriction setTokenizeQuery(boolean tokenizeQuery) {
     this.tokenizeQuery = tokenizeQuery;
     return this;
   }
@@ -75,7 +75,7 @@ public class LuceneQueryRestrictionApi {
    * @param fuzzy Allowed distance from 0 to 1 where the closer to 1 the parameter is,
    *              the higher similarity the match needs to have.
    */
-  public LuceneQueryRestrictionApi setFuzzy(String fuzzy) {
+  public QueryRestriction setFuzzy(String fuzzy) {
     try {
       setFuzzy(Float.parseFloat(fuzzy));
     } catch(NumberFormatException nfe) {
@@ -84,17 +84,17 @@ public class LuceneQueryRestrictionApi {
     return this;
   }
 
-  public LuceneQueryRestrictionApi setFuzzy(float fuzzy) {
+  public QueryRestriction setFuzzy(float fuzzy) {
     this.fuzzy = fuzzy;
     return this;
   }
 
-  public LuceneQueryRestrictionApi setFuzzy() {
+  public QueryRestriction setFuzzy() {
     fuzzy = -1f; //use Lucene's default (which is 0.5)
     return this;
   }
 
-  public LuceneQueryRestrictionApi setNegate(boolean negate) {
+  public QueryRestriction setNegate(boolean negate) {
     this.negate = negate;
     return this;
   }
@@ -103,7 +103,7 @@ public class LuceneQueryRestrictionApi {
    * The term's words have to be in the given proximity e.g. at most 8 words apart.
    * @param proximity How many words apart can the words be.
    */
-  public LuceneQueryRestrictionApi setProximity(String proximity) {
+  public QueryRestriction setProximity(String proximity) {
     try {
       setProximity(Integer.parseInt(proximity));
     } catch(NumberFormatException nfe) {
@@ -112,7 +112,7 @@ public class LuceneQueryRestrictionApi {
     return this;
   }
 
-  public LuceneQueryRestrictionApi setProximity(int proximity) {
+  public QueryRestriction setProximity(int proximity) {
     this.proximity = proximity;
     return this;
   }
@@ -123,7 +123,7 @@ public class LuceneQueryRestrictionApi {
    * @param boost The factor to boost the term.
    * @return
    */
-  public LuceneQueryRestrictionApi setBoost(String boost) {
+  public QueryRestriction setBoost(String boost) {
     try {
       setBoost(Float.parseFloat(boost));
     } catch(NumberFormatException nfe) {
@@ -132,7 +132,7 @@ public class LuceneQueryRestrictionApi {
     return this;
   }
 
-  public LuceneQueryRestrictionApi setBoost(float boost) {
+  public QueryRestriction setBoost(float boost) {
     this.boost = boost;
     return this;
   }
@@ -223,8 +223,8 @@ public class LuceneQueryRestrictionApi {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj instanceof LuceneQueryRestrictionApi) {
-      LuceneQueryRestrictionApi other = (LuceneQueryRestrictionApi) obj;
+    if (obj instanceof QueryRestriction) {
+      QueryRestriction other = (QueryRestriction) obj;
       return new EqualsBuilder().append(boost, other.boost).append(fuzzy, other.fuzzy
           ).append(negate, other.negate).append(proximity, other.proximity).append(query, 
               other.query).append(specifier, other.specifier).append(tokenizeQuery, 
