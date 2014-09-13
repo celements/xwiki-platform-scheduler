@@ -10,9 +10,12 @@ import org.apache.commons.lang.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.context.Execution;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.SpaceReference;
 
 import com.celements.search.lucene.query.LuceneQueryApi;
 import com.celements.search.lucene.query.LuceneQueryRestrictionApi;
+import com.celements.web.service.IWebUtilsService;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 
@@ -25,6 +28,9 @@ public class LuceneSearchService implements ILuceneSearchService {
   
   private static final boolean DEFAULT_TOKENIZE = true;
   private static final boolean DEFAULT_FUZZY = false;
+  
+  @Requirement
+  private IWebUtilsService webUtilsService;
   
   @Requirement
   private Execution execution;
@@ -63,6 +69,51 @@ public class LuceneSearchService implements ILuceneSearchService {
       if (fuzzy) {
         restriction.setFuzzy();
       }
+    }
+    return restriction;
+  }
+
+  public LuceneQueryRestrictionApi createSpaceRestriction(SpaceReference spaceRef) {
+    String spaceName = "";
+    if (spaceRef != null) {
+      spaceName = spaceRef.getName();
+    }
+    return createRestriction("space", "\"" + spaceName + "\"");
+  }
+
+  public List<LuceneQueryRestrictionApi> createSpaceRestrictionList(
+      List<SpaceReference> spaceRefs) {
+    List<LuceneQueryRestrictionApi> restrictionList = 
+        new ArrayList<LuceneQueryRestrictionApi>();
+    for (SpaceReference spaceRef : spaceRefs) {
+      LuceneQueryRestrictionApi restr = createSpaceRestriction(spaceRef);
+      if (restr != null) {
+        restrictionList.add(restr);
+      }
+    }
+    return restrictionList;
+  }
+
+  public LuceneQueryRestrictionApi createObjectRestriction(DocumentReference classRef) {
+    LuceneQueryRestrictionApi restriction = null;
+    if (classRef != null) {
+      String className = webUtilsService.getRefLocalSerializer().serialize(classRef);
+      restriction = createRestriction("object", "\"" + className + "\"");
+    }
+    return restriction;
+  }
+
+  public LuceneQueryRestrictionApi createFieldRestriction(DocumentReference classRef,
+      String field, String value) {
+    return createFieldRestriction(classRef, field, value, DEFAULT_TOKENIZE);
+  }
+
+  public LuceneQueryRestrictionApi createFieldRestriction(DocumentReference classRef,
+      String field, String value, boolean tokenize) {
+    LuceneQueryRestrictionApi restriction = null;
+    if (classRef != null && StringUtils.isNotBlank(field)) {
+      String className = webUtilsService.getRefLocalSerializer().serialize(classRef);
+      restriction = createRestriction(className + "." + field, value, tokenize);
     }
     return restriction;
   }

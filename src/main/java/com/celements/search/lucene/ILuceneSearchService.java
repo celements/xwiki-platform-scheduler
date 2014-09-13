@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.SpaceReference;
 
 import com.celements.search.lucene.query.LuceneQueryApi;
 import com.celements.search.lucene.query.LuceneQueryRestrictionApi;
@@ -24,6 +26,19 @@ public interface ILuceneSearchService {
   
   public LuceneQueryRestrictionApi createRestriction(String field, String value,
       boolean tokenize, boolean fuzzy);
+
+  public LuceneQueryRestrictionApi createSpaceRestriction(SpaceReference spaceRef);
+  
+  public List<LuceneQueryRestrictionApi> createSpaceRestrictionList(
+      List<SpaceReference> spaceRefs);
+
+  public LuceneQueryRestrictionApi createObjectRestriction(DocumentReference classRef);
+
+  public LuceneQueryRestrictionApi createFieldRestriction(DocumentReference classRef,
+      String field, String value);
+
+  public LuceneQueryRestrictionApi createFieldRestriction(DocumentReference classRef,
+      String field, String value, boolean tokenize);
 
   public List<LuceneQueryRestrictionApi> createRestrictionList(List<String> fields, 
       String value);
