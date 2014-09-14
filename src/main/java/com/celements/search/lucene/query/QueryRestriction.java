@@ -123,6 +123,16 @@ public class QueryRestriction implements IQueryRestriction {
     this.boost = boost;
     return this;
   }
+  
+  /**
+   * @deprecated instead use {@link #getQueryString()}
+   * 
+   * @return
+   */
+  @Deprecated
+  public String getRestriction() {
+    return getQueryString();
+  }
 
   @Override
   public String getQueryString() {
