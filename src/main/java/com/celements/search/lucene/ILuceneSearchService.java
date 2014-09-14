@@ -9,6 +9,7 @@ import org.xwiki.model.reference.SpaceReference;
 
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
+import com.celements.search.lucene.query.QueryRestrictionGroup;
 
 @ComponentRole
 public interface ILuceneSearchService {
@@ -16,8 +17,10 @@ public interface ILuceneSearchService {
   public LuceneQuery createQuery();
 
   public LuceneQuery createQuery(String database);
-
-  public LuceneQuery createQuery(LuceneQuery query);
+  
+  public QueryRestrictionGroup createAndRestrictionGroup();
+  
+  public QueryRestrictionGroup createOrRestrictionGroup();
 
   public QueryRestriction createRestriction(String field, String value);
 

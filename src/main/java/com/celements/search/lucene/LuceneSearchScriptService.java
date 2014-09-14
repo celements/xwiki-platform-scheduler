@@ -9,6 +9,7 @@ import org.xwiki.script.service.ScriptService;
 
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
+import com.celements.search.lucene.query.QueryRestrictionGroup;
 
 @Component("lucene")
 public class LuceneSearchScriptService implements ScriptService {
@@ -19,9 +20,13 @@ public class LuceneSearchScriptService implements ScriptService {
   public LuceneQuery createQuery() {
     return service.createQuery();
   }
-
-  public LuceneQuery createQuery(LuceneQuery query) {
-    return service.createQuery(query);
+  
+  public QueryRestrictionGroup createAndRestrictionGroup() {
+    return service.createAndRestrictionGroup();
+  }
+  
+  public QueryRestrictionGroup createOrRestrictionGroup() {
+    return service.createOrRestrictionGroup();
   }
 
   public QueryRestriction createRestriction(String field, String value) {

@@ -15,6 +15,8 @@ import org.xwiki.model.reference.SpaceReference;
 
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
+import com.celements.search.lucene.query.QueryRestrictionGroup;
+import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.web.service.IWebUtilsService;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
@@ -47,9 +49,13 @@ public class LuceneSearchService implements ILuceneSearchService {
   public LuceneQuery createQuery(String database) {
     return new LuceneQuery(database);
   }
-
-  public LuceneQuery createQuery(LuceneQuery query) {
-    return new LuceneQuery(query);
+  
+  public QueryRestrictionGroup createAndRestrictionGroup() {
+    return new QueryRestrictionGroup(Type.AND);
+  }
+  
+  public QueryRestrictionGroup createOrRestrictionGroup() {
+    return new QueryRestrictionGroup(Type.OR);
   }
 
   public QueryRestriction createRestriction(String field, String value) {

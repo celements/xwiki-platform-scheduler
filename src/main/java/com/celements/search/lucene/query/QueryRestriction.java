@@ -12,7 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.queryParser.QueryParser;
 
-public class QueryRestriction {
+public class QueryRestriction implements IQueryRestriction {
 
   private static Log LOGGER = LogFactory.getFactory().getInstance(
       QueryRestriction.class);
@@ -25,25 +25,12 @@ public class QueryRestriction {
   private Float boost = null;
   private boolean negate = false;
 
-  public QueryRestriction() { }
-
-  public QueryRestriction(QueryRestriction restriction) {
-    specifier = restriction.specifier;
-    query = restriction.query;
-    tokenizeQuery = restriction.tokenizeQuery;
-    fuzzy = restriction.fuzzy;
-    proximity = restriction.proximity;
-    boost = restriction.boost;
-    negate = restriction.negate;
-  }
-
   public QueryRestriction(String specifier, String query) {
     this.specifier = specifier;
     this.query = query;
   }
 
-  public QueryRestriction(String specifier, String query, boolean tokenizeQuery
-      ) {
+  public QueryRestriction(String specifier, String query, boolean tokenizeQuery) {
     this.specifier = specifier;
     this.query = query;
     this.tokenizeQuery = tokenizeQuery;
@@ -137,14 +124,15 @@ public class QueryRestriction {
     return this;
   }
 
-  public String getRestriction() {
-    String queryString = "";
-    if((specifier != null) && (query != null) && (specifier.trim().length() > 0)
+  @Override
+  public String getQueryString() {
+    String ret = "";
+    if ((specifier != null) && (query != null) && (specifier.trim().length() > 0)
         && (query.trim().length() > 0)) {
-      if(tokenizeQuery) {
+      if (tokenizeQuery) {
         StringBuilder tokenizedQuery = new StringBuilder();
         Matcher m = getQueryTokenMatcher();
-        while(m.find()) {
+        while (m.find()) {
           String token = m.group(0).trim();
           if(!token.matches("[\"+-]")) {
             token = QueryParser.escape(token);
@@ -161,24 +149,24 @@ public class QueryRestriction {
             tokenizedQuery.append(" " + token);
           }
         }
-        queryString = tokenizedQuery.toString().trim();
+        ret = tokenizedQuery.toString().trim();
       } else {
-        queryString = query;
+        ret = query;
       }
       DecimalFormat formater = getDecimalFormater();
-      queryString = makeRestrictionFuzzy(queryString, formater);
-      if((proximity != null) && (proximity > 1)) {
-        queryString = "\"" + queryString + "\"~" + formater.format(proximity);
+      ret = makeRestrictionFuzzy(ret, formater);
+      if ((proximity != null) && (proximity > 1)) {
+        ret = "\"" + ret + "\"~" + formater.format(proximity);
       }
-      queryString = specifier + ":(" + queryString + ")";
-      if((boost != null) && (boost > 0)) {
-        queryString += "^" + formater.format(boost);
+      ret = specifier + ":(" + ret + ")";
+      if ((boost != null) && (boost > 0)) {
+        ret += "^" + formater.format(boost);
       }
-      if(negate) {
-        queryString = "NOT " + queryString;
+      if (negate) {
+        ret = "NOT " + ret;
       }
     }
-    return queryString;
+    return ret;
   }
 
   Matcher getQueryTokenMatcher() {
@@ -216,6 +204,16 @@ public class QueryRestriction {
   }
 
   @Override
+  public QueryRestriction copy() {
+    QueryRestriction copy = new QueryRestriction(specifier, query, tokenizeQuery);
+    copy.fuzzy = fuzzy;
+    copy.proximity = proximity;
+    copy.boost = boost;
+    copy.negate = negate;
+    return copy;
+  }
+
+  @Override
   public int hashCode() {
     return new HashCodeBuilder().append(boost).append(fuzzy).append(negate).append(
         proximity).append(query).append(specifier).append(tokenizeQuery).toHashCode();
@@ -236,7 +234,7 @@ public class QueryRestriction {
   
   @Override
   public String toString() {
-    return "LuceneQueryRestrictionApi [queryString=" + getRestriction() + "]";
+    return "QueryRestriction [queryString=" + getQueryString() + "]";
   }
   
 }
