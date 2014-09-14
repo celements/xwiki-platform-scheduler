@@ -47,7 +47,13 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   public LuceneQuery createQuery(String database) {
-    return new LuceneQuery(database);
+    LuceneQuery query;
+    if (StringUtils.isNotBlank(database)) {
+      query = new LuceneQuery(database);
+    } else {
+      query = createQuery();
+    }
+    return query;
   }
   
   public QueryRestrictionGroup createAndRestrictionGroup() {

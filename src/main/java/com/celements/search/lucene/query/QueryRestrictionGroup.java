@@ -18,6 +18,10 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
   public QueryRestrictionGroup(Type type) {
     this.type = type;
   }
+  
+  public Type getType() {
+    return type;
+  }
 
   @Override
   public String getQueryString() {
