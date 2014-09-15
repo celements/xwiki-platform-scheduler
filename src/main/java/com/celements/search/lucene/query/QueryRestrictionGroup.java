@@ -35,7 +35,7 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
         ret += restrString;
       }
     }
-    if (ret.length() > 0) {
+    if ((ret.length() > 0) && (this.size() > 1)) {
       ret = "(" + ret + ")";
     }
     return ret;

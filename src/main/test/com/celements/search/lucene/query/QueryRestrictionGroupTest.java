@@ -24,7 +24,7 @@ public class QueryRestrictionGroupTest {
   public void testGetQueryString_single() {
     QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
     restrGrp.add(new QueryRestriction("field", "value"));
-    assertEquals("(field:(+value*))", restrGrp.getQueryString());
+    assertEquals("field:(+value*)", restrGrp.getQueryString());
   }
 
   @Test

@@ -139,10 +139,15 @@ public class LuceneSearchResult {
       }
       return searchResultsCache;
     } catch (IOException ioe) {
-      throw new LuceneSearchException(ioe);
+      throw newLuceneSearchException(ioe);
     } catch (ParseException exc) {
-      throw new LuceneSearchException(exc);
+      throw newLuceneSearchException(exc);
     }
+  }
+
+  private LuceneSearchException newLuceneSearchException(Throwable cause) {
+    return new LuceneSearchException("Error while executing lucene search query:" 
+        + queryString, cause);
   }
 
   @Override

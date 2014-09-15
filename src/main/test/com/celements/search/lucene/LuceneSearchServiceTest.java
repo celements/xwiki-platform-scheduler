@@ -31,7 +31,7 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
     LuceneQuery query = searchService.createQuery();
     assertNotNull(query);
     assertEquals(getContext().getDatabase(), query.getDatabase());
-    assertEquals("(wiki:(+\"" + getContext().getDatabase() + "\"))", 
+    assertEquals("wiki:(+\"" + getContext().getDatabase() + "\")", 
         query.getQueryString());
   }
 
@@ -41,12 +41,12 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
     LuceneQuery query = searchService.createQuery(database);
     assertNotNull(query);
     assertEquals(database, query.getDatabase());
-    assertEquals("(wiki:(+\"" + database + "\"))", query.getQueryString());
+    assertEquals("wiki:(+\"" + database + "\")", query.getQueryString());
   }
   
   @Test
   public void testCreateAndRestrictionGroup() {
-    QueryRestrictionGroup restrGrp = searchService.createAndRestrictionGroup();
+    QueryRestrictionGroup restrGrp = searchService.createRestrictionGroup(Type.AND);
     assertNotNull(restrGrp);
     assertEquals(Type.AND, restrGrp.getType());
     assertEquals(0, restrGrp.size());
@@ -54,10 +54,49 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testCreateOrRestrictionGroup() {
-    QueryRestrictionGroup restrGrp = searchService.createOrRestrictionGroup();
+    QueryRestrictionGroup restrGrp = searchService.createRestrictionGroup(Type.OR);
     assertNotNull(restrGrp);
     assertEquals(Type.OR, restrGrp.getType());
     assertEquals(0, restrGrp.size());
+  }
+  
+  @Test
+  public void testCreateRestrictionGroup() {
+    List<String> fields = Arrays.asList("field1", "field2", "field3");
+    List<String> values = Arrays.asList("value1", "value2", "value3");
+    QueryRestrictionGroup restrGrp = searchService.createRestrictionGroup(Type.AND, 
+        fields, values);
+    assertNotNull(restrGrp);
+    assertEquals(Type.AND, restrGrp.getType());
+    assertEquals(3, restrGrp.size());
+    assertEquals("(field1:(+value1*) AND field2:(+value2*) AND field3:(+value3*))", 
+        restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testCreateRestrictionGroup_oneField() {
+    List<String> fields = Arrays.asList("field");
+    List<String> values = Arrays.asList("value1", "value2", "value3");
+    QueryRestrictionGroup restrGrp = searchService.createRestrictionGroup(Type.OR, fields, 
+        values);
+    assertNotNull(restrGrp);
+    assertEquals(Type.OR, restrGrp.getType());
+    assertEquals(3, restrGrp.size());
+    assertEquals("(field:(+value1*) OR field:(+value2*) OR field:(+value3*))", 
+        restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testCreateRestrictionGroup_twoValues() {
+    List<String> fields = Arrays.asList("field1", "field2", "field3");
+    List<String> values = Arrays.asList("value1", "value2");
+    QueryRestrictionGroup restrGrp = searchService.createRestrictionGroup(Type.AND, 
+        fields, values);
+    assertNotNull(restrGrp);
+    assertEquals(Type.AND, restrGrp.getType());
+    assertEquals(3, restrGrp.size());
+    assertEquals("(field1:(+value1*) AND field2:(+value2*) AND field3:(+value2*))", 
+        restrGrp.getQueryString());
   }
 
   @Test
@@ -74,16 +113,6 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
         "first_name", "Hans", false, true);
     assertNotNull(restr);
     assertEquals("XWiki.XWikiUsers.first_name:(Hans~)", restr.getQueryString());
-  }
-  
-  @Test
-  public void testCreateRestrictionList() {
-    List<QueryRestriction> restrList = searchService.createRestrictionList(
-        Arrays.asList("XWiki.XWikiUsers.first_name", "XWiki.XWikiUsers.last_name"), "Hans");
-    assertNotNull(restrList);
-    assertEquals(2, restrList.size());
-    assertEquals("XWiki.XWikiUsers.first_name:(+Hans*)", restrList.get(0).getQueryString());
-    assertEquals("XWiki.XWikiUsers.last_name:(+Hans*)", restrList.get(1).getQueryString());
   }
 
   @Test

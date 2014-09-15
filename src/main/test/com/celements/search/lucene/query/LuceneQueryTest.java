@@ -33,7 +33,7 @@ public class LuceneQueryTest {
   @Test
   public void testGetQueryString_alwaysHasWikiRestriction() {
     assertEquals(1, query.size());
-    assertEquals("(wiki:(+\"" + database + "\"))", query.getQueryString());
+    assertEquals("wiki:(+\"" + database + "\")", query.getQueryString());
   }
   
   @Test

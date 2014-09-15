@@ -10,6 +10,7 @@ import org.xwiki.model.reference.SpaceReference;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
+import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 
 @ComponentRole
 public interface ILuceneSearchService {
@@ -18,9 +19,13 @@ public interface ILuceneSearchService {
 
   public LuceneQuery createQuery(String database);
   
-  public QueryRestrictionGroup createAndRestrictionGroup();
-  
-  public QueryRestrictionGroup createOrRestrictionGroup();
+  public QueryRestrictionGroup createRestrictionGroup(Type type);
+
+  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields, 
+      List<String> values);
+
+  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields, 
+      List<String> values, boolean tokenize, boolean fuzzy);
 
   public QueryRestriction createRestriction(String field, String value);
 
@@ -30,8 +35,6 @@ public interface ILuceneSearchService {
       boolean fuzzy);
 
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef);
-  
-  public List<QueryRestriction> createSpaceRestrictionList(List<SpaceReference> spaceRefs);
 
   public QueryRestriction createObjectRestriction(DocumentReference classRef);
 
@@ -40,16 +43,6 @@ public interface ILuceneSearchService {
 
   public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
       String value, boolean tokenize);
-
-  public List<QueryRestriction> createRestrictionList(List<String> fields, String value);
-
-  public List<QueryRestriction> createRestrictionList(List<String> fields, String value, 
-      boolean tokenize, boolean fuzzy);
-
-  public List<QueryRestriction> createRestrictionList(String field, List<String> values);
-
-  public List<QueryRestriction> createRestrictionList(String field, List<String> values, 
-      boolean tokenize, boolean fuzzy);
   
   public QueryRestriction createRangeRestriction(String field, String from, String to);
 

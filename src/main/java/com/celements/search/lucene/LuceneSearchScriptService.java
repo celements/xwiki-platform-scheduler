@@ -10,6 +10,7 @@ import org.xwiki.script.service.ScriptService;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
+import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 
 @Component("lucene")
 public class LuceneSearchScriptService implements ScriptService {
@@ -20,13 +21,34 @@ public class LuceneSearchScriptService implements ScriptService {
   public LuceneQuery createQuery() {
     return service.createQuery();
   }
+
+  /**
+   * @deprecated instead use {@link LuceneQuery#copy()}
+   * 
+   * @param query
+   * @return
+   */
+  @Deprecated
+  public LuceneQuery createQuery(LuceneQuery query) {
+    return query.copy();
+  }
   
   public QueryRestrictionGroup createAndRestrictionGroup() {
-    return service.createAndRestrictionGroup();
+    return service.createRestrictionGroup(Type.AND);
   }
   
   public QueryRestrictionGroup createOrRestrictionGroup() {
-    return service.createOrRestrictionGroup();
+    return service.createRestrictionGroup(Type.OR);
+  }
+  
+  public QueryRestrictionGroup createAndRestrictionGroup(List<String> fields, 
+      List<String> values) {
+    return service.createRestrictionGroup(Type.AND, fields, values);
+  }
+  
+  public QueryRestrictionGroup createOrRestrictionGroup(List<String> fields, 
+      List<String> values) {
+    return service.createRestrictionGroup(Type.OR, fields, values);
   }
 
   public QueryRestriction createRestriction(String field, String value) {

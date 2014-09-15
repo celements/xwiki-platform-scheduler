@@ -51,7 +51,7 @@ public class LuceneQuery extends QueryRestrictionGroup {
    * @return
    */
   @Deprecated
-  public LuceneQuery addRestrictionList(List<IQueryRestriction> restrictionList) {
+  public LuceneQuery addRestrictionList(List<? extends IQueryRestriction> restrictionList) {
     if (restrictionList != null) {
       addAll(restrictionList);
     }
@@ -65,7 +65,7 @@ public class LuceneQuery extends QueryRestrictionGroup {
    * @return
    */
   @Deprecated
-  public LuceneQuery addOrRestrictionList(List<IQueryRestriction> restrictionList) {
+  public LuceneQuery addOrRestrictionList(List<? extends IQueryRestriction> restrictionList) {
     if (restrictionList != null) {
       QueryRestrictionGroup orRestrGrp = new QueryRestrictionGroup(Type.OR);
       orRestrGrp.addAll(restrictionList);

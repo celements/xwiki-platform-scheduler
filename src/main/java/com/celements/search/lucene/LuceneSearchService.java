@@ -2,8 +2,8 @@ package com.celements.search.lucene;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,10 +42,12 @@ public class LuceneSearchService implements ILuceneSearchService {
         XWikiContext.EXECUTIONCONTEXT_KEY);
   }
 
+  @Override
   public LuceneQuery createQuery() {
     return new LuceneQuery(getContext().getDatabase());
   }
 
+  @Override
   public LuceneQuery createQuery(String database) {
     LuceneQuery query;
     if (StringUtils.isNotBlank(database)) {
@@ -56,22 +58,51 @@ public class LuceneSearchService implements ILuceneSearchService {
     return query;
   }
   
-  public QueryRestrictionGroup createAndRestrictionGroup() {
-    return new QueryRestrictionGroup(Type.AND);
-  }
-  
-  public QueryRestrictionGroup createOrRestrictionGroup() {
-    return new QueryRestrictionGroup(Type.OR);
+  @Override
+  public QueryRestrictionGroup createRestrictionGroup(Type type) {
+    return new QueryRestrictionGroup(type);
   }
 
+  @Override
+  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields, 
+      List<String> values) {
+    return createRestrictionGroup(type, fields, values, DEFAULT_TOKENIZE, DEFAULT_FUZZY);
+  }
+
+  @Override
+  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields, 
+      List<String> values, boolean tokenize, boolean fuzzy) {
+    QueryRestrictionGroup restrGrp = createRestrictionGroup(type);
+    Iterator<String> fieldIter = fields.iterator();
+    Iterator<String> valueIter = values.iterator();
+    String field = null;
+    String value = null;
+    while (fieldIter.hasNext() || valueIter.hasNext()) {
+      if (fieldIter.hasNext()) {
+        field = fieldIter.next();
+      }
+      if (valueIter.hasNext()) {
+        value = valueIter.next();
+      }
+      QueryRestriction restr = createRestriction(field, value, tokenize, fuzzy);
+      if (restr != null) {
+        restrGrp.add(restr);
+      }
+    }
+    return restrGrp;
+  }
+
+  @Override
   public QueryRestriction createRestriction(String field, String value) {
     return createRestriction(field, value, DEFAULT_TOKENIZE, DEFAULT_FUZZY);
   }
 
+  @Override
   public QueryRestriction createRestriction(String field, String value, boolean tokenize) {
     return createRestriction(field, value, tokenize, DEFAULT_FUZZY);
   }
   
+  @Override
   public QueryRestriction createRestriction(String field, String value, boolean tokenize, 
       boolean fuzzy) {
     QueryRestriction restriction = null;
@@ -84,6 +115,7 @@ public class LuceneSearchService implements ILuceneSearchService {
     return restriction;
   }
 
+  @Override
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef) {
     String spaceName = "";
     if (spaceRef != null) {
@@ -92,18 +124,7 @@ public class LuceneSearchService implements ILuceneSearchService {
     return createRestriction("space", "\"" + spaceName + "\"");
   }
 
-  public List<QueryRestriction> createSpaceRestrictionList(
-      List<SpaceReference> spaceRefs) {
-    List<QueryRestriction> restrictionList = new ArrayList<QueryRestriction>();
-    for (SpaceReference spaceRef : spaceRefs) {
-      QueryRestriction restr = createSpaceRestriction(spaceRef);
-      if (restr != null) {
-        restrictionList.add(restr);
-      }
-    }
-    return restrictionList;
-  }
-
+  @Override
   public QueryRestriction createObjectRestriction(DocumentReference classRef) {
     QueryRestriction restriction = null;
     if (classRef != null) {
@@ -113,11 +134,13 @@ public class LuceneSearchService implements ILuceneSearchService {
     return restriction;
   }
 
+  @Override
   public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
       String value) {
     return createFieldRestriction(classRef, field, value, DEFAULT_TOKENIZE);
   }
 
+  @Override
   public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
       String value, boolean tokenize) {
     QueryRestriction restriction = null;
@@ -127,43 +150,13 @@ public class LuceneSearchService implements ILuceneSearchService {
     }
     return restriction;
   }
-
-  public List<QueryRestriction> createRestrictionList(List<String> fields, String value) {
-    return createRestrictionList(fields, value, DEFAULT_TOKENIZE, DEFAULT_FUZZY);
-  }
-
-  public List<QueryRestriction> createRestrictionList(List<String> fields, String value, 
-      boolean tokenize, boolean fuzzy) {
-    List<QueryRestriction> restrictionList = new ArrayList<QueryRestriction>();
-    for (String field : fields) {
-      QueryRestriction restr = createRestriction(field, value, tokenize, fuzzy);
-      if (restr != null) {
-        restrictionList.add(restr);
-      }
-    }
-    return restrictionList;
-  }
-
-  public List<QueryRestriction> createRestrictionList(String field, List<String> values) {
-    return createRestrictionList(field, values, DEFAULT_TOKENIZE, DEFAULT_FUZZY);
-  }
-
-  public List<QueryRestriction> createRestrictionList(String field, List<String> values, 
-      boolean tokenize, boolean fuzzy) {
-    List<QueryRestriction> restrictionList = new ArrayList<QueryRestriction>();
-    for (String value : values) {
-      QueryRestriction restr = createRestriction(field, value, tokenize, fuzzy);
-      if (restr != null) {
-        restrictionList.add(restr);
-      }
-    }
-    return restrictionList;
-  }
   
+  @Override
   public QueryRestriction createRangeRestriction(String field, String from, String to) {
     return createRangeRestriction(field, from, to, true);
   }
 
+  @Override
   public QueryRestriction createRangeRestriction(String field, String from, String to, 
       boolean inclusive) {
     String value = from + " TO " + to;
@@ -175,20 +168,24 @@ public class LuceneSearchService implements ILuceneSearchService {
     return createRestriction(field, value, false);
   }
   
+  @Override
   public QueryRestriction createDateRestriction(String field, Date date) {
     return createRestriction(field, SDF.format(date), false);
   }
 
+  @Override
   public QueryRestriction createFromDateRestriction(String field, Date fromDate, 
       boolean inclusive) {
     return createFromToDateRestriction(field, fromDate, null, inclusive);
   }
 
+  @Override
   public QueryRestriction createToDateRestriction(String field, Date toDate, 
       boolean inclusive) {
     return createFromToDateRestriction(field, null, toDate, inclusive);
   }
 
+  @Override
   public QueryRestriction createFromToDateRestriction(String field, Date fromDate, 
       Date toDate, boolean inclusive) {
     String from = (fromDate != null) ? SDF.format(fromDate) : DATE_LOW;
@@ -196,16 +193,19 @@ public class LuceneSearchService implements ILuceneSearchService {
     return createRangeRestriction(field, from, to, inclusive);
   }
   
+  @Override
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
       List<String> languages) {
     return new LuceneSearchResult(query, sortFields, languages, false, getContext());
   }
   
+  @Override
   public LuceneSearchResult searchWithoutChecks(LuceneQuery query, List<String> sortFields, 
       List<String> languages) {
     return new LuceneSearchResult(query, sortFields, languages, true, getContext());
   }
 
+  @Override
   public int getResultLimit(boolean skipChecks) {
     LucenePlugin lucenePlugin = (LucenePlugin) getContext().getWiki().getPlugin("lucene", 
         getContext());
