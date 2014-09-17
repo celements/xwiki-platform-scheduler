@@ -11,8 +11,10 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
 
+import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
@@ -129,7 +131,12 @@ public class LuceneSearchService implements ILuceneSearchService {
     QueryRestriction restriction = null;
     if (classRef != null) {
       String className = webUtilsService.getRefLocalSerializer().serialize(classRef);
-      restriction = createRestriction("object", "\"" + className + "\"");
+      // workaround bug Ticket #7230
+      String spaceName = classRef.getLastSpaceReference().getName();
+      if (!Character.isDigit(spaceName.charAt(spaceName.length() - 1))) {
+        className = "\"" + className + "\"";
+      }
+      restriction = createRestriction("object", className);
     }
     return restriction;
   }
@@ -147,6 +154,27 @@ public class LuceneSearchService implements ILuceneSearchService {
     if (classRef != null && StringUtils.isNotBlank(field)) {
       String className = webUtilsService.getRefLocalSerializer().serialize(classRef);
       restriction = createRestriction(className + "." + field, value, tokenize);
+    }
+    return restriction;
+  }
+  
+  @Override
+  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef, 
+      String field, EntityReference ref) {
+    IQueryRestriction restriction = null;
+    if (classRef != null && StringUtils.isNotBlank(field)) {
+      String fieldStr = webUtilsService.getRefLocalSerializer().serialize(classRef) + "." 
+          + field;
+      if (ref != null) {
+        QueryRestrictionGroup restrGrp = createRestrictionGroup(Type.OR);
+        restrGrp.add(createRestriction(fieldStr, webUtilsService.getRefLocalSerializer(
+            ).serialize(ref)));
+        restrGrp.add(createRestriction(fieldStr, webUtilsService.getRefDefaultSerializer(
+            ).serialize(ref)));
+        restriction = restrGrp;
+      } else {
+        restriction = createRestriction(fieldStr, "");
+      }
     }
     return restriction;
   }

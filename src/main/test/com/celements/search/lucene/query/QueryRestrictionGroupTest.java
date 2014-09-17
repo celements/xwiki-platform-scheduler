@@ -60,6 +60,15 @@ public class QueryRestrictionGroupTest {
     assertEquals("((field1:(+value1*) AND field2:(+value2*)) OR (field3:(+value3*) "
         + "AND field4:(+value4*)) OR field5:(+value5*))", restrGrp.getQueryString());
   }
+  
+  @Test
+  public void testGetQueryString_not() {
+    QueryRestrictionGroup restrGrp = getNewFilledRestrGrp(Type.AND);
+    restrGrp.setNegate(true);
+    restrGrp.get(1).setNegate(true);
+    assertEquals("NOT ((field1:(+value1*) OR field2:(+value2*)) AND NOT (field3:(+value3*) "
+        + "OR field4:(+value4*)) AND field5:(+value5*))", restrGrp.getQueryString());
+  }
 
   @Test
   public void testCopy() {

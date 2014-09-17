@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
 
+import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
@@ -43,6 +45,9 @@ public interface ILuceneSearchService {
 
   public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
       String value, boolean tokenize);
+
+  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef, 
+      String field, EntityReference ref);
   
   public QueryRestriction createRangeRestriction(String field, String from, String to);
 
