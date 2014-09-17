@@ -17,13 +17,13 @@ public class QueryRestriction implements IQueryRestriction {
   private static Log LOGGER = LogFactory.getFactory().getInstance(
       QueryRestriction.class);
 
+  private boolean negate = false;
   private String specifier = null;
   private String query = null;
   private boolean tokenizeQuery = true;
   private Float fuzzy = null;
   private Integer proximity = null;
   private Float boost = null;
-  private boolean negate = false;
 
   public QueryRestriction(String specifier, String query) {
     this.specifier = specifier;
@@ -34,6 +34,12 @@ public class QueryRestriction implements IQueryRestriction {
     this.specifier = specifier;
     this.query = query;
     this.tokenizeQuery = tokenizeQuery;
+  }
+
+  @Override
+  public QueryRestriction setNegate(boolean negate) {
+    this.negate = negate;
+    return this;
   }
 
   public QueryRestriction setSpecifier(String specifier) {
@@ -78,11 +84,6 @@ public class QueryRestriction implements IQueryRestriction {
 
   public QueryRestriction setFuzzy() {
     fuzzy = -1f; //use Lucene's default (which is 0.5)
-    return this;
-  }
-
-  public QueryRestriction setNegate(boolean negate) {
-    this.negate = negate;
     return this;
   }
 

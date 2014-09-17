@@ -12,11 +12,18 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
   public static enum Type {
     AND, OR;
   }
-  
+
+  private boolean negate = false;
   private final Type type;
   
   public QueryRestrictionGroup(Type type) {
     this.type = type;
+  }
+
+  @Override
+  public QueryRestrictionGroup setNegate(boolean negate) {
+    this.negate = negate;
+    return this;
   }
   
   public Type getType() {
@@ -37,6 +44,9 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
     }
     if ((ret.length() > 0) && (this.size() > 1)) {
       ret = "(" + ret + ")";
+      if (negate) {
+        ret = "NOT " + ret;
+      }
     }
     return ret;
   }
