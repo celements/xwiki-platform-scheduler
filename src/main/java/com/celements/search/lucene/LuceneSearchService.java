@@ -167,10 +167,10 @@ public class LuceneSearchService implements ILuceneSearchService {
           + field;
       if (ref != null) {
         QueryRestrictionGroup restrGrp = createRestrictionGroup(Type.OR);
-        restrGrp.add(createRestriction(fieldStr, webUtilsService.getRefLocalSerializer(
-            ).serialize(ref)));
-        restrGrp.add(createRestriction(fieldStr, webUtilsService.getRefDefaultSerializer(
-            ).serialize(ref)));
+        restrGrp.add(createRestriction(fieldStr, "\"" 
+            + webUtilsService.getRefLocalSerializer().serialize(ref) + "\""));
+        restrGrp.add(createRestriction(fieldStr, "\"" 
+            + webUtilsService.getRefDefaultSerializer().serialize(ref) + "\""));
         restriction = restrGrp;
       } else {
         restriction = createRestriction(fieldStr, "");
