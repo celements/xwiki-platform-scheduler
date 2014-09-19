@@ -1,7 +1,5 @@
 package com.celements.search.lucene;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -25,10 +23,6 @@ import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 
 @Component
 public class LuceneSearchService implements ILuceneSearchService {
-
-  static final DateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
-  static final String DATE_LOW = "000101010000";
-  static final String DATE_HIGH = "999912312359";
   
   private static final boolean DEFAULT_TOKENIZE = true;
   private static final boolean DEFAULT_FUZZY = false;

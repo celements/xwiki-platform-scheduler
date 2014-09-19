@@ -1,5 +1,7 @@
 package com.celements.search.lucene;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +18,10 @@ import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 
 @ComponentRole
 public interface ILuceneSearchService {
+
+  public static final DateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
+  public static final String DATE_LOW = "000101010000";
+  public static final String DATE_HIGH = "999912312359";
 
   public LuceneQuery createQuery();
 
