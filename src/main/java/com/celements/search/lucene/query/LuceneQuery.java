@@ -21,6 +21,10 @@ public class LuceneQuery extends QueryRestrictionGroup {
   public String getDatabase() {
     return database;
   }
+  
+  public void setDatabase(String database) {
+    this.database = database;
+  }
 
   @Override
   public LuceneQuery copy() {
