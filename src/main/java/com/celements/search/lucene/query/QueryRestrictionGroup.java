@@ -3,7 +3,7 @@ package com.celements.search.lucene.query;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implements IQueryRestriction {
   
@@ -18,6 +18,21 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
   
   public QueryRestrictionGroup(Type type) {
     this.type = type;
+  }
+  
+  @Override
+  public boolean add(IQueryRestriction restr) {
+    if ((restr != null) && !restr.isEmpty()) {
+      return super.add(restr);
+    }
+    return false;
+  }
+  
+  @Override
+  public void add(int index, IQueryRestriction restr) {
+    if ((restr != null) && !restr.isEmpty()) {
+      super.add(index, restr);
+    }
   }
 
   @Override
@@ -58,6 +73,11 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
       copy.add(restr.copy());
     }
     return copy;
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return size() == 0;
   }
 
   @Override
