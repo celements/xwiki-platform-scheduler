@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
@@ -222,6 +223,11 @@ public class QueryRestriction implements IQueryRestriction {
     copy.boost = boost;
     copy.negate = negate;
     return copy;
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return StringUtils.isBlank(getQueryString());
   }
 
   @Override

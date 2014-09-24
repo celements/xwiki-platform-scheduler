@@ -7,5 +7,7 @@ public interface IQueryRestriction {
   public IQueryRestriction setNegate(boolean negate);
   
   public IQueryRestriction copy();
+  
+  public boolean isEmpty();
 
 }
