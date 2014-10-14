@@ -37,7 +37,12 @@ public class LuceneSearchResult {
 
   LuceneSearchResult(LuceneQuery query, List<String> sortFields, List<String> languages, 
       boolean skipChecks, XWikiContext context) {
-    this.queryString = query.getQueryString();
+    this(query.getQueryString(), sortFields, languages, skipChecks, context);
+  }
+
+  LuceneSearchResult(String queryString, List<String> sortFields, List<String> languages, 
+      boolean skipChecks, XWikiContext context) {
+    this.queryString = queryString;
     this.sortFields = getList(sortFields);
     this.languages = getList(languages);
     this.skipChecks = skipChecks;

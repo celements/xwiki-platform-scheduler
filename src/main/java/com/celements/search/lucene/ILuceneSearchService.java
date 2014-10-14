@@ -70,13 +70,19 @@ public interface ILuceneSearchService {
 
   public QueryRestriction createFromToDateRestriction(String field, Date fromDate, 
       Date toDate, boolean inclusive);
-  
+
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
       List<String> languages);
-  
-  public LuceneSearchResult searchWithoutChecks(LuceneQuery query, List<String> sortFields, 
+
+  public LuceneSearchResult searchWithoutChecks(LuceneQuery query, 
+      List<String> sortFields, List<String> languages);
+
+  public LuceneSearchResult search(String queryString, List<String> sortFields, 
       List<String> languages);
-  
+
+  public LuceneSearchResult searchWithoutChecks(String queryString, 
+      List<String> sortFields, List<String> languages);
+
   public int getResultLimit(boolean skipChecks);
 
 }
