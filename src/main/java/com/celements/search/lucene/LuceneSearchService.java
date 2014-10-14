@@ -214,17 +214,29 @@ public class LuceneSearchService implements ILuceneSearchService {
     String to = (toDate != null) ? SDF.format(toDate) : DATE_HIGH;
     return createRangeRestriction(field, from, to, inclusive);
   }
-  
+
   @Override
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
       List<String> languages) {
     return new LuceneSearchResult(query, sortFields, languages, false, getContext());
   }
-  
+
   @Override
-  public LuceneSearchResult searchWithoutChecks(LuceneQuery query, List<String> sortFields, 
-      List<String> languages) {
+  public LuceneSearchResult searchWithoutChecks(LuceneQuery query, 
+      List<String> sortFields, List<String> languages) {
     return new LuceneSearchResult(query, sortFields, languages, true, getContext());
+  }
+
+  @Override
+  public LuceneSearchResult search(String queryString, List<String> sortFields, 
+      List<String> languages) {
+    return new LuceneSearchResult(queryString, sortFields, languages, false, getContext());
+  }
+
+  @Override
+  public LuceneSearchResult searchWithoutChecks(String queryString, 
+      List<String> sortFields, List<String> languages) {
+    return new LuceneSearchResult(queryString, sortFields, languages, true, getContext());
   }
 
   @Override
