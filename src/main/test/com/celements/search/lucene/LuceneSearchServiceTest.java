@@ -1,5 +1,6 @@
 package com.celements.search.lucene;
 
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 import java.text.ParseException;
@@ -15,14 +16,21 @@ import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
+import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 import com.xpn.xwiki.web.Utils;
 
 public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   
   private ILuceneSearchService searchService;
+  private XWiki xwiki;
+  private XWikiContext context;
   
   @Before
   public void setUp_LuceneSearchServiceTest() throws Exception {
+    xwiki = getWikiMock();
+    context = getContext();
     searchService = Utils.getComponent(ILuceneSearchService.class);
   }
 
@@ -177,6 +185,63 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
     assertNotNull(restr);
     assertEquals("XWiki.XWikiUsers.date:([111111111111 TO 999912312359])", 
         restr.getQueryString());
+  }
+  
+  @Test
+  public void testSkipChecks_false() {
+    expect(xwiki.getXWikiPreference(eq("search_skipChecks"), eq("search.skipChecks"), 
+        eq("0"), same(getContext()))).andReturn("0").once();
+    
+    replayDefault();
+    boolean ret = searchService.skipChecks();
+    verifyDefault();
+    
+    assertFalse(ret);
+  }
+  
+  @Test
+  public void testSkipChecks_true() {
+    expect(xwiki.getXWikiPreference(eq("search_skipChecks"), eq("search.skipChecks"), 
+        eq("0"), same(getContext()))).andReturn("1").once();
+    
+    replayDefault();
+    boolean ret = searchService.skipChecks();
+    verifyDefault();
+    
+    assertTrue(ret);
+  }
+  
+  @Test
+  public void testGetResultLimit() {
+    int limit = 1234;
+    boolean skipChecks = false;
+    LucenePlugin pluginMock = createMockAndAddToDefault(LucenePlugin.class);
+    expect(xwiki.getPlugin(eq("lucene"), same(getContext()))).andReturn(pluginMock).once();
+    expect(pluginMock.getResultLimit(eq(skipChecks), same(context))).andReturn(limit
+        ).once();
+    
+    replayDefault();
+    int ret = searchService.getResultLimit(skipChecks);
+    verifyDefault();
+    
+    assertEquals(limit, ret);
+  }
+  
+  @Test
+  public void testGetResultLimit_skipChecks() {
+    int limit = 1234;
+    expect(xwiki.getXWikiPreference(eq("search_skipChecks"), eq("search.skipChecks"), 
+        eq("0"), same(getContext()))).andReturn("1").once();
+    LucenePlugin pluginMock = createMockAndAddToDefault(LucenePlugin.class);
+    expect(xwiki.getPlugin(eq("lucene"), same(getContext()))).andReturn(pluginMock).once();
+    expect(pluginMock.getResultLimit(eq(true), same(context))).andReturn(limit
+        ).once();
+    
+    replayDefault();
+    int ret = searchService.getResultLimit();
+    verifyDefault();
+    
+    assertEquals(limit, ret);
   }
 
 }

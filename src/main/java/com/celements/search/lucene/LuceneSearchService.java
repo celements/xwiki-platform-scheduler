@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.context.Execution;
@@ -23,6 +25,8 @@ import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 
 @Component
 public class LuceneSearchService implements ILuceneSearchService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LuceneSearchService.class);
   
   private static final boolean DEFAULT_TOKENIZE = true;
   private static final boolean DEFAULT_FUZZY = false;
@@ -240,10 +244,25 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
+  public int getResultLimit() {
+    return getResultLimit(skipChecks());
+  }
+
+  @Override
   public int getResultLimit(boolean skipChecks) {
     LucenePlugin lucenePlugin = (LucenePlugin) getContext().getWiki().getPlugin("lucene", 
         getContext());
-    return lucenePlugin.getResultLimit(skipChecks, getContext());
+    int limit = lucenePlugin.getResultLimit(skipChecks, getContext());
+    LOGGER.debug("getResultLimit: got '{}' for skipChecks '{}'", limit, skipChecks);
+    return limit;
+  }
+  
+  @Override
+  public boolean skipChecks() {
+    String skipChecks = getContext().getWiki().getXWikiPreference("search_skipChecks",
+        "search.skipChecks", "0", getContext());
+    LOGGER.debug("skipChecks: got '{}'", skipChecks);
+    return StringUtils.equals(skipChecks, "1");
   }
 
 }
