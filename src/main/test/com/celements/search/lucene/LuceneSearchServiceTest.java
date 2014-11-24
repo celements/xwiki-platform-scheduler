@@ -189,8 +189,8 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testSkipChecks_false() {
-    expect(xwiki.getXWikiPreference(eq("search_skipChecks"), eq("search.skipChecks"), 
-        eq("0"), same(getContext()))).andReturn("0").once();
+    expect(xwiki.getXWikiPreferenceAsInt(eq("search_skipChecks"), eq("search.skipChecks"), 
+        eq(0), same(getContext()))).andReturn(0).once();
     
     replayDefault();
     boolean ret = searchService.skipChecks();
@@ -201,8 +201,8 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testSkipChecks_true() {
-    expect(xwiki.getXWikiPreference(eq("search_skipChecks"), eq("search.skipChecks"), 
-        eq("0"), same(getContext()))).andReturn("1").once();
+    expect(xwiki.getXWikiPreferenceAsInt(eq("search_skipChecks"), eq("search.skipChecks"), 
+        eq(0), same(getContext()))).andReturn(1).once();
     
     replayDefault();
     boolean ret = searchService.skipChecks();
@@ -230,8 +230,8 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   @Test
   public void testGetResultLimit_skipChecks() {
     int limit = 1234;
-    expect(xwiki.getXWikiPreference(eq("search_skipChecks"), eq("search.skipChecks"), 
-        eq("0"), same(getContext()))).andReturn("1").once();
+    expect(xwiki.getXWikiPreferenceAsInt(eq("search_skipChecks"), eq("search.skipChecks"), 
+        eq(0), same(getContext()))).andReturn(1).once();
     LucenePlugin pluginMock = createMockAndAddToDefault(LucenePlugin.class);
     expect(xwiki.getPlugin(eq("lucene"), same(getContext()))).andReturn(pluginMock).once();
     expect(pluginMock.getResultLimit(eq(true), same(context))).andReturn(limit

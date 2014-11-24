@@ -259,10 +259,10 @@ public class LuceneSearchService implements ILuceneSearchService {
   
   @Override
   public boolean skipChecks() {
-    String skipChecks = getContext().getWiki().getXWikiPreference("search_skipChecks",
-        "search.skipChecks", "0", getContext());
+    int skipChecks = getContext().getWiki().getXWikiPreferenceAsInt("search_skipChecks",
+        "search.skipChecks", 0, getContext());
     LOGGER.debug("skipChecks: got '{}'", skipChecks);
-    return StringUtils.equals(skipChecks, "1");
+    return skipChecks == 1;
   }
 
 }
