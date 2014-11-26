@@ -32,20 +32,20 @@ public class LuceneSearchScriptService implements ScriptService {
   public LuceneQuery createQuery(LuceneQuery query) {
     return query.copy();
   }
-  
+
   public QueryRestrictionGroup createAndRestrictionGroup() {
     return service.createRestrictionGroup(Type.AND);
   }
-  
+
   public QueryRestrictionGroup createOrRestrictionGroup() {
     return service.createRestrictionGroup(Type.OR);
   }
-  
+
   public QueryRestrictionGroup createAndRestrictionGroup(List<String> fields, 
       List<String> values) {
     return service.createRestrictionGroup(Type.AND, fields, values);
   }
-  
+
   public QueryRestrictionGroup createOrRestrictionGroup(List<String> fields, 
       List<String> values) {
     return service.createRestrictionGroup(Type.OR, fields, values);
@@ -77,7 +77,7 @@ public class LuceneSearchScriptService implements ScriptService {
       boolean inclusive) {
     return service.createRangeRestriction(field, from, to, inclusive);
   }
-  
+
   public QueryRestriction createDateRestriction(String field, Date date) {
     return service.createDateRestriction(field, date);
   }
@@ -96,31 +96,39 @@ public class LuceneSearchScriptService implements ScriptService {
       Date toDate, boolean inclusive) {
     return service.createFromToDateRestriction(field, fromDate, toDate, inclusive);
   }
-  
+
   public LuceneSearchResult search(LuceneQuery query) {
     return service.search(query, null, null);
   }
-  
+
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields) {
     return service.search(query, sortFields, null);
   }
-  
+
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
       List<String> languages) {
     return service.search(query, sortFields, languages);
   }
-  
+
   public LuceneSearchResult search(String queryString) {
     return service.search(queryString, null, null);
   }
-  
+
   public LuceneSearchResult search(String queryString, List<String> sortFields) {
     return service.search(queryString, sortFields, null);
   }
-  
+
   public LuceneSearchResult search(String queryString, List<String> sortFields, 
       List<String> languages) {
     return service.search(queryString, sortFields, languages);
   }
-  
+
+  public int getResultLimit() {
+    return service.getResultLimit();
+  }
+
+  public boolean skipChecks() {
+    return service.skipChecks();
+  }
+
 }
