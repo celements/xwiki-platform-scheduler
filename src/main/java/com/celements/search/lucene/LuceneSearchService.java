@@ -222,7 +222,8 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
       List<String> languages) {
-    return new LuceneSearchResult(query, sortFields, languages, false, getContext());
+    return new LuceneSearchResult(query, sortFields, languages, skipChecks(), 
+        getContext());
   }
 
   @Override
@@ -234,7 +235,8 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public LuceneSearchResult search(String queryString, List<String> sortFields, 
       List<String> languages) {
-    return new LuceneSearchResult(queryString, sortFields, languages, false, getContext());
+    return new LuceneSearchResult(queryString, sortFields, languages, skipChecks(), 
+        getContext());
   }
 
   @Override
