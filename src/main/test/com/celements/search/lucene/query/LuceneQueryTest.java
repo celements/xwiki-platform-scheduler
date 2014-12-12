@@ -39,7 +39,7 @@ public class LuceneQueryTest {
   @Test
   public void testGetQueryString_withEmptyRestriction() {
     query.add(new QueryRestriction("object", ""));
-    assertEquals("(wiki:(+\"" + database + "\"))", query.getQueryString());
+    assertEquals("wiki:(+\"" + database + "\")", query.getQueryString());
   }
 
   @Test

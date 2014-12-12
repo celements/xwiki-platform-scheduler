@@ -222,8 +222,7 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
       List<String> languages) {
-    return new LuceneSearchResult(query, sortFields, languages, skipChecks(), 
-        getContext());
+    return new LuceneSearchResult(query, sortFields, languages, false, getContext());
   }
 
   @Override
@@ -235,8 +234,7 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public LuceneSearchResult search(String queryString, List<String> sortFields, 
       List<String> languages) {
-    return new LuceneSearchResult(queryString, sortFields, languages, skipChecks(), 
-        getContext());
+    return new LuceneSearchResult(queryString, sortFields, languages, false, getContext());
   }
 
   @Override
@@ -247,7 +245,7 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public int getResultLimit() {
-    return getResultLimit(skipChecks());
+    return getResultLimit(false);
   }
 
   @Override
@@ -257,14 +255,6 @@ public class LuceneSearchService implements ILuceneSearchService {
     int limit = lucenePlugin.getResultLimit(skipChecks, getContext());
     LOGGER.debug("getResultLimit: got '{}' for skipChecks '{}'", limit, skipChecks);
     return limit;
-  }
-  
-  @Override
-  public boolean skipChecks() {
-    int skipChecks = getContext().getWiki().getXWikiPreferenceAsInt("search_skipChecks",
-        "search.skipChecks", 0, getContext());
-    LOGGER.debug("skipChecks: got '{}'", skipChecks);
-    return skipChecks == 1;
   }
 
 }

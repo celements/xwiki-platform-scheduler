@@ -188,40 +188,15 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
-  public void testSkipChecks_false() {
-    expect(xwiki.getXWikiPreferenceAsInt(eq("search_skipChecks"), eq("search.skipChecks"), 
-        eq(0), same(getContext()))).andReturn(0).once();
-    
-    replayDefault();
-    boolean ret = searchService.skipChecks();
-    verifyDefault();
-    
-    assertFalse(ret);
-  }
-  
-  @Test
-  public void testSkipChecks_true() {
-    expect(xwiki.getXWikiPreferenceAsInt(eq("search_skipChecks"), eq("search.skipChecks"), 
-        eq(0), same(getContext()))).andReturn(1).once();
-    
-    replayDefault();
-    boolean ret = searchService.skipChecks();
-    verifyDefault();
-    
-    assertTrue(ret);
-  }
-  
-  @Test
   public void testGetResultLimit() {
     int limit = 1234;
-    boolean skipChecks = false;
     LucenePlugin pluginMock = createMockAndAddToDefault(LucenePlugin.class);
     expect(xwiki.getPlugin(eq("lucene"), same(getContext()))).andReturn(pluginMock).once();
-    expect(pluginMock.getResultLimit(eq(skipChecks), same(context))).andReturn(limit
+    expect(pluginMock.getResultLimit(eq(false), same(context))).andReturn(limit
         ).once();
     
     replayDefault();
-    int ret = searchService.getResultLimit(skipChecks);
+    int ret = searchService.getResultLimit();
     verifyDefault();
     
     assertEquals(limit, ret);
@@ -230,15 +205,13 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   @Test
   public void testGetResultLimit_skipChecks() {
     int limit = 1234;
-    expect(xwiki.getXWikiPreferenceAsInt(eq("search_skipChecks"), eq("search.skipChecks"), 
-        eq(0), same(getContext()))).andReturn(1).once();
     LucenePlugin pluginMock = createMockAndAddToDefault(LucenePlugin.class);
     expect(xwiki.getPlugin(eq("lucene"), same(getContext()))).andReturn(pluginMock).once();
     expect(pluginMock.getResultLimit(eq(true), same(context))).andReturn(limit
         ).once();
     
     replayDefault();
-    int ret = searchService.getResultLimit();
+    int ret = searchService.getResultLimit(true);
     verifyDefault();
     
     assertEquals(limit, ret);

@@ -127,8 +127,8 @@ public class LuceneSearchScriptService implements ScriptService {
     return service.getResultLimit();
   }
 
-  public boolean skipChecks() {
-    return service.skipChecks();
+  public int getResultLimit(boolean skipChecks) {
+    return service.getResultLimit(skipChecks);
   }
 
 }

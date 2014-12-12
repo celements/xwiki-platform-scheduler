@@ -87,6 +87,4 @@ public interface ILuceneSearchService {
 
   public int getResultLimit(boolean skipChecks);
 
-  public boolean skipChecks();
-
 }
