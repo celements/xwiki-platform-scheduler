@@ -22,7 +22,7 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
   
   @Override
   public boolean add(IQueryRestriction restr) {
-    if ((restr != null) && !restr.isEmpty()) {
+    if ((restr != null) && !restr.isEmpty() && !this.contains(restr)) {
       return super.add(restr);
     }
     return false;

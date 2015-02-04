@@ -28,6 +28,23 @@ public class QueryRestrictionGroupTest {
   }
 
   @Test
+  public void testGetQueryString_duplicate_same() {
+    QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
+    QueryRestriction restr = new QueryRestriction("field", "value");
+    restrGrp.add(restr);
+    restrGrp.add(restr);
+    assertEquals("field:(+value*)", restrGrp.getQueryString());
+  }
+
+  @Test
+  public void testGetQueryString_duplicate_equal() {
+    QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
+    restrGrp.add(new QueryRestriction("field", "value"));
+    restrGrp.add(new QueryRestriction("field", "value"));
+    assertEquals("field:(+value*)", restrGrp.getQueryString());
+  }
+
+  @Test
   public void testGetQueryString_multiple_and() {
     QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
     restrGrp.add(new QueryRestriction("field1", "value1"));
