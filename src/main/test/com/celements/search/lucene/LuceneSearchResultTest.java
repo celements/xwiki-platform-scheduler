@@ -13,7 +13,9 @@ import org.apache.lucene.queryParser.ParseException;
 import org.easymock.Capture;
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 
 import com.celements.common.test.AbstractBridgedComponentTestCase;
 import com.celements.search.lucene.query.LuceneQuery;
@@ -76,15 +78,18 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     
     List<SearchResult> list = new ArrayList<SearchResult>();
     list.add(createMockAndAddToDefault(SearchResult.class));
+    list.add(createMockAndAddToDefault(SearchResult.class));
     expect(sResultsMock.getResults(eq(7), eq(10))).andReturn(list).once();
     DocumentReference docRef = new DocumentReference("db", "space", "doc");
-    expect(list.get(0).getDocumentReference()).andReturn(docRef).once();
+    expect(list.get(0).getReference()).andReturn(docRef).once();
+    AttachmentReference attRef = new AttachmentReference("file", docRef);
+    expect(list.get(1).getReference()).andReturn(attRef).once();
     
     replayDefault();
-    List<DocumentReference> ret = result.getResults();
+    List<EntityReference> ret = result.getResults();
     verifyDefault();
 
-    assertEquals(Arrays.asList(docRef), ret);
+    assertEquals(Arrays.asList(docRef, attRef), ret);
   }
   
   @Test
@@ -102,10 +107,10 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     list.add(createMockAndAddToDefault(SearchResult.class));
     expect(sResultsMock.getResults(eq(0), eq(1234))).andReturn(list).once();
     DocumentReference docRef = new DocumentReference("db", "space", "doc");
-    expect(list.get(0).getDocumentReference()).andReturn(docRef).once();
+    expect(list.get(0).getReference()).andReturn(docRef).once();
     
     replayDefault();
-    List<DocumentReference> ret = result.getResults();
+    List<EntityReference> ret = result.getResults();
     verifyDefault();
 
     assertEquals(Arrays.asList(docRef), ret);
