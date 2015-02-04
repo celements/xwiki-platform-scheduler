@@ -124,6 +124,20 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
 
   @Test
+  public void testCreateWikiPageTypeRestriction() {
+    QueryRestriction restr = searchService.createWikiPageTypeRestriction();
+    assertNotNull(restr);
+    assertEquals("type:(+\"wikipage\")", restr.getQueryString());
+  }
+
+  @Test
+  public void testCreateAttachmentTypeRestriction() {
+    QueryRestriction restr = searchService.createAttachmentTypeRestriction();
+    assertNotNull(restr);
+    assertEquals("type:(+\"attachment\")", restr.getQueryString());
+  }
+
+  @Test
   public void testRangeRestriction() {
     QueryRestriction restr = searchService.createRangeRestriction("XWiki." +
         "XWikiUsers.first_name", "Hans", "Peter");

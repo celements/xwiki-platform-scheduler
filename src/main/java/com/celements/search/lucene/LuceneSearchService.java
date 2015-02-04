@@ -116,6 +116,16 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
+  public QueryRestriction createWikiPageTypeRestriction() {
+    return createRestriction("type", "\"" + LucenePlugin.DOCTYPE_WIKIPAGE + "\"");
+  }
+
+  @Override
+  public QueryRestriction createAttachmentTypeRestriction() {
+    return createRestriction("type", "\"" + LucenePlugin.DOCTYPE_ATTACHMENT + "\"");
+  }
+
+  @Override
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef) {
     String spaceName = "";
     if (spaceRef != null) {

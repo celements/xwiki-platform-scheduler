@@ -42,6 +42,10 @@ public interface ILuceneSearchService {
   public QueryRestriction createRestriction(String field, String value, boolean tokenize, 
       boolean fuzzy);
 
+  public QueryRestriction createWikiPageTypeRestriction();
+
+  public QueryRestriction createAttachmentTypeRestriction();
+
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef);
 
   public QueryRestriction createObjectRestriction(DocumentReference classRef);
