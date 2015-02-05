@@ -107,14 +107,8 @@ public class LuceneSearchResult {
   public List<EntityReference> getResults() throws LuceneSearchException {
     List<EntityReference> ret = new ArrayList<EntityReference>();
     SearchResults results = luceneSearch();
-    int offset = getOffset() + 1;
-    if (offset < 0) {
-      offset = 0;
-    }
-    int limit = getLimit();
-    if (limit <= 0) {
-      limit = results.getHitcount();
-    }
+    int offset = (getOffset() < 0 ? 0 : getOffset() + 1);
+    int limit = (getLimit() <= 0 ? getSize() : getLimit());
     for (SearchResult result : results.getResults(offset, limit)) {
       ret.add(result.getReference());
     }
@@ -123,7 +117,12 @@ public class LuceneSearchResult {
   }
 
   public int getSize() throws LuceneSearchException {
-    int hitcount = luceneSearch().getHitcount();
+    int hitcount;
+    if (skipChecks) {
+      hitcount = luceneSearch().getTotalHitcount();
+    } else {
+      hitcount = luceneSearch().getHitcount();
+    }
     LOGGER.debug("getSize: returning '" + hitcount + "' for: '" + this);
     return hitcount;
   }
