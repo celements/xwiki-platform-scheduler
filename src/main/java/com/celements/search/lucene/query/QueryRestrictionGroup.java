@@ -30,7 +30,7 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
   
   @Override
   public void add(int index, IQueryRestriction restr) {
-    if ((restr != null) && !restr.isEmpty()) {
+    if ((restr != null) && !restr.isEmpty() && !this.contains(restr)) {
       super.add(index, restr);
     }
   }
