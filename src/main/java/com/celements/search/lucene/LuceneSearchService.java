@@ -1,5 +1,6 @@
 package com.celements.search.lucene;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +22,7 @@ import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.web.service.IWebUtilsService;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.plugin.lucene.IndexFields;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 
 @Component
@@ -44,18 +46,18 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public LuceneQuery createQuery() {
-    return new LuceneQuery(getContext().getDatabase());
+    return new LuceneQuery(Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE, 
+        LucenePlugin.DOCTYPE_ATTACHMENT));
   }
 
   @Override
-  public LuceneQuery createQuery(String database) {
-    LuceneQuery query;
-    if (StringUtils.isNotBlank(database)) {
-      query = new LuceneQuery(database);
-    } else {
-      query = createQuery();
-    }
-    return query;
+  public LuceneQuery createWikiPageQuery() {
+    return new LuceneQuery(Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE));
+  }
+
+  @Override
+  public LuceneQuery createAttachmentQuery() {
+    return new LuceneQuery(Arrays.asList(LucenePlugin.DOCTYPE_ATTACHMENT));
   }
   
   @Override
@@ -116,22 +118,15 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public QueryRestriction createWikiPageTypeRestriction() {
-    return createRestriction("type", "\"" + LucenePlugin.DOCTYPE_WIKIPAGE + "\"");
-  }
-
-  @Override
-  public QueryRestriction createAttachmentTypeRestriction() {
-    return createRestriction("type", "\"" + LucenePlugin.DOCTYPE_ATTACHMENT + "\"");
-  }
-
-  @Override
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef) {
-    String spaceName = "";
+    String spaceName;
     if (spaceRef != null) {
       spaceName = spaceRef.getName();
+    } else {
+      spaceName = getContext().getDoc().getDocumentReference().getLastSpaceReference(
+          ).getName();
     }
-    return createRestriction("space", "\"" + spaceName + "\"");
+    return createRestriction(IndexFields.DOCUMENT_SPACE, "\"" + spaceName + "\"");
   }
 
   @Override
@@ -144,7 +139,7 @@ public class LuceneSearchService implements ILuceneSearchService {
       if (!Character.isDigit(spaceName.charAt(spaceName.length() - 1))) {
         className = "\"" + className + "\"";
       }
-      restriction = createRestriction("object", className);
+      restriction = createRestriction(IndexFields.OBJECT, className);
     }
     return restriction;
   }

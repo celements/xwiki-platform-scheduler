@@ -25,7 +25,9 @@ public interface ILuceneSearchService {
 
   public LuceneQuery createQuery();
 
-  public LuceneQuery createQuery(String database);
+  public LuceneQuery createWikiPageQuery();
+
+  public LuceneQuery createAttachmentQuery();
   
   public QueryRestrictionGroup createRestrictionGroup(Type type);
 
@@ -41,10 +43,6 @@ public interface ILuceneSearchService {
   
   public QueryRestriction createRestriction(String field, String value, boolean tokenize, 
       boolean fuzzy);
-
-  public QueryRestriction createWikiPageTypeRestriction();
-
-  public QueryRestriction createAttachmentTypeRestriction();
 
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef);
 

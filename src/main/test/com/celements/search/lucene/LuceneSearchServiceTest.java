@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.model.reference.SpaceReference;
+import org.xwiki.model.reference.WikiReference;
 
 import com.celements.common.test.AbstractBridgedComponentTestCase;
 import com.celements.search.lucene.query.LuceneQuery;
@@ -38,18 +40,24 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   public void testCreateQuery() {
     LuceneQuery query = searchService.createQuery();
     assertNotNull(query);
-    assertEquals(getContext().getDatabase(), query.getDatabase());
-    assertEquals("wiki:(+\"" + getContext().getDatabase() + "\")", 
+    assertEquals("((type:(+\"wikipage\") OR type:(+\"attachment\")) "
+        + "AND wiki:(+\"xwikidb\"))", query.getQueryString());
+  }
+
+  @Test
+  public void testCreateWikiPageQuery() {
+    LuceneQuery query = searchService.createWikiPageQuery();
+    assertNotNull(query);
+    assertEquals("(type:(+\"wikipage\") AND wiki:(+\"xwikidb\"))", 
         query.getQueryString());
   }
 
   @Test
-  public void testCreateQuery_withDB() {
-    String database = "theDB";
-    LuceneQuery query = searchService.createQuery(database);
+  public void testCreateAttachmentPageQuery() {
+    LuceneQuery query = searchService.createAttachmentQuery();
     assertNotNull(query);
-    assertEquals(database, query.getDatabase());
-    assertEquals("wiki:(+\"" + database + "\")", query.getQueryString());
+    assertEquals("(type:(+\"attachment\") AND wiki:(+\"xwikidb\"))", 
+        query.getQueryString());
   }
   
   @Test
@@ -124,17 +132,11 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
 
   @Test
-  public void testCreateWikiPageTypeRestriction() {
-    QueryRestriction restr = searchService.createWikiPageTypeRestriction();
+  public void testCreateSpaceRestriction() {
+    QueryRestriction restr = searchService.createSpaceRestriction(new SpaceReference(
+        "spaceName", new WikiReference("wiki")));
     assertNotNull(restr);
-    assertEquals("type:(+\"wikipage\")", restr.getQueryString());
-  }
-
-  @Test
-  public void testCreateAttachmentTypeRestriction() {
-    QueryRestriction restr = searchService.createAttachmentTypeRestriction();
-    assertNotNull(restr);
-    assertEquals("type:(+\"attachment\")", restr.getQueryString());
+    assertEquals("space:(+\"spaceName\")", restr.getQueryString());
   }
 
   @Test
