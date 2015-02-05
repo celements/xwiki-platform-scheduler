@@ -23,6 +23,14 @@ public class LuceneSearchScriptService implements ScriptService {
     return service.createQuery();
   }
 
+  public LuceneQuery createWikiPageQuery() {
+    return service.createWikiPageQuery();
+  }
+
+  public LuceneQuery createAttachmentQuery() {
+    return service.createAttachmentQuery();
+  }
+
   /**
    * @deprecated instead use {@link LuceneQuery#copy()}
    * 
