@@ -46,8 +46,18 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
   }
 
   @Test
-  public void testGetWikis() {
-    assertEquals(Collections.emptyList(), query.getWikis());
+  public void testGetWikis_defaultWiki() {
+    assertEquals("xwikidb", query.getWikis().get(0).getName());
+    try {
+      query.getWikis().remove(0);
+      fail("expecting UnsupportedOperationException");
+    } catch (UnsupportedOperationException exc) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testGetWikis_set() {
     List<WikiReference> wikis = new ArrayList<WikiReference>();
     wikis.add(new WikiReference("wikiX"));
     query.setWikis(wikis);

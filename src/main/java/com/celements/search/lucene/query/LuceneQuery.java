@@ -19,11 +19,12 @@ public class LuceneQuery extends QueryRestrictionGroup {
   private static final long serialVersionUID = 20140913181251L;
 
   private final List<String> docTypes;
-  private List<WikiReference> wikis = Collections.emptyList();
+  private List<WikiReference> wikis;
 
   public LuceneQuery(List<String> docTypes) {
     super(Type.AND);
     this.docTypes = Collections.unmodifiableList(new ArrayList<String>(docTypes));
+    wikis = Arrays.asList(Utils.getComponent(IWebUtilsService.class).getWikiRef());
   }
 
   public List<String> getDocTypes() {
@@ -80,8 +81,8 @@ public class LuceneQuery extends QueryRestrictionGroup {
   @Override
   public String getQueryString() {
     QueryRestrictionGroup restrGrp = super.copy();
-    restrGrp.add(0, getWikisAsRestrGrp());
-    restrGrp.add(0, getDocTypesAsRestrGrp());
+    restrGrp.add(0, getAsRestrGrp(wikis));
+    restrGrp.add(0, getAsRestrGrp(docTypes));
     return restrGrp.getQueryString();
   }
 
@@ -137,27 +138,22 @@ public class LuceneQuery extends QueryRestrictionGroup {
     return this;
   }
 
-  private QueryRestrictionGroup getDocTypesAsRestrGrp() {
+  private QueryRestrictionGroup getAsRestrGrp(List<?> list) {
     QueryRestrictionGroup ret = new QueryRestrictionGroup(Type.OR);
-    for (String docType: docTypes) {
-      ret.add(getDocTypeRestr(docType));
+    for (Object elem : list) {
+      IQueryRestriction restr;
+      if (elem instanceof WikiReference) {
+        restr = getWikiRestr((WikiReference) elem);
+      } else {
+        restr = getDocTypeRestr((String) elem);
+      }
+      ret.add(restr);
     }
     return ret;
   }
 
   private IQueryRestriction getDocTypeRestr(String type) {
     return new QueryRestriction(IndexFields.DOCUMENT_TYPE, "\"" + type + "\"");
-  }
-
-  private QueryRestrictionGroup getWikisAsRestrGrp() {
-    QueryRestrictionGroup ret = new QueryRestrictionGroup(Type.OR);
-    for (WikiReference wikiRef : wikis) {
-      ret.add(getWikiRestr(wikiRef));
-    }
-    if (ret.isEmpty()) {
-      ret.add(getWikiRestr(Utils.getComponent(IWebUtilsService.class).getWikiRef()));
-    }
-    return ret;
   }
 
   private IQueryRestriction getWikiRestr(WikiReference wikiRef) {
