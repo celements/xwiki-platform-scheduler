@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -40,24 +41,23 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   public void testCreateQuery() {
     LuceneQuery query = searchService.createQuery();
     assertNotNull(query);
-    assertEquals("((type:(+\"wikipage\") OR type:(+\"attachment\")) "
-        + "AND wiki:(+\"xwikidb\"))", query.getQueryString());
-  }
-
-  @Test
-  public void testCreateWikiPageQuery() {
-    LuceneQuery query = searchService.createWikiPageQuery();
-    assertNotNull(query);
     assertEquals("(type:(+\"wikipage\") AND wiki:(+\"xwikidb\"))", 
         query.getQueryString());
   }
 
   @Test
-  public void testCreateAttachmentPageQuery() {
-    LuceneQuery query = searchService.createAttachmentQuery();
+  public void testCreateQuery_noType() {
+    LuceneQuery query = searchService.createQuery(Collections.<String>emptyList());
     assertNotNull(query);
-    assertEquals("(type:(+\"attachment\") AND wiki:(+\"xwikidb\"))", 
-        query.getQueryString());
+    assertEquals("wiki:(+\"xwikidb\")", query.getQueryString());
+  }
+
+  @Test
+  public void testCreateQuery_multiType() {
+    LuceneQuery query = searchService.createQuery(Arrays.asList("typeX", "typeY"));
+    assertNotNull(query);
+    assertEquals("((type:(+\"typeX\") OR type:(+\"typeY\")) "
+        + "AND wiki:(+\"xwikidb\"))", query.getQueryString());
   }
   
   @Test

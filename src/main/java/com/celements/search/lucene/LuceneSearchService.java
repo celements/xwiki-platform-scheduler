@@ -46,18 +46,12 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public LuceneQuery createQuery() {
-    return new LuceneQuery(Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE, 
-        LucenePlugin.DOCTYPE_ATTACHMENT));
-  }
-
-  @Override
-  public LuceneQuery createWikiPageQuery() {
     return new LuceneQuery(Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE));
   }
 
   @Override
-  public LuceneQuery createAttachmentQuery() {
-    return new LuceneQuery(Arrays.asList(LucenePlugin.DOCTYPE_ATTACHMENT));
+  public LuceneQuery createQuery(List<String> types) {
+    return new LuceneQuery(types);
   }
   
   @Override
