@@ -13,7 +13,9 @@ import org.apache.lucene.queryParser.ParseException;
 import org.easymock.Capture;
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 
 import com.celements.common.test.AbstractBridgedComponentTestCase;
 import com.celements.search.lucene.query.LuceneQuery;
@@ -33,13 +35,13 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   public void setUp_LuceneSearchResultTest() throws Exception {
     context = getContext();
     lucenePluginMock = createMockAndAddToDefault(LucenePlugin.class);
-    newResult(new LuceneQuery("db"), null, null, false);
+    newResult(new LuceneQuery(Arrays.asList("docType")), null, null, false);
     result.injectLucenePlugin(lucenePluginMock);
   }
   
   @Test
   public void testGetters() {
-    LuceneQuery query = new LuceneQuery("db");
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     List<String> sortFields = Arrays.asList("sort1", "sort2");
     List<String> languages = Arrays.asList("lang1", "lang2");
     boolean skipChecks = false;
@@ -66,7 +68,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testGetResults() throws Exception {
-    LuceneQuery query = new LuceneQuery("db");
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     boolean skipChecks = true;
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
@@ -76,21 +78,24 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     
     List<SearchResult> list = new ArrayList<SearchResult>();
     list.add(createMockAndAddToDefault(SearchResult.class));
+    list.add(createMockAndAddToDefault(SearchResult.class));
     expect(sResultsMock.getResults(eq(7), eq(10))).andReturn(list).once();
     DocumentReference docRef = new DocumentReference("db", "space", "doc");
-    expect(list.get(0).getDocumentReference()).andReturn(docRef).once();
+    expect(list.get(0).getReference()).andReturn(docRef).once();
+    AttachmentReference attRef = new AttachmentReference("file", docRef);
+    expect(list.get(1).getReference()).andReturn(attRef).once();
     
     replayDefault();
-    List<DocumentReference> ret = result.getResults();
+    List<EntityReference> ret = result.getResults();
     verifyDefault();
 
-    assertEquals(Arrays.asList(docRef), ret);
+    assertEquals(Arrays.asList(docRef, attRef), ret);
   }
   
   @Test
   public void testGetResults_negativeOffsetLimit() throws Exception {
-    LuceneQuery query = new LuceneQuery("db");
-    boolean skipChecks = true;
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
+    boolean skipChecks = false;
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
     result.injectSearchResultsCache(sResultsMock);
@@ -102,10 +107,10 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     list.add(createMockAndAddToDefault(SearchResult.class));
     expect(sResultsMock.getResults(eq(0), eq(1234))).andReturn(list).once();
     DocumentReference docRef = new DocumentReference("db", "space", "doc");
-    expect(list.get(0).getDocumentReference()).andReturn(docRef).once();
+    expect(list.get(0).getReference()).andReturn(docRef).once();
     
     replayDefault();
-    List<DocumentReference> ret = result.getResults();
+    List<EntityReference> ret = result.getResults();
     verifyDefault();
 
     assertEquals(Arrays.asList(docRef), ret);
@@ -113,8 +118,8 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testGetSize() throws Exception {
-    LuceneQuery query = new LuceneQuery("db");
-    boolean skipChecks = true;
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
+    boolean skipChecks = false;
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
     result.injectSearchResultsCache(sResultsMock);
@@ -129,8 +134,25 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
+  public void testGetSize_skipChecks() throws Exception {
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
+    boolean skipChecks = true;
+    newResult(query, null, null, skipChecks);
+    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    result.injectSearchResultsCache(sResultsMock);
+    
+    expect(sResultsMock.getTotalHitcount()).andReturn(1234);
+    
+    replayDefault();
+    int ret = result.getSize();
+    verifyDefault();
+
+    assertEquals(1234, ret);
+  }
+  
+  @Test
   public void testLuceneSearch_alreadySet() throws Exception {
-    LuceneQuery query = new LuceneQuery("db");
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     boolean skipChecks = true;
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
@@ -145,7 +167,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testLuceneSearch_withChecks() throws Exception {
-    LuceneQuery query = new LuceneQuery("db");
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     List<String> sortFields = Arrays.asList("sort1", "sort2");
     List<String> languages = Arrays.asList("lang1", "lang2");
     boolean skipChecks = false;
@@ -167,7 +189,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testLuceneSearch_withoutChecks() throws Exception {
-    LuceneQuery query = new LuceneQuery("db");
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     boolean skipChecks = true;
     newResult(query, null, null, skipChecks);
     Capture<String[]> sortFieldsCapture = new Capture<String[]>();
@@ -187,7 +209,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testLuceneSearch_IOException() throws Exception {
-    LuceneQuery query = new LuceneQuery("db");
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     boolean skipChecks = false;
     newResult(query, null, null, skipChecks);
     
@@ -207,7 +229,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   
   @Test
   public void testLuceneSearch_ParseException() throws Exception {
-    LuceneQuery query = new LuceneQuery("db");
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     boolean skipChecks = false;
     newResult(query, null, null, skipChecks);
     

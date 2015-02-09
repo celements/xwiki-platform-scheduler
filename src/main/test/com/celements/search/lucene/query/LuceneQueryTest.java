@@ -2,20 +2,25 @@ package com.celements.search.lucene.query;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.model.reference.WikiReference;
 
+import com.celements.common.test.AbstractBridgedComponentTestCase;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 
-public class LuceneQueryTest {
-  
-  private String database;
+public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
+
   private LuceneQuery query;
   
   @Before
   public void setUp_LuceneQueryTest() throws Exception {
-    database = "theDB";
-    query = new LuceneQuery(database);
+    query = new LuceneQuery(Collections.<String>emptyList());
   }
   
   @Test
@@ -24,43 +29,166 @@ public class LuceneQueryTest {
   }
 
   @Test
+  public void testGetDocTypes() {
+    assertEquals(Collections.emptyList(), query.getDocTypes());
+    List<String> docTypes = new ArrayList<String>();
+    docTypes.add("typeX");
+    query = new LuceneQuery(docTypes);
+    assertEquals(docTypes, query.getDocTypes());
+    docTypes.add("typeY");
+    assertFalse(docTypes.equals(query.getDocTypes()));
+    try {
+      query.getDocTypes().remove(0);
+      fail("expecting UnsupportedOperationException");
+    } catch (UnsupportedOperationException exc) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testGetWikis_defaultWiki() {
+    assertEquals("xwikidb", query.getWikis().get(0).getName());
+    try {
+      query.getWikis().remove(0);
+      fail("expecting UnsupportedOperationException");
+    } catch (UnsupportedOperationException exc) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testGetWikis_set() {
+    List<WikiReference> wikis = new ArrayList<WikiReference>();
+    wikis.add(new WikiReference("wikiX"));
+    query.setWikis(wikis);
+    assertEquals(wikis, query.getWikis());
+    wikis.add(new WikiReference("wikiY"));
+    assertFalse(wikis.equals(query.getWikis()));
+    try {
+      query.getWikis().remove(0);
+      fail("expecting UnsupportedOperationException");
+    } catch (UnsupportedOperationException exc) {
+      // expected
+    }
+  }
+
+  @Test
   public void testGetQueryString() {
-    query.add(new QueryRestriction("object", "XWiki.XWikiUsers"));
-    assertEquals("(wiki:(+\"" + database + "\") AND object:(+XWiki.XWikiUsers*))", 
-        query.getQueryString());
+    String queryString = "wiki:(+\"xwikidb\")";
+    assertEquals("wiki restriction always needed", queryString, query.getQueryString());
+    assertEquals("queryString must stay the same", queryString, query.getQueryString());
+  }
+
+  @Test
+  public void testGetQueryString_withType() {
+    query = new LuceneQuery(Arrays.asList("typeX"));
+    String queryString = "(type:(+\"typeX\") AND wiki:(+\"xwikidb\"))";
+    assertEquals(queryString, query.getQueryString());
+    assertEquals("queryString must stay the same", queryString, query.getQueryString());
+  }
+
+  @Test
+  public void testGetQueryString_multiTypes() {
+    query = new LuceneQuery(Arrays.asList("typeX", "typeY"));
+    String queryString = "((type:(+\"typeX\") OR type:(+\"typeY\")) AND wiki:(+\"xwikidb\"))";
+    assertEquals(queryString, query.getQueryString());
+    assertEquals("queryString must stay the same", queryString, query.getQueryString());
+  }
+
+  @Test
+  public void testGetQueryString_otherDB() {
+    query.setWiki(new WikiReference("theWiki"));
+    String queryString = "wiki:(+\"theWiki\")";
+    assertEquals(queryString, query.getQueryString());
+    assertEquals("queryString must stay the same", queryString, query.getQueryString());
+  }
+
+  @Test
+  public void testGetQueryString_multiDBs() {
+    query.setWikis(Arrays.asList(new WikiReference("theWiki1"), new WikiReference(
+        "theWiki2")));
+    String queryString = "(wiki:(+\"theWiki1\") OR wiki:(+\"theWiki2\"))";
+    assertEquals(queryString, query.getQueryString());
+    assertEquals("queryString must stay the same", queryString, query.getQueryString());
   }
   
   @Test
-  public void testGetQueryString_alwaysHasWikiRestriction() {
-    assertEquals(1, query.size());
-    assertEquals("wiki:(+\"" + database + "\")", query.getQueryString());
-  }
-  
-  @Test
-  public void testGetQueryString_withEmptyRestriction() {
+  public void testGetQueryString_emptyRestriction() {
     query.add(new QueryRestriction("object", ""));
-    assertEquals("wiki:(+\"" + database + "\")", query.getQueryString());
+    String queryString = "wiki:(+\"xwikidb\")";
+    assertEquals(queryString, query.getQueryString());
+    assertEquals("queryString must stay the same", queryString, query.getQueryString());
+  }
+
+  @Test
+  public void testGetQueryString_oneRestr() {
+    query.add(new QueryRestriction("object", "XWiki.XWikiUsers"));
+    String queryString = "(wiki:(+\"xwikidb\") AND object:(+XWiki.XWikiUsers*))";
+    assertEquals(queryString, query.getQueryString());
+    assertEquals("queryString must stay the same", queryString, query.getQueryString());
   }
 
   @Test
   public void testGetQueryString_filled() {
-    LuceneQuery query = getNewFilledQuery();
-    assertEquals("(wiki:(+\"" + database + "\") AND (field1:(+value1*) "
-        + "OR field2:(+value2*)) AND (field3:(+value3*) OR field4:(+value4*)) "
-        + "AND field5:(+value5*))", query.getQueryString());
+    LuceneQuery query = getNewFilledQuery(Arrays.asList("typeX"));
+    String queryString = "(type:(+\"typeX\") AND wiki:(+\"xwikidb\") "
+        + "AND (field1:(+value1*) OR field2:(+value2*)) "
+        + "AND (field3:(+value3*) OR field4:(+value4*)) AND field5:(+value5*))";
+    assertEquals(queryString, query.getQueryString());
+    assertEquals("queryString must stay the same", queryString, query.getQueryString());
   }
 
   @Test
   public void testCopy() {
-    LuceneQuery query = getNewFilledQuery();
+    LuceneQuery query = getNewFilledQuery(Arrays.asList("typeX"));
     LuceneQuery queryCopy = query.copy();
     assertNotSame(query, queryCopy);
     assertEquals(query, queryCopy);
-    assertEquals(query.getDatabase(), queryCopy.getDatabase());
+    assertEquals(query.getDocTypes(), query.getDocTypes());
+    assertEquals(query.getWikis(), query.getWikis());
+    assertEquals(query.getQueryString(), query.getQueryString());
+  }
+
+  @Test
+  public void testEquals() {
+    LuceneQuery query = getNewFilledQuery(Arrays.asList("typeX"));
+    LuceneQuery queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    assertNotSame(query, queryCopy);
+    assertTrue(query.equals(queryCopy));
+    
+    queryCopy = getNewFilledQuery(Arrays.asList("typeY"));
+    assertFalse(query.equals(queryCopy));
+    
+    queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    queryCopy.setWiki(new WikiReference("asdf"));
+    assertFalse(query.equals(queryCopy));
+    
+    queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    queryCopy.add(new QueryRestriction("field6", "value6"));
+    assertFalse(query.equals(queryCopy));
+  }
+
+  @Test
+  public void testHashCode() {
+    LuceneQuery query = getNewFilledQuery(Arrays.asList("typeX"));
+    LuceneQuery queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    assertNotSame(query, queryCopy);
+    assertTrue(query.hashCode() == queryCopy.hashCode());
+    
+    queryCopy = getNewFilledQuery(Arrays.asList("typeY"));
+    assertFalse(query.hashCode() == queryCopy.hashCode());
+    
+    queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    queryCopy.setWiki(new WikiReference("asdf"));
+    assertFalse(query.hashCode() == queryCopy.hashCode());
+    
+    queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    queryCopy.add(new QueryRestriction("field6", "value6"));
+    assertFalse(query.hashCode() == queryCopy.hashCode());
   }
   
-  private LuceneQuery getNewFilledQuery() {
-    LuceneQuery query = new LuceneQuery(database);
+  private LuceneQuery getNewFilledQuery(List<String> docTypes) {
+    LuceneQuery query = new LuceneQuery(docTypes);
     QueryRestrictionGroup restrGrpUser = new QueryRestrictionGroup(Type.OR);
     restrGrpUser.add(new QueryRestriction("field1", "value1"));
     restrGrpUser.add(new QueryRestriction("field2", "value2"));

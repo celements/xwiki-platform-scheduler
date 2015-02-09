@@ -11,6 +11,7 @@ import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
+import com.xpn.xwiki.plugin.lucene.IndexFields;
 
 @Component("lucene")
 public class LuceneSearchScriptService implements ScriptService {
@@ -20,6 +21,10 @@ public class LuceneSearchScriptService implements ScriptService {
 
   public LuceneQuery createQuery() {
     return service.createQuery();
+  }
+
+  public LuceneQuery createQuery(List<String> types) {
+    return service.createQuery(types);
   }
 
   /**
@@ -56,7 +61,7 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public QueryRestriction createObjectRestriction(String objectName) {
-    return service.createRestriction("object", objectName);
+    return service.createRestriction(IndexFields.OBJECT, objectName);
   }
 
   public QueryRestriction createObjectFieldRestriction(String objectName, String field, 

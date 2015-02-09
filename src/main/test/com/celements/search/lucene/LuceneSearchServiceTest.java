@@ -5,11 +5,14 @@ import static org.junit.Assert.*;
 
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.model.reference.SpaceReference;
+import org.xwiki.model.reference.WikiReference;
 
 import com.celements.common.test.AbstractBridgedComponentTestCase;
 import com.celements.search.lucene.query.LuceneQuery;
@@ -38,18 +41,32 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   public void testCreateQuery() {
     LuceneQuery query = searchService.createQuery();
     assertNotNull(query);
-    assertEquals(getContext().getDatabase(), query.getDatabase());
-    assertEquals("wiki:(+\"" + getContext().getDatabase() + "\")", 
+    assertEquals("(type:(+\"wikipage\") AND wiki:(+\"xwikidb\"))", 
         query.getQueryString());
   }
 
   @Test
-  public void testCreateQuery_withDB() {
-    String database = "theDB";
-    LuceneQuery query = searchService.createQuery(database);
+  public void testCreateQuery_nullType() {
+    LuceneQuery query = searchService.createQuery(null);
     assertNotNull(query);
-    assertEquals(database, query.getDatabase());
-    assertEquals("wiki:(+\"" + database + "\")", query.getQueryString());
+    assertEquals("((type:(+\"wikipage\") OR type:(+\"attachment\")) "
+        + "AND wiki:(+\"xwikidb\"))", query.getQueryString());
+  }
+
+  @Test
+  public void testCreateQuery_noType() {
+    LuceneQuery query = searchService.createQuery(Collections.<String>emptyList());
+    assertNotNull(query);
+    assertEquals("((type:(+\"wikipage\") OR type:(+\"attachment\")) "
+        + "AND wiki:(+\"xwikidb\"))", query.getQueryString());
+  }
+
+  @Test
+  public void testCreateQuery_multiType() {
+    LuceneQuery query = searchService.createQuery(Arrays.asList("typeX", "typeY"));
+    assertNotNull(query);
+    assertEquals("((type:(+\"typeX\") OR type:(+\"typeY\")) "
+        + "AND wiki:(+\"xwikidb\"))", query.getQueryString());
   }
   
   @Test
@@ -121,6 +138,14 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
         "first_name", "Hans", false, true);
     assertNotNull(restr);
     assertEquals("XWiki.XWikiUsers.first_name:(Hans~)", restr.getQueryString());
+  }
+
+  @Test
+  public void testCreateSpaceRestriction() {
+    QueryRestriction restr = searchService.createSpaceRestriction(new SpaceReference(
+        "spaceName", new WikiReference("wiki")));
+    assertNotNull(restr);
+    assertEquals("space:(+\"spaceName\")", restr.getQueryString());
   }
 
   @Test

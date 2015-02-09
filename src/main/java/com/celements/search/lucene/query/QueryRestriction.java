@@ -37,6 +37,14 @@ public class QueryRestriction implements IQueryRestriction {
     this.tokenizeQuery = tokenizeQuery;
   }
 
+  public String getSpecifier() {
+    return specifier;
+  }
+
+  public String getQuery() {
+    return query;
+  }
+
   @Override
   public QueryRestriction setNegate(boolean negate) {
     this.negate = negate;

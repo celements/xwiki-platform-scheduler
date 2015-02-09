@@ -23,9 +23,15 @@ public interface ILuceneSearchService {
   public static final String DATE_LOW = "000101010000";
   public static final String DATE_HIGH = "999912312359";
 
+  /**
+   * @return LuceneQuery object with type 'wikipage' only
+   */
   public LuceneQuery createQuery();
 
-  public LuceneQuery createQuery(String database);
+  /**
+   * @param types e.g. 'wikipage' or 'attachment'
+   */
+  public LuceneQuery createQuery(List<String> types);
   
   public QueryRestrictionGroup createRestrictionGroup(Type type);
 
