@@ -51,6 +51,9 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public LuceneQuery createQuery(List<String> types) {
+    if ((types == null) || types.isEmpty()) {
+      types = Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE, LucenePlugin.DOCTYPE_ATTACHMENT);
+    }
     return new LuceneQuery(types);
   }
   

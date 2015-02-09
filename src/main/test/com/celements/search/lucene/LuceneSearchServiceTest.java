@@ -46,10 +46,19 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
 
   @Test
+  public void testCreateQuery_nullType() {
+    LuceneQuery query = searchService.createQuery(null);
+    assertNotNull(query);
+    assertEquals("((type:(+\"wikipage\") OR type:(+\"attachment\")) "
+        + "AND wiki:(+\"xwikidb\"))", query.getQueryString());
+  }
+
+  @Test
   public void testCreateQuery_noType() {
     LuceneQuery query = searchService.createQuery(Collections.<String>emptyList());
     assertNotNull(query);
-    assertEquals("wiki:(+\"xwikidb\")", query.getQueryString());
+    assertEquals("((type:(+\"wikipage\") OR type:(+\"attachment\")) "
+        + "AND wiki:(+\"xwikidb\"))", query.getQueryString());
   }
 
   @Test
