@@ -3,6 +3,7 @@ package com.celements.search.lucene.query;
 import java.util.ArrayList;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang.StringUtils;
 
 public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implements IQueryRestriction {
@@ -72,6 +73,7 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
     for (IQueryRestriction restr : this) {
       copy.add(restr.copy());
     }
+    copy.setNegate(negate);
     return copy;
   }
 
@@ -82,14 +84,16 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(super.hashCode()).append(type).hashCode();
+    return new HashCodeBuilder().append(super.hashCode()).append(type).append(negate
+        ).hashCode();
   }
 
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof QueryRestrictionGroup) {
       QueryRestrictionGroup other = (QueryRestrictionGroup) obj;
-      return super.equals(obj) && (type == other.type);
+      return super.equals(obj) && new EqualsBuilder().append(type, other.type
+          ).append(negate, other.negate).isEquals();
     } else {
       return false;
     }

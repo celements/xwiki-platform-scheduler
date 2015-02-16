@@ -90,6 +90,7 @@ public class QueryRestrictionGroupTest {
   @Test
   public void testCopy() {
     QueryRestrictionGroup restrGrp = getNewFilledRestrGrp(Type.AND);
+    restrGrp.setNegate(true);
     QueryRestrictionGroup restrGrpCopy = restrGrp.copy();
     assertNotSame(restrGrp, restrGrpCopy);
     assertEquals(restrGrp, restrGrpCopy);
@@ -98,10 +99,19 @@ public class QueryRestrictionGroupTest {
   @Test
   public void testHashCode() {
     QueryRestrictionGroup restrGrp1 = getNewFilledRestrGrp(Type.AND);
-    QueryRestrictionGroup restrGrp2 = restrGrp1.copy();
+    QueryRestrictionGroup restrGrp2 = getNewFilledRestrGrp(Type.AND);
     assertTrue(restrGrp1.hashCode() == restrGrp2.hashCode());
     restrGrp1.remove(restrGrp1.size() - 1);
     restrGrp1.add(new QueryRestriction("field5", "valueOther"));
+    assertFalse(restrGrp1.hashCode() == restrGrp2.hashCode());
+  }
+
+  @Test
+  public void testHashCode_Negate() {
+    QueryRestrictionGroup restrGrp1 = getNewFilledRestrGrp(Type.AND);
+    QueryRestrictionGroup restrGrp2 = getNewFilledRestrGrp(Type.AND);
+    assertTrue(restrGrp1.hashCode() == restrGrp2.hashCode());
+    restrGrp1.setNegate(true);
     assertFalse(restrGrp1.hashCode() == restrGrp2.hashCode());
   }
 
@@ -115,10 +125,19 @@ public class QueryRestrictionGroupTest {
   @Test
   public void testEquals() {
     QueryRestrictionGroup restrGrp1 = getNewFilledRestrGrp(Type.AND);
-    QueryRestrictionGroup restrGrp2 = restrGrp1.copy();
+    QueryRestrictionGroup restrGrp2 = getNewFilledRestrGrp(Type.AND);
     assertTrue(restrGrp1.equals(restrGrp2));
     restrGrp1.remove(restrGrp1.size() - 1);
     restrGrp1.add(new QueryRestriction("field5", "valueOther"));
+    assertFalse(restrGrp1.equals(restrGrp2));
+  }
+
+  @Test
+  public void testEquals_negate() {
+    QueryRestrictionGroup restrGrp1 = getNewFilledRestrGrp(Type.AND);
+    QueryRestrictionGroup restrGrp2 = getNewFilledRestrGrp(Type.AND);
+    assertTrue(restrGrp1.equals(restrGrp2));
+    restrGrp1.setNegate(true);
     assertFalse(restrGrp1.equals(restrGrp2));
   }
 
