@@ -130,7 +130,7 @@ public class LuceneSearchService implements ILuceneSearchService {
   public QueryRestriction createObjectRestriction(DocumentReference classRef) {
     QueryRestriction restriction = null;
     if (classRef != null) {
-      String className = webUtilsService.getRefLocalSerializer().serialize(classRef);
+      String className = webUtilsService.serializeRef(classRef, true);
       // workaround bug Ticket #7230
       String spaceName = classRef.getLastSpaceReference().getName();
       if (!Character.isDigit(spaceName.charAt(spaceName.length() - 1))) {
@@ -152,7 +152,7 @@ public class LuceneSearchService implements ILuceneSearchService {
       String value, boolean tokenize) {
     QueryRestriction restriction = null;
     if (classRef != null && StringUtils.isNotBlank(field)) {
-      String className = webUtilsService.getRefLocalSerializer().serialize(classRef);
+      String className = webUtilsService.serializeRef(classRef, true);
       restriction = createRestriction(className + "." + field, value, tokenize);
     }
     return restriction;
@@ -163,14 +163,13 @@ public class LuceneSearchService implements ILuceneSearchService {
       String field, EntityReference ref) {
     IQueryRestriction restriction = null;
     if (classRef != null && StringUtils.isNotBlank(field)) {
-      String fieldStr = webUtilsService.getRefLocalSerializer().serialize(classRef) + "." 
-          + field;
+      String fieldStr = webUtilsService.serializeRef(classRef, true) + "." + field;
       if (ref != null) {
         QueryRestrictionGroup restrGrp = createRestrictionGroup(Type.OR);
         restrGrp.add(createRestriction(fieldStr, "\"" 
-            + webUtilsService.getRefLocalSerializer().serialize(ref) + "\""));
+            + webUtilsService.serializeRef(ref, true) + "\""));
         restrGrp.add(createRestriction(fieldStr, "\"" 
-            + webUtilsService.getRefDefaultSerializer().serialize(ref) + "\""));
+            + webUtilsService.serializeRef(ref, true) + "\""));
         restriction = restrGrp;
       } else {
         restriction = createRestriction(fieldStr, "");

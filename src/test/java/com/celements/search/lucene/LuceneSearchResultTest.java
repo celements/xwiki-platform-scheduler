@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.easymock.Capture;
@@ -93,6 +94,27 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
+  public void testGetResults_empty() throws Exception {
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
+    boolean skipChecks = true;
+    newResult(query, null, null, skipChecks);
+    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    result.injectSearchResultsCache(sResultsMock);
+    int totalCount = 10;
+
+    expect(sResultsMock.getTotalHitcount()).andReturn(totalCount).once();
+    expect(sResultsMock.getResults(eq(1), eq(totalCount))).andReturn(
+        Collections.<SearchResult>emptyList()).once();
+    
+    replayDefault();
+    List<EntityReference> ret = result.getResults();
+    verifyDefault();
+
+    assertNotNull(ret);
+    assertEquals(0, ret.size());
+  }
+  
+  @Test
   public void testGetResults_negativeOffsetLimit() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     boolean skipChecks = false;
@@ -105,7 +127,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     expect(sResultsMock.getHitcount()).andReturn(1234);
     List<SearchResult> list = new ArrayList<SearchResult>();
     list.add(createMockAndAddToDefault(SearchResult.class));
-    expect(sResultsMock.getResults(eq(0), eq(1234))).andReturn(list).once();
+    expect(sResultsMock.getResults(eq(1), eq(1234))).andReturn(list).once();
     DocumentReference docRef = new DocumentReference("db", "space", "doc");
     expect(list.get(0).getReference()).andReturn(docRef).once();
     
@@ -114,6 +136,61 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     verifyDefault();
 
     assertEquals(Arrays.asList(docRef), ret);
+  }
+  
+  @Test
+  public void testGetResultsScoreMap() throws Exception {
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
+    boolean skipChecks = true;
+    newResult(query, null, null, skipChecks);
+    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    result.injectSearchResultsCache(sResultsMock);
+    result.setOffset(6);
+    result.setLimit(10);
+    
+    List<SearchResult> list = new ArrayList<SearchResult>();
+    list.add(createMockAndAddToDefault(SearchResult.class));
+    list.add(createMockAndAddToDefault(SearchResult.class));
+    expect(sResultsMock.getResults(eq(7), eq(10))).andReturn(list).once();
+    DocumentReference docRef = new DocumentReference("db", "space", "doc");
+    expect(list.get(0).getReference()).andReturn(docRef).once();
+    Float docScore = 0.3f;
+    expect(list.get(0).getScore()).andReturn(docScore).once();
+    AttachmentReference attRef = new AttachmentReference("file", docRef);
+    expect(list.get(1).getReference()).andReturn(attRef).once();
+    Float attScore = 0.5f;
+    expect(list.get(1).getScore()).andReturn(attScore).once();
+    
+    replayDefault();
+    Map<EntityReference, Float> ret = result.getResultsScoreMap();
+    verifyDefault();
+
+    assertEquals(2, ret.size());
+    assertTrue(ret.containsKey(docRef));
+    assertEquals(docScore, ret.get(docRef));
+    assertTrue(ret.containsKey(attRef));
+    assertEquals(attScore, ret.get(attRef));
+  }
+  
+  @Test
+  public void testGetResultsScoreMap_empty() throws Exception {
+    LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
+    boolean skipChecks = true;
+    newResult(query, null, null, skipChecks);
+    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    result.injectSearchResultsCache(sResultsMock);
+    int totalCount = 10;
+
+    expect(sResultsMock.getTotalHitcount()).andReturn(totalCount).once();
+    expect(sResultsMock.getResults(eq(1), eq(totalCount))).andReturn(
+        Collections.<SearchResult>emptyList()).once();
+    
+    replayDefault();
+    Map<EntityReference, Float> ret = result.getResultsScoreMap();
+    verifyDefault();
+
+    assertNotNull(ret);
+    assertEquals(0, ret.size());
   }
   
   @Test

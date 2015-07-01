@@ -9,14 +9,13 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.queryParser.QueryParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QueryRestriction implements IQueryRestriction {
 
-  private static Log LOGGER = LogFactory.getFactory().getInstance(
-      QueryRestriction.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(QueryRestriction.class);
 
   private boolean negate = false;
   private String specifier = null;

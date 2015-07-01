@@ -3,12 +3,14 @@ package com.celements.search.lucene;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.queryParser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.model.reference.EntityReference;
 
 import com.celements.search.lucene.query.LuceneQuery;
@@ -19,8 +21,7 @@ import com.xpn.xwiki.plugin.lucene.SearchResults;
 
 public class LuceneSearchResult {
 
-  private static Log LOGGER = LogFactory.getFactory().getInstance(
-      LuceneSearchResult.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LuceneSearchResult.class);
 
   private SearchResults searchResultsCache;
   private LucenePlugin lucenePlugin;
@@ -65,7 +66,7 @@ public class LuceneSearchResult {
     return sortFields;
   }
 
-  private String[] getSortFieldsArray() {
+  String[] getSortFieldsArray() {
     return sortFields.toArray(new String[sortFields.size()]);
   }
 
@@ -73,7 +74,7 @@ public class LuceneSearchResult {
     return languages;
   }
   
-  private String getLanguageString() {
+  String getLanguageString() {
     return StringUtils.join(languages, ",");
   }
 
@@ -106,14 +107,32 @@ public class LuceneSearchResult {
 
   public List<EntityReference> getResults() throws LuceneSearchException {
     List<EntityReference> ret = new ArrayList<EntityReference>();
-    SearchResults results = luceneSearch();
-    int offset = (getOffset() < 0 ? 0 : getOffset() + 1);
-    int limit = (getLimit() <= 0 ? getSize() : getLimit());
-    for (SearchResult result : results.getResults(offset, limit)) {
+    for (SearchResult result : getSearchResultList()) {
       ret.add(result.getReference());
     }
     LOGGER.info("getResults: returning '" + ret.size() + "' results for: " + this);
     return ret;
+  }
+
+  public Map<EntityReference, Float> getResultsScoreMap(int offset, int limit
+      ) throws LuceneSearchException {
+    return this.setOffset(offset).setLimit(limit).getResultsScoreMap();
+  }
+
+  public Map<EntityReference, Float> getResultsScoreMap() throws LuceneSearchException {
+    Map<EntityReference, Float> ret = new LinkedHashMap<>();
+    for (SearchResult result : getSearchResultList()) {
+      ret.put(result.getReference(), result.getScore());
+    }
+    LOGGER.info("getResultsScoreMap: returning '" + ret.size() + "' results for: " + this);
+    return ret;
+  }
+
+  private List<SearchResult> getSearchResultList() throws LuceneSearchException {
+    SearchResults results = luceneSearch();
+    int offset = (getOffset() <= 0 ? 1 : getOffset() + 1);
+    int limit = (getLimit() <= 0 ? getSize() : getLimit());
+    return results.getResults(offset, limit);
   }
 
   public int getSize() throws LuceneSearchException {
