@@ -2,9 +2,9 @@ package com.celements.search.lucene.query;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang.StringUtils;
 
 public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implements IQueryRestriction {
   
@@ -50,16 +50,18 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
   public String getQueryString() {
     String ret = "";
     for (IQueryRestriction restr : this) {
-      String restrString;
-      if ((restr != null) && StringUtils.isNotBlank(restrString = restr.getQueryString())) {
-        if (ret.length() > 0) {
+      String queryStr = restr.getQueryString();
+      if (StringUtils.isNotBlank(queryStr)) {
+        if (!ret.isEmpty()) {
           ret += " " + type + " ";
         }
-        ret += restrString;
+        ret += queryStr.trim();
       }
     }
-    if ((ret.length() > 0) && (this.size() > 1)) {
-      ret = "(" + ret + ")";
+    if (!ret.isEmpty()) {
+      if (this.size() > 1) {
+        ret = "(" + ret + ")";
+      }
       if (negate) {
         ret = "NOT " + ret;
       }

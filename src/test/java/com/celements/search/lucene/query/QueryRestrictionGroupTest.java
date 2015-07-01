@@ -21,6 +21,16 @@ public class QueryRestrictionGroupTest {
   }
 
   @Test
+  public void testGetQueryString_empty_multiple() {
+    QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
+    restrGrp.add(new QueryRestriction("", ""));
+    restrGrp.add(new QueryRestriction("", ""));
+    restrGrp.add(new QueryRestrictionGroup(Type.AND));
+    restrGrp.add(new QueryRestrictionGroup(Type.AND));
+    assertEquals("", restrGrp.getQueryString());
+  }
+
+  @Test
   public void testGetQueryString_single() {
     QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
     restrGrp.add(new QueryRestriction("field", "value"));
@@ -85,6 +95,14 @@ public class QueryRestrictionGroupTest {
     restrGrp.get(1).setNegate(true);
     assertEquals("NOT ((field1:(+value1*) OR field2:(+value2*)) AND NOT (field3:(+value3*) "
         + "OR field4:(+value4*)) AND field5:(+value5*))", restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testGetQueryString_not_single() {
+    QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
+    restrGrp.add(new QueryRestriction("field", "value"));
+    restrGrp.setNegate(true);
+    assertEquals("NOT field:(+value*)", restrGrp.getQueryString());
   }
 
   @Test
@@ -151,14 +169,14 @@ public class QueryRestrictionGroupTest {
   private QueryRestrictionGroup getNewFilledRestrGrp(Type type) {
     Type otherType = type == Type.AND ? Type.OR : Type.AND;
     QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(type);
-    QueryRestrictionGroup restrGrpUser = new QueryRestrictionGroup(otherType);
-    restrGrpUser.add(new QueryRestriction("field1", "value1"));
-    restrGrpUser.add(new QueryRestriction("field2", "value2"));
-    restrGrp.add(restrGrpUser);
-    QueryRestrictionGroup restrGrpGroup = new QueryRestrictionGroup(otherType);
-    restrGrpGroup.add(new QueryRestriction("field3", "value3"));
-    restrGrpGroup.add(new QueryRestriction("field4", "value4"));
-    restrGrp.add(restrGrpGroup);
+    QueryRestrictionGroup restrGrp1 = new QueryRestrictionGroup(otherType);
+    restrGrp1.add(new QueryRestriction("field1", "value1"));
+    restrGrp1.add(new QueryRestriction("field2", "value2"));
+    restrGrp.add(restrGrp1);
+    QueryRestrictionGroup restrGrp2 = new QueryRestrictionGroup(otherType);
+    restrGrp2.add(new QueryRestriction("field3", "value3"));
+    restrGrp2.add(new QueryRestriction("field4", "value4"));
+    restrGrp.add(restrGrp2);
     restrGrp.add(new QueryRestriction("field5", "value5"));
     return restrGrp;
   }
