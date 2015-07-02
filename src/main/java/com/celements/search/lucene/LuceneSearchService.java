@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
@@ -29,7 +29,7 @@ import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 public class LuceneSearchService implements ILuceneSearchService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LuceneSearchService.class);
-  
+
   private static final boolean DEFAULT_TOKENIZE = true;
   private static final boolean DEFAULT_FUZZY = false;
   
@@ -123,18 +123,18 @@ public class LuceneSearchService implements ILuceneSearchService {
       spaceName = getContext().getDoc().getDocumentReference().getLastSpaceReference(
           ).getName();
     }
-    return createRestriction(IndexFields.DOCUMENT_SPACE, "\"" + spaceName + "\"");
+    return createRestriction(IndexFields.DOCUMENT_SPACE, exactify(spaceName));
   }
 
   @Override
   public QueryRestriction createObjectRestriction(DocumentReference classRef) {
     QueryRestriction restriction = null;
     if (classRef != null) {
-      String className = webUtilsService.serializeRef(classRef, true);
+      String className = serialize(classRef);
       // workaround bug Ticket #7230
       String spaceName = classRef.getLastSpaceReference().getName();
       if (!Character.isDigit(spaceName.charAt(spaceName.length() - 1))) {
-        className = "\"" + className + "\"";
+        className = exactify(className);
       }
       restriction = createRestriction(IndexFields.OBJECT, className);
     }
@@ -151,9 +151,8 @@ public class LuceneSearchService implements ILuceneSearchService {
   public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
       String value, boolean tokenize) {
     QueryRestriction restriction = null;
-    if (classRef != null && StringUtils.isNotBlank(field)) {
-      String className = webUtilsService.serializeRef(classRef, true);
-      restriction = createRestriction(className + "." + field, value, tokenize);
+    if ((classRef != null) && StringUtils.isNotBlank(field)) {
+      restriction = createRestriction(serialize(classRef) + "." + field, value, tokenize);
     }
     return restriction;
   }
@@ -163,13 +162,11 @@ public class LuceneSearchService implements ILuceneSearchService {
       String field, EntityReference ref) {
     IQueryRestriction restriction = null;
     if (classRef != null && StringUtils.isNotBlank(field)) {
-      String fieldStr = webUtilsService.serializeRef(classRef, true) + "." + field;
+      String fieldStr = serialize(classRef) + "." + field;
       if (ref != null) {
         QueryRestrictionGroup restrGrp = createRestrictionGroup(Type.OR);
-        restrGrp.add(createRestriction(fieldStr, "\"" 
-            + webUtilsService.serializeRef(ref, true) + "\""));
-        restrGrp.add(createRestriction(fieldStr, "\"" 
-            + webUtilsService.serializeRef(ref, true) + "\""));
+        restrGrp.add(createRestriction(fieldStr, exactify(serialize(ref))));
+        restrGrp.add(createRestriction(fieldStr, exactify(serialize(ref))));
         restriction = restrGrp;
       } else {
         restriction = createRestriction(fieldStr, "");
@@ -221,6 +218,23 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
+  public QueryRestrictionGroup createAttachmentRestrictionGroup(DocumentReference docRef,
+      String mimetype, String filename) {
+    QueryRestrictionGroup attGrp = createRestrictionGroup(Type.AND);
+    if (docRef != null) {
+      attGrp.add(createRestriction(IndexFields.DOCUMENT_FULLNAME, 
+          exactify(serialize(docRef))));
+    }
+    if (StringUtils.isNotBlank(mimetype)) {
+      attGrp.add(createRestriction(IndexFields.MIMETYPE, exactify(mimetype)));
+    }
+    if (StringUtils.isNotBlank(filename)) {
+      attGrp.add(createRestriction(IndexFields.FILENAME, filename));
+    }
+    return attGrp;
+  }
+
+  @Override
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
       List<String> languages) {
     return new LuceneSearchResult(query, sortFields, languages, false, getContext());
@@ -256,6 +270,14 @@ public class LuceneSearchService implements ILuceneSearchService {
     int limit = lucenePlugin.getResultLimit(skipChecks, getContext());
     LOGGER.debug("getResultLimit: got '{}' for skipChecks '{}'", limit, skipChecks);
     return limit;
+  }
+
+  private String exactify(String str) {
+    return "\"" + str + "\"";
+  }
+
+  private String serialize(EntityReference ref) {
+    return webUtilsService.serializeRef(ref, true);
   }
 
 }

@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
 
@@ -203,13 +204,33 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
-  public void testCreateFromDateRestriction() throws ParseException {  
+  public void testCreateFromDateRestriction() throws ParseException {
     Date fromDate = LuceneSearchService.SDF.parse("111111111111");
     QueryRestriction restr = searchService.createFromDateRestriction("XWiki." +
         "XWikiUsers.date", fromDate, true);
     assertNotNull(restr);
     assertEquals("XWiki.XWikiUsers.date:([111111111111 TO 999912312359])", 
         restr.getQueryString());
+  }
+  
+  @Test
+  public void testCreateAttachmentRestrictionGroup() throws ParseException {
+    DocumentReference docRef = new DocumentReference("xwikidb", "space", "filebase");
+    String mimetype = "application/pdf";
+    String filename = "Asdf";
+    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
+        docRef, mimetype, filename);
+    assertNotNull(restrGrp);
+    assertEquals("(fullname:(+\"space.filebase\") AND mimetype:(+\"application/pdf\") "
+        + "AND filename:(+Asdf*))", restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testCreateAttachmentRestrictionGroup_empty() throws ParseException {
+    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
+        null, null, null);
+    assertNotNull(restrGrp);
+    assertEquals("", restrGrp.getQueryString());
   }
   
   @Test

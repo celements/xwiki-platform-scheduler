@@ -77,6 +77,9 @@ public interface ILuceneSearchService {
   public QueryRestriction createFromToDateRestriction(String field, Date fromDate, 
       Date toDate, boolean inclusive);
 
+  public QueryRestrictionGroup createAttachmentRestrictionGroup(DocumentReference docRef, 
+      String mimetype, String filename);
+
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
       List<String> languages);
 

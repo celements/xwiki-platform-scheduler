@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 
 import com.celements.search.lucene.query.LuceneQuery;
@@ -110,6 +111,11 @@ public class LuceneSearchScriptService implements ScriptService {
   public QueryRestriction createFromToDateRestriction(String field, Date fromDate, 
       Date toDate, boolean inclusive) {
     return service.createFromToDateRestriction(field, fromDate, toDate, inclusive);
+  }
+
+  public QueryRestrictionGroup createAttachmentRestrictionGroup(DocumentReference docRef,
+      String mimetype, String filename) {
+    return service.createAttachmentRestrictionGroup(docRef, mimetype, filename);
   }
 
   public LuceneSearchResult search(LuceneQuery query) {
