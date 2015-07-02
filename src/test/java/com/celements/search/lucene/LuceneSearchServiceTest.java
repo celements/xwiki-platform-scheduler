@@ -3,7 +3,6 @@ package com.celements.search.lucene;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -174,7 +173,7 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
-  public void testCreateDateRestriction() throws ParseException {    
+  public void testCreateDateRestriction() throws Exception {    
     Date date = LuceneSearchService.SDF.parse("199001151213");
     QueryRestriction restr = searchService.createDateRestriction("XWiki." +
         "XWikiUsers.date", date);
@@ -183,7 +182,7 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
-  public void testCreateFromToDateRestriction() throws ParseException {  
+  public void testCreateFromToDateRestriction() throws Exception {  
     Date fromDate = LuceneSearchService.SDF.parse("111111111111");
     Date toDate = LuceneSearchService.SDF.parse("199001151213");
     QueryRestriction restr = searchService.createFromToDateRestriction("XWiki." +
@@ -194,7 +193,7 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
-  public void testCreateToDateRestriction() throws ParseException {
+  public void testCreateToDateRestriction() throws Exception {
     Date toDate = LuceneSearchService.SDF.parse("199001151213");
     QueryRestriction restr = searchService.createToDateRestriction("XWiki." +
         "XWikiUsers.date", toDate, true);
@@ -204,7 +203,7 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
-  public void testCreateFromDateRestriction() throws ParseException {
+  public void testCreateFromDateRestriction() throws Exception {
     Date fromDate = LuceneSearchService.SDF.parse("111111111111");
     QueryRestriction restr = searchService.createFromDateRestriction("XWiki." +
         "XWikiUsers.date", fromDate, true);
@@ -214,19 +213,55 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
-  public void testCreateAttachmentRestrictionGroup() throws ParseException {
+  public void testCreateAttachmentRestrictionGroup() throws Exception {
     DocumentReference docRef = new DocumentReference("xwikidb", "space", "filebase");
     String mimetype = "application/pdf";
-    String filename = "Asdf";
+    List<String> filenamePrefs = Arrays.asList("Asdf");
     QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
-        docRef, mimetype, filename);
+        docRef, mimetype, filenamePrefs);
     assertNotNull(restrGrp);
     assertEquals("(fullname:(+\"space.filebase\") AND mimetype:(+\"application/pdf\") "
         + "AND filename:(+Asdf*))", restrGrp.getQueryString());
   }
   
   @Test
-  public void testCreateAttachmentRestrictionGroup_empty() throws ParseException {
+  public void testCreateAttachmentRestrictionGroup_filenames_multi() throws Exception {
+    DocumentReference docRef = new DocumentReference("xwikidb", "space", "filebase");
+    String mimetype = "application/pdf";
+    List<String> filenamePrefs = Arrays.asList("Asdf", "Fdsa");
+    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
+        docRef, mimetype, filenamePrefs);
+    assertNotNull(restrGrp);
+    assertEquals("(fullname:(+\"space.filebase\") AND mimetype:(+\"application/pdf\") "
+        + "AND (filename:(+Asdf*) OR filename:(+Fdsa*)))", restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testCreateAttachmentRestrictionGroup_filenames_empty() throws Exception {
+    DocumentReference docRef = new DocumentReference("xwikidb", "space", "filebase");
+    String mimetype = "application/pdf";
+    List<String> filenamePrefs = Collections.emptyList();
+    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
+        docRef, mimetype, filenamePrefs);
+    assertNotNull(restrGrp);
+    assertEquals("(fullname:(+\"space.filebase\") AND mimetype:(+\"application/pdf\"))", 
+        restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testCreateAttachmentRestrictionGroup_filenames_null() throws Exception {
+    DocumentReference docRef = new DocumentReference("xwikidb", "space", "filebase");
+    String mimetype = "application/pdf";
+    List<String> filenamePrefs = null;
+    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
+        docRef, mimetype, filenamePrefs);
+    assertNotNull(restrGrp);
+    assertEquals("(fullname:(+\"space.filebase\") AND mimetype:(+\"application/pdf\"))", 
+        restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testCreateAttachmentRestrictionGroup_empty() throws Exception {
     QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
         null, null, null);
     assertNotNull(restrGrp);

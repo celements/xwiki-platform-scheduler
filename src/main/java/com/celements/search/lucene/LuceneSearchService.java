@@ -219,7 +219,7 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public QueryRestrictionGroup createAttachmentRestrictionGroup(DocumentReference docRef,
-      String mimetype, String filename) {
+      String mimetype, List<String> filenamePrefs) {
     QueryRestrictionGroup attGrp = createRestrictionGroup(Type.AND);
     if (docRef != null) {
       attGrp.add(createRestriction(IndexFields.DOCUMENT_FULLNAME, 
@@ -228,8 +228,14 @@ public class LuceneSearchService implements ILuceneSearchService {
     if (StringUtils.isNotBlank(mimetype)) {
       attGrp.add(createRestriction(IndexFields.MIMETYPE, exactify(mimetype)));
     }
-    if (StringUtils.isNotBlank(filename)) {
-      attGrp.add(createRestriction(IndexFields.FILENAME, filename));
+    if (filenamePrefs != null) {
+      QueryRestrictionGroup filenameGrp = createRestrictionGroup(Type.OR);
+      for (String prefix : filenamePrefs) {
+        if (StringUtils.isNotBlank(prefix)) {
+          filenameGrp.add(createRestriction(IndexFields.FILENAME, prefix));
+        }
+      }
+      attGrp.add(filenameGrp);
     }
     return attGrp;
   }

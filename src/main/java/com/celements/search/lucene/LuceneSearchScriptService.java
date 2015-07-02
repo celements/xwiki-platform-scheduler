@@ -114,8 +114,8 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public QueryRestrictionGroup createAttachmentRestrictionGroup(DocumentReference docRef,
-      String mimetype, String filename) {
-    return service.createAttachmentRestrictionGroup(docRef, mimetype, filename);
+      String mimetype, List<String> filenamePrefs) {
+    return service.createAttachmentRestrictionGroup(docRef, mimetype, filenamePrefs);
   }
 
   public LuceneSearchResult search(LuceneQuery query) {
