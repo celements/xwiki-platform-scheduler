@@ -1,8 +1,10 @@
 package com.celements.search.web.classes;
 
+import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.WikiReference;
 
+@ComponentRole
 public interface IWebSearchClassConfig {
 
   public static final String CLASS_SPACE = "Celements2";

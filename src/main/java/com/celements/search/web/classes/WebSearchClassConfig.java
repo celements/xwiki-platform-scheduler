@@ -1,5 +1,6 @@
 package com.celements.search.web.classes;
 
+import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
@@ -7,6 +8,7 @@ import org.xwiki.model.reference.WikiReference;
 
 import com.celements.web.service.IWebUtilsService;
 
+@Component
 public class WebSearchClassConfig implements IWebSearchClassConfig {
 
   @Requirement
