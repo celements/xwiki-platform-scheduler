@@ -1,2 +1,4 @@
 com.celements.search.lucene.LuceneSearchService
 com.celements.search.lucene.LuceneSearchScriptService
+com.celements.search.web.classes.WebSearchClassConfig
+com.celements.search.web.classes.WebSearchClasses
