@@ -71,8 +71,10 @@ public class WebSearchClasses extends AbstractClassCollection {
         webUtils.getWikiRef()));
     BaseClass bclass = classDoc.getXClass();
     boolean needsUpdate = classDoc.isNew();
-    needsUpdate |= bclass.addTextField(IWebSearchClassConfig.PROPERTY_MIMETYPE,
-        IWebSearchClassConfig.PROPERTY_MIMETYPE, 30);
+    needsUpdate |= bclass.addTextField(IWebSearchClassConfig.PROPERTY_MIMETYPES,
+        IWebSearchClassConfig.PROPERTY_MIMETYPES, 30);
+    needsUpdate |= bclass.addTextField(IWebSearchClassConfig.PROPERTY_MIMETYPES_BLACK_LIST,
+        IWebSearchClassConfig.PROPERTY_MIMETYPES_BLACK_LIST, 30);
     needsUpdate |= bclass.addTextField(IWebSearchClassConfig.PROPERTY_FILENAME_PREFIXES,
         IWebSearchClassConfig.PROPERTY_FILENAME_PREFIXES, 30);
     setContentAndSaveClassDocument(classDoc, needsUpdate);

@@ -23,7 +23,8 @@ public interface IWebSearchClassConfig {
   public static final String PROPERTY_PAGETYPES_BLACK_LIST = "pageTypesBlackList";
   public static final String PROPERTY_HIDE_FORM = "hideForm";
 
-  public static final String PROPERTY_MIMETYPE = "mimeType";
+  public static final String PROPERTY_MIMETYPES = "mimeTypes";
+  public static final String PROPERTY_MIMETYPES_BLACK_LIST = "mimeTypesBlackList";
   public static final String PROPERTY_FILENAME_PREFIXES = "fileNamePrefixes";
 
   public DocumentReference getWebSearchConfigClassRef(WikiReference wikiRef);
