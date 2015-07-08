@@ -50,6 +50,8 @@ public interface ILuceneSearchService {
 
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef);
 
+  public QueryRestriction createDocRestriction(DocumentReference docRef);
+
   public QueryRestriction createObjectRestriction(DocumentReference classRef);
 
   public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 

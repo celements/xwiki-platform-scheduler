@@ -69,6 +69,11 @@ public class LuceneSearchScriptService implements ScriptService {
         spaceName));
   }
 
+  public QueryRestriction createDocRestriction(String fullName) {
+    return service.createDocRestriction(webUtilsService.resolveDocumentReference(
+        fullName));
+  }
+
   public QueryRestriction createObjectRestriction(String objectName) {
     return service.createObjectRestriction(webUtilsService.resolveDocumentReference(
         objectName));

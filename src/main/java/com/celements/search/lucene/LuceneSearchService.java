@@ -127,6 +127,14 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
+  public QueryRestriction createDocRestriction(DocumentReference docRef) {
+    if (docRef == null) {
+      docRef = getContext().getDoc().getDocumentReference();
+    }
+    return createRestriction(IndexFields.DOCUMENT_FULLNAME, exactify(serialize(docRef)));
+  }
+
+  @Override
   public QueryRestriction createObjectRestriction(DocumentReference classRef) {
     QueryRestriction restriction = null;
     if (classRef != null) {
