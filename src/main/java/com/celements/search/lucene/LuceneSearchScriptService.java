@@ -3,8 +3,11 @@ package com.celements.search.lucene;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.script.service.ScriptService;
 
 import com.celements.search.lucene.query.LuceneQuery;
@@ -64,13 +67,19 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public QueryRestriction createSpaceRestriction(String spaceName) {
-    return service.createSpaceRestriction(webUtilsService.resolveSpaceReference(
-        spaceName));
+    SpaceReference spaceRef = null;
+    if (StringUtils.isNotBlank(spaceName)) {
+      spaceRef = webUtilsService.resolveSpaceReference(spaceName);
+    }
+    return service.createSpaceRestriction(spaceRef);
   }
 
   public QueryRestriction createDocRestriction(String fullName) {
-    return service.createDocRestriction(webUtilsService.resolveDocumentReference(
-        fullName));
+    DocumentReference docRef = null;
+    if (StringUtils.isNotBlank(fullName)) {
+      docRef = webUtilsService.resolveDocumentReference(fullName);
+    }
+    return service.createDocRestriction(docRef);
   }
 
   public QueryRestriction createObjectRestriction(String objectName) {

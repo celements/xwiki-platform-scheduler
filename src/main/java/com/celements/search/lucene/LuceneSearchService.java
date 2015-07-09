@@ -119,21 +119,11 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef) {
-    String spaceName;
-    if (spaceRef != null) {
-      spaceName = spaceRef.getName();
-    } else {
-      spaceName = getContext().getDoc().getDocumentReference().getLastSpaceReference(
-          ).getName();
-    }
-    return createRestriction(IndexFields.DOCUMENT_SPACE, exactify(spaceName));
+    return createRestriction(IndexFields.DOCUMENT_SPACE, exactify(serialize(spaceRef)));
   }
 
   @Override
   public QueryRestriction createDocRestriction(DocumentReference docRef) {
-    if (docRef == null) {
-      docRef = getContext().getDoc().getDocumentReference();
-    }
     return createRestriction(IndexFields.DOCUMENT_FULLNAME, exactify(serialize(docRef)));
   }
 
@@ -280,11 +270,19 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   private String exactify(String str) {
-    return "\"" + str + "\"";
+    if (StringUtils.isNotBlank(str)) {
+      return "\"" + str + "\"";
+    } else {
+      return "";
+    }
   }
 
   private String serialize(EntityReference ref) {
-    return webUtilsService.serializeRef(ref, true);
+    if (ref != null) {
+      return webUtilsService.serializeRef(ref, true);
+    } else {
+      return "";
+    }
   }
 
 }
