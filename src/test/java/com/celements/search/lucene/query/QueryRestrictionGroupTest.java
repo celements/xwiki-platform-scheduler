@@ -104,6 +104,33 @@ public class QueryRestrictionGroupTest {
     restrGrp.setNegate(true);
     assertEquals("NOT field:(+value*)", restrGrp.getQueryString());
   }
+  
+  @Test
+  public void testGetQueryString_onlyNegated_and() {
+    QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
+    restrGrp.add(new QueryRestriction("field1", "value1").setNegate(true));
+    restrGrp.add(new QueryRestriction("field2", "value2").setNegate(true));
+    assertEquals("NOT (field1:(+value1*) OR field2:(+value2*))", 
+        restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testGetQueryString_onlyNegated_or() {
+    QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.OR);
+    restrGrp.add(new QueryRestriction("field1", "value1").setNegate(true));
+    restrGrp.add(new QueryRestriction("field2", "value2").setNegate(true));
+    assertEquals("NOT (field1:(+value1*) AND field2:(+value2*))", 
+        restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testGetQueryString_onlyNegated_alreadyNot() {
+    QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.OR);
+    restrGrp.add(new QueryRestriction("field1", "value1").setNegate(true));
+    restrGrp.add(new QueryRestriction("field2", "value2").setNegate(true));
+    restrGrp.setNegate(true);
+    assertEquals("(field1:(+value1*) AND field2:(+value2*))", restrGrp.getQueryString());
+  }
 
   @Test
   public void testCopy() {

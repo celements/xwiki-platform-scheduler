@@ -45,6 +45,11 @@ public class QueryRestriction implements IQueryRestriction {
   }
 
   @Override
+  public boolean getNegate() {
+    return negate;
+  }
+
+  @Override
   public QueryRestriction setNegate(boolean negate) {
     this.negate = negate;
     return this;
