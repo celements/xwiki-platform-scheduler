@@ -3,6 +3,7 @@ package com.celements.search.lucene;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -10,7 +11,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
 
@@ -141,6 +141,18 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
 
   @Test
+  public void testCreateRestriction_nullField() {
+    assertEquals("", searchService.createRestriction(null, "Hans").getQueryString());
+    assertEquals("", searchService.createRestriction("", "Hans").getQueryString());
+  }
+
+  @Test
+  public void testCreateRestriction_nullVal() {
+    assertEquals("", searchService.createRestriction("Hans", null).getQueryString());
+    assertEquals("", searchService.createRestriction("Hans", "").getQueryString());
+  }
+
+  @Test
   public void testCreateSpaceRestriction() {
     QueryRestriction restr = searchService.createSpaceRestriction(new SpaceReference(
         "spaceName", new WikiReference("wiki")));
@@ -213,55 +225,56 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
   }
   
   @Test
-  public void testCreateAttachmentRestrictionGroup() throws Exception {
-    DocumentReference docRef = new DocumentReference("xwikidb", "space", "filebase");
-    String mimetype = "application/pdf";
+  public void testCreateAttachmentRestrictionGroup_mimetypes() throws Exception {
+    List<String> mimetypes = Arrays.asList("application/pdf");
+    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
+        mimetypes, null, null);
+    assertNotNull(restrGrp);
+    assertEquals("mimetype:(+application/pdf*)", restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testCreateAttachmentRestrictionGroup_mimetypesBlackList() throws Exception {
+    List<String> mimetypesBlackList = Arrays.asList("text");
+    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
+        null, mimetypesBlackList, null);
+    assertNotNull(restrGrp);
+    assertEquals("NOT mimetype:(+text*)", restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testCreateAttachmentRestrictionGroup_filenames() throws Exception {
     List<String> filenamePrefs = Arrays.asList("Asdf");
     QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
-        docRef, mimetype, filenamePrefs);
+        null, null, filenamePrefs);
     assertNotNull(restrGrp);
-    assertEquals("(fullname:(+\"space.filebase\") AND mimetype:(+\"application/pdf\") "
-        + "AND filename:(+Asdf*))", restrGrp.getQueryString());
+    assertEquals("filename:(+Asdf*)", restrGrp.getQueryString());
   }
   
   @Test
-  public void testCreateAttachmentRestrictionGroup_filenames_multi() throws Exception {
-    DocumentReference docRef = new DocumentReference("xwikidb", "space", "filebase");
-    String mimetype = "application/pdf";
+  public void testCreateAttachmentRestrictionGroup_multi() throws Exception {
+    List<String> mimetypes = Arrays.asList("image", "application/pdf");
+    List<String> mimetypesBlackList = Arrays.asList("text", "video");
     List<String> filenamePrefs = Arrays.asList("Asdf", "Fdsa");
     QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
-        docRef, mimetype, filenamePrefs);
+        mimetypes, mimetypesBlackList, filenamePrefs);
     assertNotNull(restrGrp);
-    assertEquals("(fullname:(+\"space.filebase\") AND mimetype:(+\"application/pdf\") "
-        + "AND (filename:(+Asdf*) OR filename:(+Fdsa*)))", restrGrp.getQueryString());
-  }
-  
-  @Test
-  public void testCreateAttachmentRestrictionGroup_filenames_empty() throws Exception {
-    DocumentReference docRef = new DocumentReference("xwikidb", "space", "filebase");
-    String mimetype = "application/pdf";
-    List<String> filenamePrefs = Collections.emptyList();
-    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
-        docRef, mimetype, filenamePrefs);
-    assertNotNull(restrGrp);
-    assertEquals("(fullname:(+\"space.filebase\") AND mimetype:(+\"application/pdf\"))", 
-        restrGrp.getQueryString());
-  }
-  
-  @Test
-  public void testCreateAttachmentRestrictionGroup_filenames_null() throws Exception {
-    DocumentReference docRef = new DocumentReference("xwikidb", "space", "filebase");
-    String mimetype = "application/pdf";
-    List<String> filenamePrefs = null;
-    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
-        docRef, mimetype, filenamePrefs);
-    assertNotNull(restrGrp);
-    assertEquals("(fullname:(+\"space.filebase\") AND mimetype:(+\"application/pdf\"))", 
+    assertEquals("((mimetype:(+image*) OR mimetype:(+application/pdf*)) "
+        + "AND NOT (mimetype:(+text*) OR mimetype:(+video*)) "
+        + "AND (filename:(+Asdf*) OR filename:(+Fdsa*)))", 
         restrGrp.getQueryString());
   }
   
   @Test
   public void testCreateAttachmentRestrictionGroup_empty() throws Exception {
+    QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
+        new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+    assertNotNull(restrGrp);
+    assertEquals("", restrGrp.getQueryString());
+  }
+  
+  @Test
+  public void testCreateAttachmentRestrictionGroup_null() throws Exception {
     QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
         null, null, null);
     assertNotNull(restrGrp);

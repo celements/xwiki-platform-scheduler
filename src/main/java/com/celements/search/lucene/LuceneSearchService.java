@@ -1,6 +1,7 @@
 package com.celements.search.lucene;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -72,8 +73,8 @@ public class LuceneSearchService implements ILuceneSearchService {
   public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields, 
       List<String> values, boolean tokenize, boolean fuzzy) {
     QueryRestrictionGroup restrGrp = createRestrictionGroup(type);
-    Iterator<String> fieldIter = fields.iterator();
-    Iterator<String> valueIter = values.iterator();
+    Iterator<String> fieldIter = getIter(fields);
+    Iterator<String> valueIter = getIter(values);
     String field = null;
     String value = null;
     while (fieldIter.hasNext() || valueIter.hasNext()) {
@@ -91,6 +92,14 @@ public class LuceneSearchService implements ILuceneSearchService {
     return restrGrp;
   }
 
+  private Iterator<String> getIter(List<String> list) {
+    if (list != null) {
+      return list.iterator();
+    } else {
+      return Collections.<String>emptyList().iterator();
+    }
+  }
+
   @Override
   public QueryRestriction createRestriction(String field, String value) {
     return createRestriction(field, value, DEFAULT_TOKENIZE, DEFAULT_FUZZY);
@@ -104,14 +113,8 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public QueryRestriction createRestriction(String field, String value, boolean tokenize, 
       boolean fuzzy) {
-    QueryRestriction restriction = null;
-    if (StringUtils.isNotBlank(field)) {
-      restriction = new QueryRestriction(field, value, tokenize);
-      if (fuzzy) {
-        restriction.setFuzzy();
-      }
-    }
-    return restriction;
+    QueryRestriction restriction = new QueryRestriction(field, value, tokenize);
+    return fuzzy ? restriction.setFuzzy() : restriction;
   }
 
   @Override
@@ -226,25 +229,15 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public QueryRestrictionGroup createAttachmentRestrictionGroup(DocumentReference docRef,
-      String mimetype, List<String> filenamePrefs) {
+  public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes, 
+      List<String> mimeTypesBlackList, List<String> filenamePrefs) {
     QueryRestrictionGroup attGrp = createRestrictionGroup(Type.AND);
-    if (docRef != null) {
-      attGrp.add(createRestriction(IndexFields.DOCUMENT_FULLNAME, 
-          exactify(serialize(docRef))));
-    }
-    if (StringUtils.isNotBlank(mimetype)) {
-      attGrp.add(createRestriction(IndexFields.MIMETYPE, exactify(mimetype)));
-    }
-    if (filenamePrefs != null) {
-      QueryRestrictionGroup filenameGrp = createRestrictionGroup(Type.OR);
-      for (String prefix : filenamePrefs) {
-        if (StringUtils.isNotBlank(prefix)) {
-          filenameGrp.add(createRestriction(IndexFields.FILENAME, prefix));
-        }
-      }
-      attGrp.add(filenameGrp);
-    }
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), 
+        mimeTypes));
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), 
+        mimeTypesBlackList).setNegate(true));
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.FILENAME), 
+        filenamePrefs));
     return attGrp;
   }
 

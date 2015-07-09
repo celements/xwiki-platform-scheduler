@@ -146,8 +146,7 @@ public class QueryRestriction implements IQueryRestriction {
   @Override
   public String getQueryString() {
     String ret = "";
-    if ((specifier != null) && (query != null) && (specifier.trim().length() > 0)
-        && (query.trim().length() > 0)) {
+    if (StringUtils.isNotBlank(specifier) && StringUtils.isNotBlank(query)) {
       if (tokenizeQuery) {
         StringBuilder tokenizedQuery = new StringBuilder();
         Matcher m = getQueryTokenMatcher();
