@@ -60,8 +60,6 @@ public class WebSearchClasses extends AbstractClassCollection {
         IWebSearchClassConfig.PROPERTY_PAGETYPES, 30);
     needsUpdate |= bclass.addTextField(IWebSearchClassConfig.PROPERTY_PAGETYPES_BLACK_LIST,
         IWebSearchClassConfig.PROPERTY_PAGETYPES_BLACK_LIST, 30);
-    needsUpdate |= bclass.addBooleanField(IWebSearchClassConfig.PROPERTY_HIDE_FORM,
-        IWebSearchClassConfig.PROPERTY_HIDE_FORM, "yesno");
     setContentAndSaveClassDocument(classDoc, needsUpdate);
     return bclass;
   }
