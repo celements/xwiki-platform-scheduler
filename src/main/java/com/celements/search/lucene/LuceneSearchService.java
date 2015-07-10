@@ -1,5 +1,6 @@
 package com.celements.search.lucene;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -223,9 +224,9 @@ public class LuceneSearchService implements ILuceneSearchService {
       List<String> mimeTypesBlackList, List<String> filenamePrefs) {
     QueryRestrictionGroup attGrp = createRestrictionGroup(Type.AND);
     attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), 
-        mimeTypes));
+        exactify(mimeTypes)));
     attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), 
-        mimeTypesBlackList).setNegate(true));
+        exactify(mimeTypesBlackList)).setNegate(true));
     attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.FILENAME), 
         filenamePrefs));
     return attGrp;
@@ -267,6 +268,16 @@ public class LuceneSearchService implements ILuceneSearchService {
     int limit = lucenePlugin.getResultLimit(skipChecks, getContext());
     LOGGER.debug("getResultLimit: got '{}' for skipChecks '{}'", limit, skipChecks);
     return limit;
+  }
+
+  private List<String> exactify(List<String> strs) {
+    List<String> ret = new ArrayList<String>();
+    if (strs != null) {
+      for (String str : strs) {
+        ret.add(exactify(str));
+      }
+    }
+    return ret;
   }
 
   private String exactify(String str) {

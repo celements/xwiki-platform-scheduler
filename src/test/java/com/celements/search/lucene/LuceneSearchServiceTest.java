@@ -230,7 +230,7 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
     QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
         mimetypes, null, null);
     assertNotNull(restrGrp);
-    assertEquals("mimetype:(+application/pdf*)", restrGrp.getQueryString());
+    assertEquals("mimetype:(+\"application/pdf\")", restrGrp.getQueryString());
   }
   
   @Test
@@ -239,7 +239,7 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
     QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
         null, mimetypesBlackList, null);
     assertNotNull(restrGrp);
-    assertEquals("NOT mimetype:(+text*)", restrGrp.getQueryString());
+    assertEquals("NOT mimetype:(+\"text\")", restrGrp.getQueryString());
   }
   
   @Test
@@ -259,8 +259,8 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
     QueryRestrictionGroup restrGrp = searchService.createAttachmentRestrictionGroup(
         mimetypes, mimetypesBlackList, filenamePrefs);
     assertNotNull(restrGrp);
-    assertEquals("((mimetype:(+image*) OR mimetype:(+application/pdf*)) "
-        + "AND NOT (mimetype:(+text*) OR mimetype:(+video*)) "
+    assertEquals("((mimetype:(+\"image\") OR mimetype:(+\"application/pdf\")) "
+        + "AND NOT (mimetype:(+\"text\") OR mimetype:(+\"video\")) "
         + "AND (filename:(+Asdf*) OR filename:(+Fdsa*)))", 
         restrGrp.getQueryString());
   }
