@@ -21,6 +21,7 @@ public interface IWebSearchClassConfig {
   public static final String PROPERTY_SPACES_BLACK_LIST = "spacesBlackList";
   public static final String PROPERTY_PAGETYPES = "pageTypes";
   public static final String PROPERTY_PAGETYPES_BLACK_LIST = "pageTypesBlackList";
+  public static final String PROPERTY_RESULT_ITEM_RENDER_SCRIPT = "resultItemRenderScript";
 
   public static final String PROPERTY_MIMETYPES = "mimeTypes";
   public static final String PROPERTY_MIMETYPES_BLACK_LIST = "mimeTypesBlackList";
