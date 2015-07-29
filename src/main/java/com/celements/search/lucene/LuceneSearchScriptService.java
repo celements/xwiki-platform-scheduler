@@ -52,12 +52,12 @@ public class LuceneSearchScriptService implements ScriptService {
     return service.createRestrictionGroup(Type.OR);
   }
 
-  public QueryRestrictionGroup createAndRestrictionGroup(List<String> fields, 
+  public QueryRestrictionGroup createAndRestrictionGroup(List<String> fields,
       List<String> values) {
     return service.createRestrictionGroup(Type.AND, fields, values);
   }
 
-  public QueryRestrictionGroup createOrRestrictionGroup(List<String> fields, 
+  public QueryRestrictionGroup createOrRestrictionGroup(List<String> fields,
       List<String> values) {
     return service.createRestrictionGroup(Type.OR, fields, values);
   }
@@ -67,6 +67,7 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public QueryRestriction createSpaceRestriction(String spaceName) {
+    spaceName = spaceName.replace("\"", "");
     SpaceReference spaceRef = null;
     if (StringUtils.isNotBlank(spaceName)) {
       spaceRef = webUtilsService.resolveSpaceReference(spaceName);
@@ -75,6 +76,7 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public QueryRestriction createDocRestriction(String fullName) {
+    fullName = fullName.replace("\"", "");
     DocumentReference docRef = null;
     if (StringUtils.isNotBlank(fullName)) {
       docRef = webUtilsService.resolveDocumentReference(fullName);
@@ -83,12 +85,14 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public QueryRestriction createObjectRestriction(String objectName) {
+    objectName = objectName.replace("\"", "");
     return service.createObjectRestriction(webUtilsService.resolveDocumentReference(
         objectName));
   }
 
-  public QueryRestriction createObjectFieldRestriction(String objectName, String field, 
+  public QueryRestriction createObjectFieldRestriction(String objectName, String field,
       String value) {
+    objectName = objectName.replace("\"", "");
     return service.createFieldRestriction(webUtilsService.resolveDocumentReference(
         objectName), field, value);
   }
@@ -97,12 +101,12 @@ public class LuceneSearchScriptService implements ScriptService {
     return createRangeRestriction(field, from, to, true);
   }
 
-  public QueryRestriction createOjbectFieldRangeRestriction(String objectName, 
+  public QueryRestriction createOjbectFieldRangeRestriction(String objectName,
       String field, String from, String to, boolean inclusive) {
     return createRangeRestriction(objectName + "." + field, from, to, inclusive);
   }
 
-  public QueryRestriction createRangeRestriction(String field, String from, String to, 
+  public QueryRestriction createRangeRestriction(String field, String from, String to,
       boolean inclusive) {
     return service.createRangeRestriction(field, from, to, inclusive);
   }
@@ -111,24 +115,24 @@ public class LuceneSearchScriptService implements ScriptService {
     return service.createDateRestriction(field, date);
   }
 
-  public QueryRestriction createFromDateRestriction(String field, Date fromDate, 
+  public QueryRestriction createFromDateRestriction(String field, Date fromDate,
       boolean inclusive) {
     return service.createFromDateRestriction(field, fromDate, inclusive);
   }
 
-  public QueryRestriction createToDateRestriction(String field, Date toDate, 
+  public QueryRestriction createToDateRestriction(String field, Date toDate,
       boolean inclusive) {
     return service.createToDateRestriction(field, toDate, inclusive);
   }
 
-  public QueryRestriction createFromToDateRestriction(String field, Date fromDate, 
+  public QueryRestriction createFromToDateRestriction(String field, Date fromDate,
       Date toDate, boolean inclusive) {
     return service.createFromToDateRestriction(field, fromDate, toDate, inclusive);
   }
 
-  public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes, 
+  public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes,
       List<String> mimeTypesBlackList, List<String> filenamePrefs) {
-    return service.createAttachmentRestrictionGroup(mimeTypes, mimeTypesBlackList, 
+    return service.createAttachmentRestrictionGroup(mimeTypes, mimeTypesBlackList,
         filenamePrefs);
   }
 
@@ -140,7 +144,7 @@ public class LuceneSearchScriptService implements ScriptService {
     return service.search(query, sortFields, null);
   }
 
-  public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
+  public LuceneSearchResult search(LuceneQuery query, List<String> sortFields,
       List<String> languages) {
     return service.search(query, sortFields, languages);
   }
@@ -153,7 +157,7 @@ public class LuceneSearchScriptService implements ScriptService {
     return service.search(queryString, sortFields, null);
   }
 
-  public LuceneSearchResult search(String queryString, List<String> sortFields, 
+  public LuceneSearchResult search(String queryString, List<String> sortFields,
       List<String> languages) {
     return service.search(queryString, sortFields, languages);
   }

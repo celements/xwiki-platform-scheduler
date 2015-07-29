@@ -29,23 +29,24 @@ public interface ILuceneSearchService {
   public LuceneQuery createQuery();
 
   /**
-   * @param types e.g. 'wikipage' or 'attachment'
+   * @param types
+   *          e.g. 'wikipage' or 'attachment'
    */
   public LuceneQuery createQuery(List<String> types);
-  
+
   public QueryRestrictionGroup createRestrictionGroup(Type type);
 
-  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields, 
+  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields,
       List<String> values);
 
-  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields, 
+  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields,
       List<String> values, boolean tokenize, boolean fuzzy);
 
   public QueryRestriction createRestriction(String field, String value);
 
   public QueryRestriction createRestriction(String field, String value, boolean tokenize);
-  
-  public QueryRestriction createRestriction(String field, String value, boolean tokenize, 
+
+  public QueryRestriction createRestriction(String field, String value, boolean tokenize,
       boolean fuzzy);
 
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef);
@@ -54,44 +55,44 @@ public interface ILuceneSearchService {
 
   public QueryRestriction createObjectRestriction(DocumentReference classRef);
 
-  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
+  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field,
       String value);
 
-  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
+  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field,
       String value, boolean tokenize);
 
-  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef, 
+  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef,
       String field, EntityReference ref);
-  
+
   public QueryRestriction createRangeRestriction(String field, String from, String to);
 
-  public QueryRestriction createRangeRestriction(String field, String from, String to, 
+  public QueryRestriction createRangeRestriction(String field, String from, String to,
       boolean inclusive);
-  
+
   public QueryRestriction createDateRestriction(String field, Date date);
 
-  public QueryRestriction createFromDateRestriction(String field, Date fromDate, 
+  public QueryRestriction createFromDateRestriction(String field, Date fromDate,
       boolean inclusive);
 
-  public QueryRestriction createToDateRestriction(String field, Date toDate, 
+  public QueryRestriction createToDateRestriction(String field, Date toDate,
       boolean inclusive);
 
-  public QueryRestriction createFromToDateRestriction(String field, Date fromDate, 
+  public QueryRestriction createFromToDateRestriction(String field, Date fromDate,
       Date toDate, boolean inclusive);
 
-  public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes, 
+  public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes,
       List<String> mimeTypesBlackList, List<String> filenamePrefs);
 
-  public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
+  public LuceneSearchResult search(LuceneQuery query, List<String> sortFields,
       List<String> languages);
 
-  public LuceneSearchResult searchWithoutChecks(LuceneQuery query, 
+  public LuceneSearchResult searchWithoutChecks(LuceneQuery query,
       List<String> sortFields, List<String> languages);
 
-  public LuceneSearchResult search(String queryString, List<String> sortFields, 
+  public LuceneSearchResult search(String queryString, List<String> sortFields,
       List<String> languages);
 
-  public LuceneSearchResult searchWithoutChecks(String queryString, 
+  public LuceneSearchResult searchWithoutChecks(String queryString,
       List<String> sortFields, List<String> languages);
 
   public int getResultLimit();

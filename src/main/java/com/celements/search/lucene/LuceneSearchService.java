@@ -34,10 +34,10 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   private static final boolean DEFAULT_TOKENIZE = true;
   private static final boolean DEFAULT_FUZZY = false;
-  
+
   @Requirement
   private IWebUtilsService webUtilsService;
-  
+
   @Requirement
   private Execution execution;
 
@@ -54,24 +54,25 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public LuceneQuery createQuery(List<String> types) {
     if ((types == null) || types.isEmpty()) {
-      types = Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE, LucenePlugin.DOCTYPE_ATTACHMENT);
+      types = Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE,
+          LucenePlugin.DOCTYPE_ATTACHMENT);
     }
     return new LuceneQuery(types);
   }
-  
+
   @Override
   public QueryRestrictionGroup createRestrictionGroup(Type type) {
     return new QueryRestrictionGroup(type);
   }
 
   @Override
-  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields, 
+  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields,
       List<String> values) {
     return createRestrictionGroup(type, fields, values, DEFAULT_TOKENIZE, DEFAULT_FUZZY);
   }
 
   @Override
-  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields, 
+  public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields,
       List<String> values, boolean tokenize, boolean fuzzy) {
     QueryRestrictionGroup restrGrp = createRestrictionGroup(type);
     Iterator<String> fieldIter = getIter(fields);
@@ -107,12 +108,13 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public QueryRestriction createRestriction(String field, String value, boolean tokenize) {
+  public QueryRestriction createRestriction(String field, String value,
+      boolean tokenize) {
     return createRestriction(field, value, tokenize, DEFAULT_FUZZY);
   }
-  
+
   @Override
-  public QueryRestriction createRestriction(String field, String value, boolean tokenize, 
+  public QueryRestriction createRestriction(String field, String value, boolean tokenize,
       boolean fuzzy) {
     QueryRestriction restriction = new QueryRestriction(field, value, tokenize);
     return fuzzy ? restriction.setFuzzy() : restriction;
@@ -133,7 +135,7 @@ public class LuceneSearchService implements ILuceneSearchService {
     QueryRestriction restriction = null;
     if (classRef != null) {
       String className = serialize(classRef);
-      // workaround bug Ticket #7230
+      // workaround issue CELDEV-35
       String spaceName = classRef.getLastSpaceReference().getName();
       if (!Character.isDigit(spaceName.charAt(spaceName.length() - 1))) {
         className = exactify(className);
@@ -144,13 +146,13 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
+  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field,
       String value) {
     return createFieldRestriction(classRef, field, value, DEFAULT_TOKENIZE);
   }
 
   @Override
-  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field, 
+  public QueryRestriction createFieldRestriction(DocumentReference classRef, String field,
       String value, boolean tokenize) {
     QueryRestriction restriction = null;
     if ((classRef != null) && StringUtils.isNotBlank(field)) {
@@ -158,9 +160,9 @@ public class LuceneSearchService implements ILuceneSearchService {
     }
     return restriction;
   }
-  
+
   @Override
-  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef, 
+  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef,
       String field, EntityReference ref) {
     IQueryRestriction restriction = null;
     if (classRef != null && StringUtils.isNotBlank(field)) {
@@ -176,43 +178,43 @@ public class LuceneSearchService implements ILuceneSearchService {
     }
     return restriction;
   }
-  
+
   @Override
   public QueryRestriction createRangeRestriction(String field, String from, String to) {
     return createRangeRestriction(field, from, to, true);
   }
 
   @Override
-  public QueryRestriction createRangeRestriction(String field, String from, String to, 
+  public QueryRestriction createRangeRestriction(String field, String from, String to,
       boolean inclusive) {
     String value = from + " TO " + to;
-    if(inclusive) {
+    if (inclusive) {
       value = "[" + value + "]";
     } else {
       value = "{" + value + "}";
     }
     return createRestriction(field, value, false);
   }
-  
+
   @Override
   public QueryRestriction createDateRestriction(String field, Date date) {
     return createRestriction(field, SDF.format(date), false);
   }
 
   @Override
-  public QueryRestriction createFromDateRestriction(String field, Date fromDate, 
+  public QueryRestriction createFromDateRestriction(String field, Date fromDate,
       boolean inclusive) {
     return createFromToDateRestriction(field, fromDate, null, inclusive);
   }
 
   @Override
-  public QueryRestriction createToDateRestriction(String field, Date toDate, 
+  public QueryRestriction createToDateRestriction(String field, Date toDate,
       boolean inclusive) {
     return createFromToDateRestriction(field, null, toDate, inclusive);
   }
 
   @Override
-  public QueryRestriction createFromToDateRestriction(String field, Date fromDate, 
+  public QueryRestriction createFromToDateRestriction(String field, Date fromDate,
       Date toDate, boolean inclusive) {
     String from = (fromDate != null) ? SDF.format(fromDate) : DATE_LOW;
     String to = (toDate != null) ? SDF.format(toDate) : DATE_HIGH;
@@ -220,38 +222,39 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes, 
+  public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes,
       List<String> mimeTypesBlackList, List<String> filenamePrefs) {
     QueryRestrictionGroup attGrp = createRestrictionGroup(Type.AND);
-    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), 
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE),
         exactify(mimeTypes)));
-    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), 
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE),
         exactify(mimeTypesBlackList)).setNegate(true));
-    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.FILENAME), 
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.FILENAME),
         filenamePrefs));
     return attGrp;
   }
 
   @Override
-  public LuceneSearchResult search(LuceneQuery query, List<String> sortFields, 
+  public LuceneSearchResult search(LuceneQuery query, List<String> sortFields,
       List<String> languages) {
     return new LuceneSearchResult(query, sortFields, languages, false, getContext());
   }
 
   @Override
-  public LuceneSearchResult searchWithoutChecks(LuceneQuery query, 
+  public LuceneSearchResult searchWithoutChecks(LuceneQuery query,
       List<String> sortFields, List<String> languages) {
     return new LuceneSearchResult(query, sortFields, languages, true, getContext());
   }
 
   @Override
-  public LuceneSearchResult search(String queryString, List<String> sortFields, 
+  public LuceneSearchResult search(String queryString, List<String> sortFields,
       List<String> languages) {
-    return new LuceneSearchResult(queryString, sortFields, languages, false, getContext());
+    return new LuceneSearchResult(queryString, sortFields, languages, false,
+        getContext());
   }
 
   @Override
-  public LuceneSearchResult searchWithoutChecks(String queryString, 
+  public LuceneSearchResult searchWithoutChecks(String queryString,
       List<String> sortFields, List<String> languages) {
     return new LuceneSearchResult(queryString, sortFields, languages, true, getContext());
   }
@@ -263,7 +266,7 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public int getResultLimit(boolean skipChecks) {
-    LucenePlugin lucenePlugin = (LucenePlugin) getContext().getWiki().getPlugin("lucene", 
+    LucenePlugin lucenePlugin = (LucenePlugin) getContext().getWiki().getPlugin("lucene",
         getContext());
     int limit = lucenePlugin.getResultLimit(skipChecks, getContext());
     LOGGER.debug("getResultLimit: got '{}' for skipChecks '{}'", limit, skipChecks);
