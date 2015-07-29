@@ -16,8 +16,10 @@ import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.web.service.IWebUtilsService;
 
-@Component("lucene")
+@Component(LuceneSearchScriptService.NAME)
 public class LuceneSearchScriptService implements ScriptService {
+
+  public static final String NAME = "lucene";
 
   @Requirement
   private ILuceneSearchService service;
