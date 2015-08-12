@@ -17,6 +17,9 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
 
+import com.celements.model.access.IModelAccessFacade;
+import com.celements.model.access.exception.DocumentLoadException;
+import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
@@ -24,6 +27,7 @@ import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.web.service.IWebUtilsService;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 
@@ -34,6 +38,9 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   private static final boolean DEFAULT_TOKENIZE = true;
   private static final boolean DEFAULT_FUZZY = false;
+
+  @Requirement
+  private IModelAccessFacade modelAccess;
 
   @Requirement
   private IWebUtilsService webUtilsService;
@@ -266,11 +273,17 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public int getResultLimit(boolean skipChecks) {
-    LucenePlugin lucenePlugin = (LucenePlugin) getContext().getWiki().getPlugin("lucene",
-        getContext());
-    int limit = lucenePlugin.getResultLimit(skipChecks, getContext());
+    int limit = getLucenePlugin().getResultLimit(skipChecks, getContext());
     LOGGER.debug("getResultLimit: got '{}' for skipChecks '{}'", limit, skipChecks);
     return limit;
+  }
+
+  @Override
+  public void queueIndexing(DocumentReference docRef) throws DocumentLoadException,
+      DocumentNotExistsException {
+    XWikiDocument doc = modelAccess.getDocument(docRef);
+    getLucenePlugin().queueDocument(doc, getContext());
+    getLucenePlugin().queueAttachment(doc, getContext());
   }
 
   private List<String> exactify(List<String> strs) {
@@ -297,6 +310,10 @@ public class LuceneSearchService implements ILuceneSearchService {
     } else {
       return "";
     }
+  }
+
+  private LucenePlugin getLucenePlugin() {
+    return (LucenePlugin) getContext().getWiki().getPlugin("lucene", getContext());
   }
 
 }

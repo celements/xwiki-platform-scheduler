@@ -4,12 +4,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.script.service.ScriptService;
 
+import com.celements.model.access.exception.DocumentAccessException;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
@@ -18,6 +21,9 @@ import com.celements.web.service.IWebUtilsService;
 
 @Component(LuceneSearchScriptService.NAME)
 public class LuceneSearchScriptService implements ScriptService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(
+      LuceneSearchScriptService.class);
 
   public static final String NAME = "lucene";
 
@@ -170,6 +176,14 @@ public class LuceneSearchScriptService implements ScriptService {
 
   public int getResultLimit(boolean skipChecks) {
     return service.getResultLimit(skipChecks);
+  }
+
+  public void queueIndexing(DocumentReference docRef) {
+    try {
+      service.queueIndexing(docRef);
+    } catch (DocumentAccessException dae) {
+      LOGGER.error("Failed to access doc '{}'", docRef, dae);
+    }
   }
 
 }

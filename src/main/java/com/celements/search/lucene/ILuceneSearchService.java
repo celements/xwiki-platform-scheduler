@@ -10,6 +10,8 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
 
+import com.celements.model.access.exception.DocumentLoadException;
+import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
@@ -98,5 +100,8 @@ public interface ILuceneSearchService {
   public int getResultLimit();
 
   public int getResultLimit(boolean skipChecks);
+
+  public void queueIndexing(DocumentReference docRef) throws DocumentLoadException,
+      DocumentNotExistsException;
 
 }
