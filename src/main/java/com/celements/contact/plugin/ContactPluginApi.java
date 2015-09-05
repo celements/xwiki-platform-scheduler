@@ -19,15 +19,10 @@
  */
 package com.celements.contact.plugin;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.api.Api;
 
 public class ContactPluginApi extends Api {
-  
-  private static Log mLogger = LogFactory.getFactory().getInstance(ContactPluginApi.class);
   
   private ContactPlugin plugin;
   
