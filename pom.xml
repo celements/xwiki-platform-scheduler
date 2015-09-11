@@ -30,7 +30,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>  
   <artifactId>celements-contact</artifactId>
-  <version>1.3</version>
+  <version>1.4-SNAPSHOT</version>
   <description>Celements Core</description> 
   <dependencies>    
     <!-- Add here all your dependencies -->
@@ -45,6 +45,6 @@
     <connection>scm:git:git@github.com:celements/celements-contact.git</connection>
     <developerConnection>scm:git:git@github.com:celements/celements-contact.git</developerConnection>
     <url>https://github.com/celements/celements-contact</url>
-    <tag>celements-contact-1.3</tag>
+    <tag>HEAD</tag>
   </scm>
 </project>
