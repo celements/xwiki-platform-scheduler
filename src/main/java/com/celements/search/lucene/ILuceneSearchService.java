@@ -17,6 +17,7 @@ import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 @ComponentRole
 public interface ILuceneSearchService {
@@ -101,7 +102,9 @@ public interface ILuceneSearchService {
 
   public int getResultLimit(boolean skipChecks);
 
-  public void queueIndexing(DocumentReference docRef) throws DocumentLoadException,
+  public void queueForIndexing(DocumentReference docRef) throws DocumentLoadException,
       DocumentNotExistsException;
+
+  public void queueForIndexing(XWikiDocument doc);
 
 }

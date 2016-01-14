@@ -180,7 +180,7 @@ public class LuceneSearchScriptService implements ScriptService {
 
   public void queueIndexing(DocumentReference docRef) {
     try {
-      service.queueIndexing(docRef);
+      service.queueForIndexing(docRef);
     } catch (DocumentAccessException dae) {
       LOGGER.error("Failed to access doc '{}'", docRef, dae);
     }

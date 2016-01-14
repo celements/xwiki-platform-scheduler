@@ -279,9 +279,14 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public void queueIndexing(DocumentReference docRef) throws DocumentLoadException,
+  public void queueForIndexing(DocumentReference docRef) throws DocumentLoadException,
       DocumentNotExistsException {
     XWikiDocument doc = modelAccess.getDocument(docRef);
+    queueForIndexing(doc);
+  }
+
+  @Override
+  public void queueForIndexing(XWikiDocument doc) {
     getLucenePlugin().queueDocument(doc, getContext());
     getLucenePlugin().queueAttachment(doc, getContext());
   }
