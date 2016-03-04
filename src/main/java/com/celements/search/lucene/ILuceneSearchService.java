@@ -64,6 +64,14 @@ public interface ILuceneSearchService {
   public QueryRestriction createFieldRestriction(DocumentReference classRef, String field,
       String value, boolean tokenize);
 
+  /**
+   * Creates a restriction for a class field which has a reference set as value.<br>
+   * NOTE: classRef must contain the same wikiRef as query
+   * @param classRef
+   * @param field
+   * @param ref
+   * @return
+   */
   public IQueryRestriction createFieldRefRestriction(DocumentReference classRef,
       String field, EntityReference ref);
 

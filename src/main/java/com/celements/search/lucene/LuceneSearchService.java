@@ -43,7 +43,7 @@ public class LuceneSearchService implements ILuceneSearchService {
   private IModelAccessFacade modelAccess;
 
   @Requirement
-  private IWebUtilsService webUtilsService;
+  private IWebUtilsService webUtils;
 
   @Requirement
   private Execution execution;
@@ -142,7 +142,7 @@ public class LuceneSearchService implements ILuceneSearchService {
     QueryRestriction restriction = null;
     if (classRef != null) {
       String className = serialize(classRef);
-      // workaround issue CELDEV-35
+      // XXX workaround issue CELDEV-35
       String spaceName = classRef.getLastSpaceReference().getName();
       if (!Character.isDigit(spaceName.charAt(spaceName.length() - 1))) {
         className = exactify(className);
@@ -175,10 +175,13 @@ public class LuceneSearchService implements ILuceneSearchService {
     if (classRef != null && StringUtils.isNotBlank(field)) {
       String fieldStr = serialize(classRef) + "." + field;
       if (ref != null) {
-        QueryRestrictionGroup restrGrp = createRestrictionGroup(Type.OR);
-        restrGrp.add(createRestriction(fieldStr, exactify(serialize(ref))));
-        restrGrp.add(createRestriction(fieldStr, exactify(serialize(ref))));
-        restriction = restrGrp;
+        restriction = createRestriction(fieldStr, exactify(serialize(ref, false)));
+        if (webUtils.getWikiRef(classRef).equals(webUtils.getWikiRef(ref))) {
+          QueryRestrictionGroup restrGrp = createRestrictionGroup(Type.OR);
+          restrGrp.add(restriction);
+          restrGrp.add(createRestriction(fieldStr, exactify(serialize(ref, true))));
+          restriction = restrGrp;
+        }
       } else {
         restriction = createRestriction(fieldStr, "");
       }
@@ -310,8 +313,12 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   private String serialize(EntityReference ref) {
+    return serialize(ref, true);
+  }
+
+  private String serialize(EntityReference ref, boolean local) {
     if (ref != null) {
-      return webUtilsService.serializeRef(ref, true);
+      return webUtils.serializeRef(ref, local);
     } else {
       return "";
     }

@@ -11,10 +11,13 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
 
 import com.celements.common.test.AbstractBridgedComponentTestCase;
+import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
@@ -158,6 +161,60 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
         "spaceName", new WikiReference("wiki")));
     assertNotNull(restr);
     assertEquals("space:(+\"spaceName\")", restr.getQueryString());
+  }
+  
+  @Test
+  public void testCreateFieldRestriction() {
+    DocumentReference classRef = new DocumentReference("db", "ClassSpace", "MyClass");
+    QueryRestriction restr = searchService.createFieldRestriction(classRef, "someField",
+        "val1 val2");
+    assertNotNull(restr);
+    assertEquals("ClassSpace.MyClass.someField:(+val1* +val2*)", restr.getQueryString());
+  }
+  
+  @Test
+  public void testCreateFieldRestriction_notTokenized() {
+    DocumentReference classRef = new DocumentReference("db", "ClassSpace", "MyClass");
+    QueryRestriction restr = searchService.createFieldRestriction(classRef, "someField",
+        "val1 val2", false);
+    assertNotNull(restr);
+    assertEquals("ClassSpace.MyClass.someField:(val1 val2)", restr.getQueryString());
+  }
+  
+  @Test
+  public void testCreateFieldRestriction_nullClassRef() {
+    QueryRestriction restr = searchService.createFieldRestriction(null, "someField",
+        "val");
+    assertNull(restr);
+  }
+  
+  @Test
+  public void testCreateFieldRestriction_emptyField() {
+    DocumentReference classRef = new DocumentReference("db", "ClassSpace", "MyClass");
+    QueryRestriction restr = searchService.createFieldRestriction(classRef, "", "val");
+    assertNull(restr);
+  }
+  
+  @Test
+  public void testCreateFieldRefRestriction() {
+    DocumentReference classRef = new DocumentReference("db", "ClassSpace", "MyClass");
+    EntityReference ref = new DocumentReference("db", "ToSpace", "ToPage");
+    IQueryRestriction restr = searchService.createFieldRefRestriction(classRef, "ref",
+        ref);
+    assertNotNull(restr);
+    assertEquals("(ClassSpace.MyClass.ref:(+\"db\\:ToSpace.ToPage\") OR "
+        + "ClassSpace.MyClass.ref:(+\"ToSpace.ToPage\"))", restr.getQueryString());
+  }
+  
+  @Test
+  public void testCreateFieldRefRestriction_otherdb() {
+    DocumentReference classRef = new DocumentReference("db", "ClassSpace", "MyClass");
+    EntityReference ref = new DocumentReference("otherdb", "ToSpace", "ToPage");
+    IQueryRestriction restr = searchService.createFieldRefRestriction(classRef, "ref",
+        ref);
+    assertNotNull(restr);
+    assertEquals("ClassSpace.MyClass.ref:(+\"otherdb\\:ToSpace.ToPage\")",
+        restr.getQueryString());
   }
 
   @Test
