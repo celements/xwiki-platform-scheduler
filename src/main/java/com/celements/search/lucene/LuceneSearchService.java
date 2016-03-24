@@ -17,7 +17,6 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
 
-import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.search.lucene.query.IQueryRestriction;
@@ -38,9 +37,9 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   private static final boolean DEFAULT_TOKENIZE = true;
   private static final boolean DEFAULT_FUZZY = false;
-
+  
   @Requirement
-  private IModelAccessFacade modelAccess;
+  private ILuceneIndexService luceneIndexService;
 
   @Requirement
   private IWebUtilsService webUtils;
@@ -281,17 +280,17 @@ public class LuceneSearchService implements ILuceneSearchService {
     return limit;
   }
 
+  @Deprecated
   @Override
   public void queueForIndexing(DocumentReference docRef) throws DocumentLoadException,
       DocumentNotExistsException {
-    XWikiDocument doc = modelAccess.getDocument(docRef);
-    queueForIndexing(doc);
+    luceneIndexService.queueForIndexing(docRef);
   }
 
+  @Deprecated
   @Override
   public void queueForIndexing(XWikiDocument doc) {
-    getLucenePlugin().queueDocument(doc, getContext());
-    getLucenePlugin().queueAttachment(doc, getContext());
+    luceneIndexService.queueForIndexing(doc);
   }
 
   private List<String> exactify(List<String> strs) {

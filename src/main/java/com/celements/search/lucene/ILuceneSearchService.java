@@ -110,9 +110,17 @@ public interface ILuceneSearchService {
 
   public int getResultLimit(boolean skipChecks);
 
+  /**
+   * @deprecated instead use {@link ILuceneIndexService}
+   */
+  @Deprecated
   public void queueForIndexing(DocumentReference docRef) throws DocumentLoadException,
       DocumentNotExistsException;
 
+  /**
+   * @deprecated instead use {@link ILuceneIndexService}
+   */
+  @Deprecated
   public void queueForIndexing(XWikiDocument doc);
 
 }
