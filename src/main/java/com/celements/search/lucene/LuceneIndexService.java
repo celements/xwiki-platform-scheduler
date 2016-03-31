@@ -10,6 +10,7 @@ import org.xwiki.model.reference.DocumentReference;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
+import com.celements.web.service.IWebUtilsService;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
@@ -21,6 +22,9 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   @Requirement
   private IModelAccessFacade modelAccess;
+  
+  @Requirement
+  private IWebUtilsService webUtils;
 
   @Requirement
   private Execution execution;
@@ -39,7 +43,10 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   @Override
   public void queueForIndexing(XWikiDocument doc) {
-    LOGGER.info("adding to index queue '{}'", doc);
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info("adding to index queue '{}'", webUtils.serializeRef(
+          doc.getDocumentReference()));
+    }
     getLucenePlugin().queueDocument(doc, getContext());
     getLucenePlugin().queueAttachment(doc, getContext());
   }

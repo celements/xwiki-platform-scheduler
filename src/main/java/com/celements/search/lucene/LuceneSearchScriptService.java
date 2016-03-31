@@ -28,17 +28,20 @@ public class LuceneSearchScriptService implements ScriptService {
   public static final String NAME = "lucene";
 
   @Requirement
-  private ILuceneSearchService service;
+  private ILuceneSearchService searchService;
+
+  @Requirement
+  private ILuceneIndexService indexService;
 
   @Requirement
   private IWebUtilsService webUtilsService;
 
   public LuceneQuery createQuery() {
-    return service.createQuery();
+    return searchService.createQuery();
   }
 
   public LuceneQuery createQuery(List<String> types) {
-    return service.createQuery(types);
+    return searchService.createQuery(types);
   }
 
   /**
@@ -53,25 +56,25 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public QueryRestrictionGroup createAndRestrictionGroup() {
-    return service.createRestrictionGroup(Type.AND);
+    return searchService.createRestrictionGroup(Type.AND);
   }
 
   public QueryRestrictionGroup createOrRestrictionGroup() {
-    return service.createRestrictionGroup(Type.OR);
+    return searchService.createRestrictionGroup(Type.OR);
   }
 
   public QueryRestrictionGroup createAndRestrictionGroup(List<String> fields,
       List<String> values) {
-    return service.createRestrictionGroup(Type.AND, fields, values);
+    return searchService.createRestrictionGroup(Type.AND, fields, values);
   }
 
   public QueryRestrictionGroup createOrRestrictionGroup(List<String> fields,
       List<String> values) {
-    return service.createRestrictionGroup(Type.OR, fields, values);
+    return searchService.createRestrictionGroup(Type.OR, fields, values);
   }
 
   public QueryRestriction createRestriction(String field, String value) {
-    return service.createRestriction(field, value);
+    return searchService.createRestriction(field, value);
   }
 
   public QueryRestriction createSpaceRestriction(String spaceName) {
@@ -80,7 +83,7 @@ public class LuceneSearchScriptService implements ScriptService {
     if (StringUtils.isNotBlank(spaceName)) {
       spaceRef = webUtilsService.resolveSpaceReference(spaceName);
     }
-    return service.createSpaceRestriction(spaceRef);
+    return searchService.createSpaceRestriction(spaceRef);
   }
 
   public QueryRestriction createDocRestriction(String fullName) {
@@ -89,19 +92,19 @@ public class LuceneSearchScriptService implements ScriptService {
     if (StringUtils.isNotBlank(fullName)) {
       docRef = webUtilsService.resolveDocumentReference(fullName);
     }
-    return service.createDocRestriction(docRef);
+    return searchService.createDocRestriction(docRef);
   }
 
   public QueryRestriction createObjectRestriction(String objectName) {
     objectName = objectName.replace("\"", "");
-    return service.createObjectRestriction(webUtilsService.resolveDocumentReference(
+    return searchService.createObjectRestriction(webUtilsService.resolveDocumentReference(
         objectName));
   }
 
   public QueryRestriction createObjectFieldRestriction(String objectName, String field,
       String value) {
     objectName = objectName.replace("\"", "");
-    return service.createFieldRestriction(webUtilsService.resolveDocumentReference(
+    return searchService.createFieldRestriction(webUtilsService.resolveDocumentReference(
         objectName), field, value);
   }
 
@@ -116,71 +119,71 @@ public class LuceneSearchScriptService implements ScriptService {
 
   public QueryRestriction createRangeRestriction(String field, String from, String to,
       boolean inclusive) {
-    return service.createRangeRestriction(field, from, to, inclusive);
+    return searchService.createRangeRestriction(field, from, to, inclusive);
   }
 
   public QueryRestriction createDateRestriction(String field, Date date) {
-    return service.createDateRestriction(field, date);
+    return searchService.createDateRestriction(field, date);
   }
 
   public QueryRestriction createFromDateRestriction(String field, Date fromDate,
       boolean inclusive) {
-    return service.createFromDateRestriction(field, fromDate, inclusive);
+    return searchService.createFromDateRestriction(field, fromDate, inclusive);
   }
 
   public QueryRestriction createToDateRestriction(String field, Date toDate,
       boolean inclusive) {
-    return service.createToDateRestriction(field, toDate, inclusive);
+    return searchService.createToDateRestriction(field, toDate, inclusive);
   }
 
   public QueryRestriction createFromToDateRestriction(String field, Date fromDate,
       Date toDate, boolean inclusive) {
-    return service.createFromToDateRestriction(field, fromDate, toDate, inclusive);
+    return searchService.createFromToDateRestriction(field, fromDate, toDate, inclusive);
   }
 
   public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes,
       List<String> mimeTypesBlackList, List<String> filenamePrefs) {
-    return service.createAttachmentRestrictionGroup(mimeTypes, mimeTypesBlackList,
+    return searchService.createAttachmentRestrictionGroup(mimeTypes, mimeTypesBlackList,
         filenamePrefs);
   }
 
   public LuceneSearchResult search(LuceneQuery query) {
-    return service.search(query, null, null);
+    return searchService.search(query, null, null);
   }
 
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields) {
-    return service.search(query, sortFields, null);
+    return searchService.search(query, sortFields, null);
   }
 
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields,
       List<String> languages) {
-    return service.search(query, sortFields, languages);
+    return searchService.search(query, sortFields, languages);
   }
 
   public LuceneSearchResult search(String queryString) {
-    return service.search(queryString, null, null);
+    return searchService.search(queryString, null, null);
   }
 
   public LuceneSearchResult search(String queryString, List<String> sortFields) {
-    return service.search(queryString, sortFields, null);
+    return searchService.search(queryString, sortFields, null);
   }
 
   public LuceneSearchResult search(String queryString, List<String> sortFields,
       List<String> languages) {
-    return service.search(queryString, sortFields, languages);
+    return searchService.search(queryString, sortFields, languages);
   }
 
   public int getResultLimit() {
-    return service.getResultLimit();
+    return searchService.getResultLimit();
   }
 
   public int getResultLimit(boolean skipChecks) {
-    return service.getResultLimit(skipChecks);
+    return searchService.getResultLimit(skipChecks);
   }
 
   public void queueIndexing(DocumentReference docRef) {
     try {
-      service.queueForIndexing(docRef);
+      indexService.queueForIndexing(docRef);
     } catch (DocumentAccessException dae) {
       LOGGER.error("Failed to access doc '{}'", docRef, dae);
     }
