@@ -13,6 +13,7 @@ import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.script.service.ScriptService;
 
 import com.celements.model.access.exception.DocumentAccessException;
+import com.celements.rights.access.IRightsAccessFacadeRole;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
@@ -27,6 +28,11 @@ public class LuceneSearchScriptService implements ScriptService {
 
   public static final String NAME = "lucene";
 
+  /**
+   * Return value for {@link #rebuildIndex()} meaning that the caller does not have rights.
+   */
+  public static final int REBUILD_NOT_ALLOWED = -1;
+
   @Requirement
   private ILuceneSearchService searchService;
 
@@ -35,6 +41,9 @@ public class LuceneSearchScriptService implements ScriptService {
 
   @Requirement
   private IWebUtilsService webUtilsService;
+  
+  @Requirement
+  private IRightsAccessFacadeRole rightsAccess;
 
   public LuceneQuery createQuery() {
     return searchService.createQuery();
@@ -187,6 +196,26 @@ public class LuceneSearchScriptService implements ScriptService {
     } catch (DocumentAccessException dae) {
       LOGGER.error("Failed to access doc '{}'", docRef, dae);
     }
+  }
+  
+  public int rebuildIndex() {
+    int ret;
+    if (webUtilsService.isAdminUser()) {
+      ret = indexService.rebuildIndex(webUtilsService.getWikiRef());
+    } else {
+      ret = REBUILD_NOT_ALLOWED;
+    }
+    return ret;
+  }
+  
+  public int rebuildIndexForAllWikis() {
+    int ret;
+    if (webUtilsService.isSuperAdminUser()) {
+      ret = indexService.rebuildIndexForAllWikis();
+    } else {
+      ret = REBUILD_NOT_ALLOWED;
+    }
+    return ret;
   }
 
 }
