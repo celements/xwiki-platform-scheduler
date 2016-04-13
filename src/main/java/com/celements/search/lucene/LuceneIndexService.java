@@ -59,6 +59,7 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   @Override
   public int rebuildIndexForAllWikis() {
+    LOGGER.info("rebuildIndexForAllWikis start");
     return getLucenePlugin().startIndex(null, "", false, false, getContext());
   }
 
@@ -77,6 +78,7 @@ public class LuceneIndexService implements ILuceneIndexService {
         }
       }
     }
+    LOGGER.info("rebuildIndex start for wikis '{}'", wikis);
     return getLucenePlugin().startIndex(wikis, "", false, false, getContext());
   }
 
