@@ -1,7 +1,6 @@
 package com.celements.search.lucene;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -59,17 +58,22 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   @Override
   public int rebuildIndexForAllWikis() {
-    LOGGER.info("rebuildIndexForAllWikis start");
-    return getLucenePlugin().startIndex(null, "", false, false, getContext());
+    return rebuildIndexForAllWikis("");
   }
 
   @Override
-  public int rebuildIndex(WikiReference wikiRef) {
-    return rebuildIndex(Arrays.asList(wikiRef));
+  public int rebuildIndexForAllWikis(String hqlFilter) {
+    LOGGER.info("rebuildIndexForAllWikis start for hqlFilter '{}'", hqlFilter);
+    return getLucenePlugin().startIndex(null, hqlFilter, false, false, getContext());
   }
 
   @Override
   public int rebuildIndex(Collection<WikiReference> wikiRefs) {
+    return rebuildIndex(wikiRefs, "");
+  }
+
+  @Override
+  public int rebuildIndex(Collection<WikiReference> wikiRefs, String hqlFilter) {
     List<String> wikis = new ArrayList<>();
     if (wikiRefs != null) {
       for (WikiReference wikiRef : wikiRefs) {
@@ -78,8 +82,8 @@ public class LuceneIndexService implements ILuceneIndexService {
         }
       }
     }
-    LOGGER.info("rebuildIndex start for wikis '{}'", wikis);
-    return getLucenePlugin().startIndex(wikis, "", false, false, getContext());
+    LOGGER.info("rebuildIndex start for wikis '{}', hqlFilter '{}'", wikis, hqlFilter);
+    return getLucenePlugin().startIndex(wikis, hqlFilter, false, false, getContext());
   }
 
   private LucenePlugin getLucenePlugin() {

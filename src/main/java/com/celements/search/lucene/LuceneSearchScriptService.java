@@ -1,5 +1,6 @@
 package com.celements.search.lucene;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -199,9 +200,14 @@ public class LuceneSearchScriptService implements ScriptService {
   }
   
   public int rebuildIndex() {
+    return rebuildIndex("");
+  }
+  
+  public int rebuildIndex(String hqlFilter) {
     int ret;
     if (webUtilsService.isAdminUser()) {
-      ret = indexService.rebuildIndex(webUtilsService.getWikiRef());
+      ret = indexService.rebuildIndex(Arrays.asList(webUtilsService.getWikiRef()),
+          hqlFilter);
     } else {
       ret = REBUILD_NOT_ALLOWED;
     }

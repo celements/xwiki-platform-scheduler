@@ -20,8 +20,10 @@ public interface ILuceneIndexService {
 
   public int rebuildIndexForAllWikis();
 
-  public int rebuildIndex(WikiReference wikiRef);
+  public int rebuildIndexForAllWikis(String hqlFilter);
 
   public int rebuildIndex(Collection<WikiReference> wikiRefs);
+
+  public int rebuildIndex(Collection<WikiReference> wikiRefs, String hqlFilter);
 
 }
