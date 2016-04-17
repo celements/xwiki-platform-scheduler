@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.util.Version;
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -16,6 +18,7 @@ import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
+import com.celements.search.lucene.query.QueryRestrictionString;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -25,6 +28,8 @@ public interface ILuceneSearchService {
   public static final DateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
   public static final String DATE_LOW = "000101010000";
   public static final String DATE_HIGH = "999912312359";
+
+  public Version getVersion();
 
   /**
    * @return LuceneQuery object with type 'wikipage' only
@@ -44,6 +49,8 @@ public interface ILuceneSearchService {
 
   public QueryRestrictionGroup createRestrictionGroup(Type type, List<String> fields,
       List<String> values, boolean tokenize, boolean fuzzy);
+
+  public QueryRestrictionString createRestriction(String query) throws ParseException;
 
   public QueryRestriction createRestriction(String field, String value);
 

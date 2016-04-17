@@ -8,10 +8,17 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -24,6 +31,7 @@ import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
+import com.celements.search.lucene.query.QueryRestrictionString;
 import com.celements.web.service.IWebUtilsService;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -40,6 +48,9 @@ public class LuceneSearchService implements ILuceneSearchService {
   
   @Requirement
   private ILuceneIndexService luceneIndexService;
+  
+  @Requirement
+  private ConfigurationSource cfgSrc;
 
   @Requirement
   private IWebUtilsService webUtils;
@@ -50,6 +61,17 @@ public class LuceneSearchService implements ILuceneSearchService {
   private XWikiContext getContext() {
     return (XWikiContext) execution.getContext().getProperty(
         XWikiContext.EXECUTIONCONTEXT_KEY);
+  }
+  
+  @Override
+  public Version getVersion() {
+    try {
+      return Version.valueOf(cfgSrc.getProperty("lucene.version",
+          Version.LUCENE_34.toString()));
+    } catch (IllegalArgumentException exc) {
+      LOGGER.warn("invalid version defined", exc);
+      return Version.LUCENE_34;
+    }
   }
 
   @Override
@@ -106,6 +128,12 @@ public class LuceneSearchService implements ILuceneSearchService {
     } else {
       return Collections.<String>emptyList().iterator();
     }
+  }
+
+  @Override
+  public QueryRestrictionString createRestriction(String query) throws ParseException {
+    return new QueryRestrictionString(new QueryParser(getVersion(), "",
+        new StandardAnalyzer(getVersion())).parse(query).toString());
   }
 
   @Override
