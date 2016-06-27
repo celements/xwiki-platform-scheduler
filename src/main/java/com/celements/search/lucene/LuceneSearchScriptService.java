@@ -24,8 +24,7 @@ import com.celements.web.service.IWebUtilsService;
 @Component(LuceneSearchScriptService.NAME)
 public class LuceneSearchScriptService implements ScriptService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(
-      LuceneSearchScriptService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LuceneSearchScriptService.class);
 
   public static final String NAME = "lucene";
 
@@ -42,7 +41,7 @@ public class LuceneSearchScriptService implements ScriptService {
 
   @Requirement
   private IWebUtilsService webUtilsService;
-  
+
   @Requirement
   private IRightsAccessFacadeRole rightsAccess;
 
@@ -56,7 +55,6 @@ public class LuceneSearchScriptService implements ScriptService {
 
   /**
    * @deprecated instead use {@link LuceneQuery#copy()}
-   * 
    * @param query
    * @return
    */
@@ -73,13 +71,11 @@ public class LuceneSearchScriptService implements ScriptService {
     return searchService.createRestrictionGroup(Type.OR);
   }
 
-  public QueryRestrictionGroup createAndRestrictionGroup(List<String> fields,
-      List<String> values) {
+  public QueryRestrictionGroup createAndRestrictionGroup(List<String> fields, List<String> values) {
     return searchService.createRestrictionGroup(Type.AND, fields, values);
   }
 
-  public QueryRestrictionGroup createOrRestrictionGroup(List<String> fields,
-      List<String> values) {
+  public QueryRestrictionGroup createOrRestrictionGroup(List<String> fields, List<String> values) {
     return searchService.createRestrictionGroup(Type.OR, fields, values);
   }
 
@@ -122,8 +118,8 @@ public class LuceneSearchScriptService implements ScriptService {
     return createRangeRestriction(field, from, to, true);
   }
 
-  public QueryRestriction createOjbectFieldRangeRestriction(String objectName,
-      String field, String from, String to, boolean inclusive) {
+  public QueryRestriction createOjbectFieldRangeRestriction(String objectName, String field,
+      String from, String to, boolean inclusive) {
     return createRangeRestriction(objectName + "." + field, from, to, inclusive);
   }
 
@@ -141,13 +137,12 @@ public class LuceneSearchScriptService implements ScriptService {
     return searchService.createFromDateRestriction(field, fromDate, inclusive);
   }
 
-  public QueryRestriction createToDateRestriction(String field, Date toDate,
-      boolean inclusive) {
+  public QueryRestriction createToDateRestriction(String field, Date toDate, boolean inclusive) {
     return searchService.createToDateRestriction(field, toDate, inclusive);
   }
 
-  public QueryRestriction createFromToDateRestriction(String field, Date fromDate,
-      Date toDate, boolean inclusive) {
+  public QueryRestriction createFromToDateRestriction(String field, Date fromDate, Date toDate,
+      boolean inclusive) {
     return searchService.createFromToDateRestriction(field, fromDate, toDate, inclusive);
   }
 
@@ -198,22 +193,21 @@ public class LuceneSearchScriptService implements ScriptService {
       LOGGER.error("Failed to access doc '{}'", docRef, dae);
     }
   }
-  
+
   public int rebuildIndex() {
     return rebuildIndex("");
   }
-  
+
   public int rebuildIndex(String hqlFilter) {
     int ret;
     if (webUtilsService.isAdminUser()) {
-      ret = indexService.rebuildIndex(Arrays.asList(webUtilsService.getWikiRef()),
-          hqlFilter);
+      ret = indexService.rebuildIndex(Arrays.asList(webUtilsService.getWikiRef()), hqlFilter);
     } else {
       ret = REBUILD_NOT_ALLOWED;
     }
     return ret;
   }
-  
+
   public int rebuildIndexForAllWikis() {
     int ret;
     if (webUtilsService.isSuperAdminUser()) {
@@ -222,6 +216,12 @@ public class LuceneSearchScriptService implements ScriptService {
       ret = REBUILD_NOT_ALLOWED;
     }
     return ret;
+  }
+
+  public void optimizeIndex() {
+    if (webUtilsService.isSuperAdminUser()) {
+      indexService.optimizeIndex();
+    }
   }
 
 }

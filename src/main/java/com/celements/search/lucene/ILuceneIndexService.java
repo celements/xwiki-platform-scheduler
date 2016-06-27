@@ -13,8 +13,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @ComponentRole
 public interface ILuceneIndexService {
 
-  public void queueForIndexing(DocumentReference docRef)
-      throws DocumentLoadException, DocumentNotExistsException;
+  public void queueForIndexing(DocumentReference docRef) throws DocumentLoadException,
+      DocumentNotExistsException;
 
   public void queueForIndexing(XWikiDocument doc);
 
@@ -25,5 +25,7 @@ public interface ILuceneIndexService {
   public int rebuildIndex(Collection<WikiReference> wikiRefs);
 
   public int rebuildIndex(Collection<WikiReference> wikiRefs, String hqlFilter);
+
+  public void optimizeIndex();
 
 }

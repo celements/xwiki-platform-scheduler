@@ -2,7 +2,6 @@ package com.celements.search.lucene;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   @Requirement
   private IModelAccessFacade modelAccess;
-  
+
   @Requirement
   private IWebUtilsService webUtils;
 
@@ -35,8 +34,7 @@ public class LuceneIndexService implements ILuceneIndexService {
   private Execution execution;
 
   private XWikiContext getContext() {
-    return (XWikiContext) execution.getContext().getProperty(
-        XWikiContext.EXECUTIONCONTEXT_KEY);
+    return (XWikiContext) execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
   }
 
   @Override
@@ -49,8 +47,7 @@ public class LuceneIndexService implements ILuceneIndexService {
   @Override
   public void queueForIndexing(XWikiDocument doc) {
     if (LOGGER.isInfoEnabled()) {
-      LOGGER.info("adding to index queue '{}'", webUtils.serializeRef(
-          doc.getDocumentReference()));
+      LOGGER.info("adding to index queue '{}'", webUtils.serializeRef(doc.getDocumentReference()));
     }
     getLucenePlugin().queueDocument(doc, getContext());
     getLucenePlugin().queueAttachment(doc, getContext());
@@ -64,7 +61,8 @@ public class LuceneIndexService implements ILuceneIndexService {
   @Override
   public int rebuildIndexForAllWikis(String hqlFilter) {
     LOGGER.info("rebuildIndexForAllWikis start for hqlFilter '{}'", hqlFilter);
-    return getLucenePlugin().startIndex(null, hqlFilter, false, false, getContext());
+    return getLucenePlugin().rebuildIndex() ? 0 : -1;
+
   }
 
   @Override
@@ -73,17 +71,14 @@ public class LuceneIndexService implements ILuceneIndexService {
   }
 
   @Override
-  public int rebuildIndex(Collection<WikiReference> wikiRefs, String hqlFilter) {
-    List<String> wikis = new ArrayList<>();
-    if (wikiRefs != null) {
-      for (WikiReference wikiRef : wikiRefs) {
-        if (wikiRef != null) {
-          wikis.add(wikiRef.getName());
-        }
-      }
-    }
+  public int rebuildIndex(Collection<WikiReference> wikis, String hqlFilter) {
     LOGGER.info("rebuildIndex start for wikis '{}', hqlFilter '{}'", wikis, hqlFilter);
-    return getLucenePlugin().startIndex(wikis, hqlFilter, false, false, getContext());
+    return getLucenePlugin().rebuildIndex(new ArrayList<>(wikis), hqlFilter, false) ? 0 : -1;
+  }
+
+  @Override
+  public void optimizeIndex() {
+    getLucenePlugin().optimizeIndex();
   }
 
   private LucenePlugin getLucenePlugin() {

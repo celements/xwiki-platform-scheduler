@@ -9,10 +9,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +43,10 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   private static final boolean DEFAULT_TOKENIZE = true;
   private static final boolean DEFAULT_FUZZY = false;
-  
+
   @Requirement
   private ILuceneIndexService luceneIndexService;
-  
+
   @Requirement
   private ConfigurationSource cfgSrc;
 
@@ -59,18 +57,17 @@ public class LuceneSearchService implements ILuceneSearchService {
   private Execution execution;
 
   private XWikiContext getContext() {
-    return (XWikiContext) execution.getContext().getProperty(
-        XWikiContext.EXECUTIONCONTEXT_KEY);
+    return (XWikiContext) execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
   }
-  
+
   @Override
   public Version getVersion() {
+    Version defaultVersion = LucenePlugin.VERSION;
     try {
-      return Version.valueOf(cfgSrc.getProperty("lucene.version",
-          Version.LUCENE_34.toString()));
+      return Version.valueOf(cfgSrc.getProperty("lucene.version", defaultVersion.toString()));
     } catch (IllegalArgumentException exc) {
       LOGGER.warn("invalid version defined", exc);
-      return Version.LUCENE_34;
+      return defaultVersion;
     }
   }
 
@@ -82,8 +79,7 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public LuceneQuery createQuery(List<String> types) {
     if ((types == null) || types.isEmpty()) {
-      types = Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE,
-          LucenePlugin.DOCTYPE_ATTACHMENT);
+      types = Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE, LucenePlugin.DOCTYPE_ATTACHMENT);
     }
     return new LuceneQuery(types);
   }
@@ -132,8 +128,8 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public QueryRestrictionString createRestriction(String query) throws ParseException {
-    return new QueryRestrictionString(new QueryParser(getVersion(), "",
-        new StandardAnalyzer(getVersion())).parse(query).toString());
+    return new QueryRestrictionString(new QueryParser(getVersion(), "", new StandardAnalyzer(
+        getVersion())).parse(query).toString());
   }
 
   @Override
@@ -142,8 +138,7 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public QueryRestriction createRestriction(String field, String value,
-      boolean tokenize) {
+  public QueryRestriction createRestriction(String field, String value, boolean tokenize) {
     return createRestriction(field, value, tokenize, DEFAULT_FUZZY);
   }
 
@@ -196,10 +191,10 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef,
-      String field, EntityReference ref) {
+  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef, String field,
+      EntityReference ref) {
     IQueryRestriction restriction = null;
-    if (classRef != null && StringUtils.isNotBlank(field)) {
+    if ((classRef != null) && StringUtils.isNotBlank(field)) {
       String fieldStr = serialize(classRef) + "." + field;
       if (ref != null) {
         restriction = createRestriction(fieldStr, exactify(serialize(ref, false)));
@@ -245,14 +240,13 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public QueryRestriction createToDateRestriction(String field, Date toDate,
-      boolean inclusive) {
+  public QueryRestriction createToDateRestriction(String field, Date toDate, boolean inclusive) {
     return createFromToDateRestriction(field, null, toDate, inclusive);
   }
 
   @Override
-  public QueryRestriction createFromToDateRestriction(String field, Date fromDate,
-      Date toDate, boolean inclusive) {
+  public QueryRestriction createFromToDateRestriction(String field, Date fromDate, Date toDate,
+      boolean inclusive) {
     String from = (fromDate != null) ? SDF.format(fromDate) : DATE_LOW;
     String to = (toDate != null) ? SDF.format(toDate) : DATE_HIGH;
     return createRangeRestriction(field, from, to, inclusive);
@@ -262,12 +256,11 @@ public class LuceneSearchService implements ILuceneSearchService {
   public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes,
       List<String> mimeTypesBlackList, List<String> filenamePrefs) {
     QueryRestrictionGroup attGrp = createRestrictionGroup(Type.AND);
-    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE),
-        exactify(mimeTypes)));
-    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE),
-        exactify(mimeTypesBlackList)).setNegate(true));
-    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.FILENAME),
-        filenamePrefs));
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), exactify(
+        mimeTypes)));
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), exactify(
+        mimeTypesBlackList)).setNegate(true));
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.FILENAME), filenamePrefs));
     return attGrp;
   }
 
@@ -278,21 +271,20 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public LuceneSearchResult searchWithoutChecks(LuceneQuery query,
-      List<String> sortFields, List<String> languages) {
+  public LuceneSearchResult searchWithoutChecks(LuceneQuery query, List<String> sortFields,
+      List<String> languages) {
     return new LuceneSearchResult(query, sortFields, languages, true, getContext());
   }
 
   @Override
   public LuceneSearchResult search(String queryString, List<String> sortFields,
       List<String> languages) {
-    return new LuceneSearchResult(queryString, sortFields, languages, false,
-        getContext());
+    return new LuceneSearchResult(queryString, sortFields, languages, false, getContext());
   }
 
   @Override
-  public LuceneSearchResult searchWithoutChecks(String queryString,
-      List<String> sortFields, List<String> languages) {
+  public LuceneSearchResult searchWithoutChecks(String queryString, List<String> sortFields,
+      List<String> languages) {
     return new LuceneSearchResult(queryString, sortFields, languages, true, getContext());
   }
 
