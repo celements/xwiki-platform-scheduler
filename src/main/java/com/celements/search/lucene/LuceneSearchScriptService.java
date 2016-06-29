@@ -33,6 +33,11 @@ public class LuceneSearchScriptService implements ScriptService {
    */
   public static final int REBUILD_NOT_ALLOWED = -1;
 
+  /**
+   * Return value for {@link #rebuildIndex()} meaning that the rebuild is already in progress.
+   */
+  public static final int REBUILD_ALREADY_IN_PROGRESS = -2;
+
   @Requirement
   private ILuceneSearchService searchService;
 
@@ -186,12 +191,17 @@ public class LuceneSearchScriptService implements ScriptService {
     return searchService.getResultLimit(skipChecks);
   }
 
-  public void queueIndexing(DocumentReference docRef) {
+  public boolean queueIndexing(DocumentReference docRef) {
+    boolean ret = false;
     try {
-      indexService.queueForIndexing(docRef);
+      if (webUtilsService.isSuperAdminUser()) {
+        indexService.queueForIndexing(docRef);
+        ret = true;
+      }
     } catch (DocumentAccessException dae) {
       LOGGER.error("Failed to access doc '{}'", docRef, dae);
     }
+    return ret;
   }
 
   public int rebuildIndex() {
@@ -199,31 +209,29 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public int rebuildIndex(String hqlFilter) {
-    int ret;
+    int ret = REBUILD_NOT_ALLOWED;
     if (webUtilsService.isAdminUser()) {
-      ret = indexService.rebuildIndex(Arrays.asList(webUtilsService.getWikiRef()), hqlFilter);
-    } else {
-      ret = REBUILD_NOT_ALLOWED;
+      ret = indexService.rebuildIndex(Arrays.asList(webUtilsService.getWikiRef()), hqlFilter) ? 0
+          : REBUILD_ALREADY_IN_PROGRESS;
     }
     return ret;
   }
 
   public int rebuildIndexForAllWikis() {
-    int ret;
+    int ret = REBUILD_NOT_ALLOWED;
     if (webUtilsService.isSuperAdminUser()) {
-      ret = indexService.rebuildIndexForAllWikis();
-    } else {
-      ret = REBUILD_NOT_ALLOWED;
+      ret = indexService.rebuildIndexForAllWikis() ? 0 : REBUILD_ALREADY_IN_PROGRESS;
     }
     return ret;
   }
 
   public boolean optimizeIndex() {
+    boolean ret = false;
     if (webUtilsService.isSuperAdminUser()) {
       indexService.optimizeIndex();
-      return true;
+      ret = true;
     }
-    return false;
+    return ret;
   }
 
 }

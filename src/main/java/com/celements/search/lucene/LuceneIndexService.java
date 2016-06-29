@@ -54,26 +54,26 @@ public class LuceneIndexService implements ILuceneIndexService {
   }
 
   @Override
-  public int rebuildIndexForAllWikis() {
+  public boolean rebuildIndexForAllWikis() {
     return rebuildIndexForAllWikis("");
   }
 
   @Override
-  public int rebuildIndexForAllWikis(String hqlFilter) {
+  public boolean rebuildIndexForAllWikis(String hqlFilter) {
     LOGGER.info("rebuildIndexForAllWikis start for hqlFilter '{}'", hqlFilter);
-    return getLucenePlugin().rebuildIndex() ? 0 : -1;
+    return getLucenePlugin().rebuildIndex();
 
   }
 
   @Override
-  public int rebuildIndex(Collection<WikiReference> wikiRefs) {
+  public boolean rebuildIndex(Collection<WikiReference> wikiRefs) {
     return rebuildIndex(wikiRefs, "");
   }
 
   @Override
-  public int rebuildIndex(Collection<WikiReference> wikis, String hqlFilter) {
+  public boolean rebuildIndex(Collection<WikiReference> wikis, String hqlFilter) {
     LOGGER.info("rebuildIndex start for wikis '{}', hqlFilter '{}'", wikis, hqlFilter);
-    return getLucenePlugin().rebuildIndex(new ArrayList<>(wikis), hqlFilter, false) ? 0 : -1;
+    return getLucenePlugin().rebuildIndex(new ArrayList<>(wikis), hqlFilter, false);
   }
 
   @Override

@@ -18,13 +18,13 @@ public interface ILuceneIndexService {
 
   public void queueForIndexing(XWikiDocument doc);
 
-  public int rebuildIndexForAllWikis();
+  public boolean rebuildIndexForAllWikis();
 
-  public int rebuildIndexForAllWikis(String hqlFilter);
+  public boolean rebuildIndexForAllWikis(String hqlFilter);
 
-  public int rebuildIndex(Collection<WikiReference> wikiRefs);
+  public boolean rebuildIndex(Collection<WikiReference> wikiRefs);
 
-  public int rebuildIndex(Collection<WikiReference> wikiRefs, String hqlFilter);
+  public boolean rebuildIndex(Collection<WikiReference> wikiRefs, String hqlFilter);
 
   public void optimizeIndex();
 
