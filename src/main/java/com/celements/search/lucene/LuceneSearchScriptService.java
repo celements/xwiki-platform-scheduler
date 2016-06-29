@@ -218,10 +218,12 @@ public class LuceneSearchScriptService implements ScriptService {
     return ret;
   }
 
-  public void optimizeIndex() {
+  public boolean optimizeIndex() {
     if (webUtilsService.isSuperAdminUser()) {
       indexService.optimizeIndex();
+      return true;
     }
+    return false;
   }
 
 }
