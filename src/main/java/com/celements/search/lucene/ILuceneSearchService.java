@@ -1,7 +1,5 @@
 package com.celements.search.lucene;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -18,16 +16,16 @@ import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
-import com.celements.search.lucene.query.QueryRestrictionString;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
+import com.celements.search.lucene.query.QueryRestrictionString;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.plugin.lucene.IndexFields;
 
 @ComponentRole
 public interface ILuceneSearchService {
 
-  public static final DateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
-  public static final String DATE_LOW = "000101010000";
-  public static final String DATE_HIGH = "999912312359";
+  public static final String DATE_LOW = IndexFields.DATE_LOW;
+  public static final String DATE_HIGH = IndexFields.DATE_HIGH;
 
   public Version getVersion();
 
@@ -74,13 +72,14 @@ public interface ILuceneSearchService {
   /**
    * Creates a restriction for a class field which has a reference set as value.<br>
    * NOTE: classRef must contain the same wikiRef as query
+   *
    * @param classRef
    * @param field
    * @param ref
    * @return
    */
-  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef,
-      String field, EntityReference ref);
+  public IQueryRestriction createFieldRefRestriction(DocumentReference classRef, String field,
+      EntityReference ref);
 
   public QueryRestriction createRangeRestriction(String field, String from, String to);
 
@@ -89,14 +88,17 @@ public interface ILuceneSearchService {
 
   public QueryRestriction createDateRestriction(String field, Date date);
 
-  public QueryRestriction createFromDateRestriction(String field, Date fromDate,
+  public QueryRestriction createFromDateRestriction(String field, Date fromDate, boolean inclusive);
+
+  public QueryRestriction createToDateRestriction(String field, Date toDate, boolean inclusive);
+
+  public QueryRestriction createFromToDateRestriction(String field, Date fromDate, Date toDate,
       boolean inclusive);
 
-  public QueryRestriction createToDateRestriction(String field, Date toDate,
-      boolean inclusive);
+  public QueryRestriction createNumberRestriction(String field, Number number);
 
-  public QueryRestriction createFromToDateRestriction(String field, Date fromDate,
-      Date toDate, boolean inclusive);
+  public QueryRestriction createFromToNumberRestriction(String field, Number fromNumber,
+      Number toNumber, boolean inclusive);
 
   public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes,
       List<String> mimeTypesBlackList, List<String> filenamePrefs);
@@ -104,14 +106,14 @@ public interface ILuceneSearchService {
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields,
       List<String> languages);
 
-  public LuceneSearchResult searchWithoutChecks(LuceneQuery query,
-      List<String> sortFields, List<String> languages);
+  public LuceneSearchResult searchWithoutChecks(LuceneQuery query, List<String> sortFields,
+      List<String> languages);
 
   public LuceneSearchResult search(String queryString, List<String> sortFields,
       List<String> languages);
 
-  public LuceneSearchResult searchWithoutChecks(String queryString,
-      List<String> sortFields, List<String> languages);
+  public LuceneSearchResult searchWithoutChecks(String queryString, List<String> sortFields,
+      List<String> languages);
 
   public int getResultLimit();
 

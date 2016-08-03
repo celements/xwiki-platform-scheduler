@@ -31,6 +31,7 @@ import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.lucene.query.QueryRestrictionString;
 import com.celements.web.service.IWebUtilsService;
+import com.google.common.base.MoreObjects;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
@@ -230,7 +231,7 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public QueryRestriction createDateRestriction(String field, Date date) {
-    return createRestriction(field, SDF.format(date), false);
+    return createRestriction(field, IndexFields.dateToString(date), false);
   }
 
   @Override
@@ -247,8 +248,21 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public QueryRestriction createFromToDateRestriction(String field, Date fromDate, Date toDate,
       boolean inclusive) {
-    String from = (fromDate != null) ? SDF.format(fromDate) : DATE_LOW;
-    String to = (toDate != null) ? SDF.format(toDate) : DATE_HIGH;
+    String from = (fromDate != null) ? IndexFields.dateToString(fromDate) : DATE_LOW;
+    String to = (toDate != null) ? IndexFields.dateToString(toDate) : DATE_HIGH;
+    return createRangeRestriction(field, from, to, inclusive);
+  }
+
+  @Override
+  public QueryRestriction createNumberRestriction(String field, Number number) {
+    return createRestriction(field, IndexFields.numberToString(number), false);
+  }
+
+  @Override
+  public QueryRestriction createFromToNumberRestriction(String field, Number fromNumber,
+      Number toNumber, boolean inclusive) {
+    String from = IndexFields.numberToString(MoreObjects.firstNonNull(fromNumber, new Integer(0)));
+    String to = IndexFields.numberToString(MoreObjects.firstNonNull(toNumber, Integer.MAX_VALUE));
     return createRangeRestriction(field, from, to, inclusive);
   }
 

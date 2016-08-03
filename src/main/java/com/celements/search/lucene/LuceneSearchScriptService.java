@@ -151,6 +151,15 @@ public class LuceneSearchScriptService implements ScriptService {
     return searchService.createFromToDateRestriction(field, fromDate, toDate, inclusive);
   }
 
+  public QueryRestriction createNumberRestriction(String field, Number number) {
+    return searchService.createNumberRestriction(field, number);
+  }
+
+  public QueryRestriction createFromToNumberRestriction(String field, Number fromNumber,
+      Number toNumber, boolean inclusive) {
+    return searchService.createFromToNumberRestriction(field, fromNumber, toNumber, inclusive);
+  }
+
   public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes,
       List<String> mimeTypesBlackList, List<String> filenamePrefs) {
     return searchService.createAttachmentRestrictionGroup(mimeTypes, mimeTypesBlackList,
