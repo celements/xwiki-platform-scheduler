@@ -1,5 +1,7 @@
 package com.celements.search.lucene;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,6 +61,11 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   private XWikiContext getContext() {
     return (XWikiContext) execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
+  }
+
+  @Override
+  public DateFormat getSDF() {
+    return new SimpleDateFormat("yyyyMMddHHmm");
   }
 
   @Override

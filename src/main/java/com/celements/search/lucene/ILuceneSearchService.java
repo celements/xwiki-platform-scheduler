@@ -26,6 +26,10 @@ import com.xpn.xwiki.plugin.lucene.IndexFields;
 @ComponentRole
 public interface ILuceneSearchService {
 
+  /**
+   * @deprecated NOT THREAD SAFE! instead use getSDF()
+   */
+  @Deprecated
   public static final DateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
   public static final String DATE_LOW = IndexFields.DATE_LOW;
   public static final String DATE_HIGH = IndexFields.DATE_HIGH;
@@ -42,6 +46,8 @@ public interface ILuceneSearchService {
    *          e.g. 'wikipage' or 'attachment'
    */
   public LuceneQuery createQuery(List<String> types);
+
+  public DateFormat getSDF();
 
   public QueryRestrictionGroup createRestrictionGroup(Type type);
 
