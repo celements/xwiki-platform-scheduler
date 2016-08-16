@@ -1,5 +1,7 @@
 package com.celements.search.lucene;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import com.xpn.xwiki.plugin.lucene.IndexFields;
 @ComponentRole
 public interface ILuceneSearchService {
 
+  public static final DateFormat SDF = new SimpleDateFormat("yyyyMMddHHmm");
   public static final String DATE_LOW = IndexFields.DATE_LOW;
   public static final String DATE_HIGH = IndexFields.DATE_HIGH;
 
