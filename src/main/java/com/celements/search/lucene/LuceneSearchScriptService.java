@@ -10,16 +10,20 @@ import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.script.service.ScriptService;
 
 import com.celements.model.access.exception.DocumentAccessException;
+import com.celements.model.context.ModelContext;
+import com.celements.model.util.ModelUtils;
 import com.celements.rights.access.IRightsAccessFacadeRole;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.web.service.IWebUtilsService;
+import com.google.common.base.Optional;
 
 @Component(LuceneSearchScriptService.NAME)
 public class LuceneSearchScriptService implements ScriptService {
@@ -49,6 +53,12 @@ public class LuceneSearchScriptService implements ScriptService {
 
   @Requirement
   private IRightsAccessFacadeRole rightsAccess;
+
+  @Requirement
+  private ModelUtils modelUtils;
+
+  @Requirement
+  private ModelContext context;
 
   public LuceneQuery createQuery() {
     return searchService.createQuery();
@@ -92,7 +102,7 @@ public class LuceneSearchScriptService implements ScriptService {
     spaceName = spaceName.replace("\"", "");
     SpaceReference spaceRef = null;
     if (StringUtils.isNotBlank(spaceName)) {
-      spaceRef = webUtilsService.resolveSpaceReference(spaceName);
+      spaceRef = modelUtils.resolveRef(spaceName, SpaceReference.class);
     }
     return searchService.createSpaceRestriction(spaceRef);
   }
@@ -101,22 +111,22 @@ public class LuceneSearchScriptService implements ScriptService {
     fullName = fullName.replace("\"", "");
     DocumentReference docRef = null;
     if (StringUtils.isNotBlank(fullName)) {
-      docRef = webUtilsService.resolveDocumentReference(fullName);
+      docRef = modelUtils.resolveRef(fullName, DocumentReference.class);
     }
     return searchService.createDocRestriction(docRef);
   }
 
   public QueryRestriction createObjectRestriction(String objectName) {
     objectName = objectName.replace("\"", "");
-    return searchService.createObjectRestriction(webUtilsService.resolveDocumentReference(
-        objectName));
+    return searchService.createObjectRestriction(modelUtils.resolveRef(objectName,
+        DocumentReference.class));
   }
 
   public QueryRestriction createObjectFieldRestriction(String objectName, String field,
       String value) {
     objectName = objectName.replace("\"", "");
-    return searchService.createFieldRestriction(webUtilsService.resolveDocumentReference(
-        objectName), field, value);
+    return searchService.createFieldRestriction(modelUtils.resolveRef(objectName,
+        DocumentReference.class), field, value);
   }
 
   public QueryRestriction createRangeRestriction(String field, String from, String to) {
@@ -214,14 +224,14 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public int rebuildIndex() {
-    return rebuildIndex("");
+    return rebuildIndex(null);
   }
 
-  public int rebuildIndex(String hqlFilter) {
+  public int rebuildIndex(EntityReference entityRef) {
     int ret = REBUILD_NOT_ALLOWED;
     if (webUtilsService.isAdminUser()) {
-      ret = indexService.rebuildIndex(Arrays.asList(webUtilsService.getWikiRef()), hqlFilter) ? 0
-          : REBUILD_ALREADY_IN_PROGRESS;
+      ret = indexService.rebuildIndex(Arrays.asList(context.getWikiRef()), Optional.fromNullable(
+          entityRef)) ? 0 : REBUILD_ALREADY_IN_PROGRESS;
     }
     return ret;
   }

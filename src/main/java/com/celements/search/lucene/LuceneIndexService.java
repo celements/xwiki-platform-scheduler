@@ -9,12 +9,14 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.WikiReference;
 
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
-import com.celements.web.service.IWebUtilsService;
+import com.celements.model.util.ModelUtils;
+import com.google.common.base.Optional;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
@@ -28,7 +30,7 @@ public class LuceneIndexService implements ILuceneIndexService {
   private IModelAccessFacade modelAccess;
 
   @Requirement
-  private IWebUtilsService webUtils;
+  private ModelUtils modelUtils;
 
   @Requirement
   private Execution execution;
@@ -47,7 +49,8 @@ public class LuceneIndexService implements ILuceneIndexService {
   @Override
   public void queueForIndexing(XWikiDocument doc) {
     if (LOGGER.isInfoEnabled()) {
-      LOGGER.info("adding to index queue '{}'", webUtils.serializeRef(doc.getDocumentReference()));
+      LOGGER.info("adding to index queue '{}'", modelUtils.serializeRef(
+          doc.getDocumentReference()));
     }
     getLucenePlugin().queueDocument(doc, getContext());
     getLucenePlugin().queueAttachment(doc, getContext());
@@ -55,25 +58,26 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   @Override
   public boolean rebuildIndexForAllWikis() {
-    return rebuildIndexForAllWikis("");
+    return rebuildIndexForAllWikis(Optional.<EntityReference>absent());
   }
 
   @Override
-  public boolean rebuildIndexForAllWikis(String hqlFilter) {
-    LOGGER.info("rebuildIndexForAllWikis start for hqlFilter '{}'", hqlFilter);
-    return getLucenePlugin().rebuildIndex();
+  public boolean rebuildIndexForAllWikis(Optional<EntityReference> entityRef) {
+    LOGGER.info("rebuildIndexForAllWikis start for entityRef '{}'", entityRef);
+    return getLucenePlugin().rebuildIndex(null, entityRef, false);
 
   }
 
   @Override
   public boolean rebuildIndex(Collection<WikiReference> wikiRefs) {
-    return rebuildIndex(wikiRefs, "");
+    return rebuildIndex(wikiRefs, Optional.<EntityReference>absent());
   }
 
   @Override
-  public boolean rebuildIndex(Collection<WikiReference> wikis, String hqlFilter) {
-    LOGGER.info("rebuildIndex start for wikis '{}', hqlFilter '{}'", wikis, hqlFilter);
-    return getLucenePlugin().rebuildIndex(new ArrayList<>(wikis), hqlFilter, false);
+  public boolean rebuildIndex(Collection<WikiReference> wikis,
+      Optional<EntityReference> entityRef) {
+    LOGGER.info("rebuildIndex start for wikis '{}', entityRef '{}'", wikis, entityRef);
+    return getLucenePlugin().rebuildIndex(new ArrayList<>(wikis), entityRef, false);
   }
 
   @Override
