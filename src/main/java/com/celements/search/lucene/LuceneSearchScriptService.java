@@ -1,6 +1,5 @@
 package com.celements.search.lucene;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.web.service.IWebUtilsService;
-import com.google.common.base.Optional;
+import com.google.common.base.MoreObjects;
 
 @Component(LuceneSearchScriptService.NAME)
 public class LuceneSearchScriptService implements ScriptService {
@@ -230,8 +229,8 @@ public class LuceneSearchScriptService implements ScriptService {
   public int rebuildIndex(EntityReference entityRef) {
     int ret = REBUILD_NOT_ALLOWED;
     if (webUtilsService.isAdminUser()) {
-      ret = indexService.rebuildIndex(Arrays.asList(context.getWikiRef()), Optional.fromNullable(
-          entityRef)) ? 0 : REBUILD_ALREADY_IN_PROGRESS;
+      entityRef = MoreObjects.firstNonNull(entityRef, context.getWikiRef());
+      ret = indexService.rebuildIndex(entityRef) ? 0 : REBUILD_ALREADY_IN_PROGRESS;
     }
     return ret;
   }

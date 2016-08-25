@@ -16,7 +16,6 @@ import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.util.ModelUtils;
-import com.google.common.base.Optional;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
@@ -58,26 +57,20 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   @Override
   public boolean rebuildIndexForAllWikis() {
-    return rebuildIndexForAllWikis(Optional.<EntityReference>absent());
-  }
-
-  @Override
-  public boolean rebuildIndexForAllWikis(Optional<EntityReference> entityRef) {
-    LOGGER.info("rebuildIndexForAllWikis start for entityRef '{}'", entityRef);
-    return getLucenePlugin().rebuildIndex(null, entityRef, false);
-
+    LOGGER.info("rebuildIndexForAllWikis start '{}'");
+    return getLucenePlugin().rebuildIndex();
   }
 
   @Override
   public boolean rebuildIndex(Collection<WikiReference> wikiRefs) {
-    return rebuildIndex(wikiRefs, Optional.<EntityReference>absent());
+    LOGGER.info("rebuildIndex start for wikiRefs '{}'", wikiRefs);
+    return getLucenePlugin().rebuildIndex(new ArrayList<>(wikiRefs), false);
   }
 
   @Override
-  public boolean rebuildIndex(Collection<WikiReference> wikis,
-      Optional<EntityReference> entityRef) {
-    LOGGER.info("rebuildIndex start for wikis '{}', entityRef '{}'", wikis, entityRef);
-    return getLucenePlugin().rebuildIndex(new ArrayList<>(wikis), entityRef, false);
+  public boolean rebuildIndex(EntityReference entityRef) {
+    LOGGER.info("rebuildIndex start for entityRef '{}'", entityRef);
+    return getLucenePlugin().rebuildIndex(entityRef, false);
   }
 
   @Override
