@@ -6,13 +6,18 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
 
-import com.celements.web.service.IWebUtilsService;
+import com.celements.model.util.ModelUtils;
 
 @Component
 public class WebSearchClassConfig implements IWebSearchClassConfig {
 
   @Requirement
-  private IWebUtilsService webUtils;
+  ModelUtils modelUtils;
+
+  @Override
+  public DocumentReference getWebSearchConfigClassRef() {
+    return getWebSearchConfigClassRef(null);
+  }
 
   @Override
   public DocumentReference getWebSearchConfigClassRef(WikiReference wikiRef) {
@@ -20,13 +25,17 @@ public class WebSearchClassConfig implements IWebSearchClassConfig {
   }
 
   @Override
+  public DocumentReference getWebAttachmentSearchConfigClassRef() {
+    return getWebAttachmentSearchConfigClassRef(null);
+  }
+
+  @Override
   public DocumentReference getWebAttachmentSearchConfigClassRef(WikiReference wikiRef) {
-    return new DocumentReference(CLASS_WEB_ATTACHMENT_SEARCH_CONFIG_NAME, getSpaceRef(
-        wikiRef));
+    return new DocumentReference(CLASS_WEB_ATTACHMENT_SEARCH_CONFIG_NAME, getSpaceRef(wikiRef));
   }
 
   private SpaceReference getSpaceRef(WikiReference wikiRef) {
-    return webUtils.resolveSpaceReference(CLASS_SPACE, wikiRef);
+    return modelUtils.resolveRef(CLASS_SPACE, SpaceReference.class, wikiRef);
   }
 
 }
