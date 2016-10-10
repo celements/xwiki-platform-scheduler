@@ -27,21 +27,21 @@ public class LuceneSearchResult {
   private LucenePlugin lucenePlugin;
 
   private final XWikiContext context;
-  
+
   private final String queryString;
   private final List<String> sortFields;
   private final List<String> languages;
   private final boolean skipChecks;
-  
+
   private int offset = 0;
   private int limit = 0;
 
-  LuceneSearchResult(LuceneQuery query, List<String> sortFields, List<String> languages, 
+  LuceneSearchResult(LuceneQuery query, List<String> sortFields, List<String> languages,
       boolean skipChecks, XWikiContext context) {
     this(query.getQueryString(), sortFields, languages, skipChecks, context);
   }
 
-  LuceneSearchResult(String queryString, List<String> sortFields, List<String> languages, 
+  LuceneSearchResult(String queryString, List<String> sortFields, List<String> languages,
       boolean skipChecks, XWikiContext context) {
     this.queryString = queryString;
     this.sortFields = getList(sortFields);
@@ -73,7 +73,7 @@ public class LuceneSearchResult {
   public List<String> getLanguages() {
     return languages;
   }
-  
+
   String getLanguageString() {
     return StringUtils.join(languages, ",");
   }
@@ -100,13 +100,12 @@ public class LuceneSearchResult {
     return this;
   }
 
-  public List<EntityReference> getResults(int offset, int limit
-      ) throws LuceneSearchException {
+  public List<EntityReference> getResults(int offset, int limit) throws LuceneSearchException {
     return this.setOffset(offset).setLimit(limit).getResults();
   }
 
   public List<EntityReference> getResults() throws LuceneSearchException {
-    List<EntityReference> ret = new ArrayList<EntityReference>();
+    List<EntityReference> ret = new ArrayList<>();
     for (SearchResult result : getSearchResultList()) {
       ret.add(result.getReference());
     }
@@ -114,8 +113,8 @@ public class LuceneSearchResult {
     return ret;
   }
 
-  public Map<EntityReference, Float> getResultsScoreMap(int offset, int limit
-      ) throws LuceneSearchException {
+  public Map<EntityReference, Float> getResultsScoreMap(int offset, int limit)
+      throws LuceneSearchException {
     return this.setOffset(offset).setLimit(limit).getResultsScoreMap();
   }
 
@@ -150,11 +149,11 @@ public class LuceneSearchResult {
     try {
       if (searchResultsCache == null) {
         if (skipChecks) {
-          searchResultsCache = getLucenePlugin().getSearchResultsWithoutChecks(
-              queryString, getSortFieldsArray(), null, getLanguageString(), context);
-        } else {
-          searchResultsCache = getLucenePlugin().getSearchResults(queryString, 
+          searchResultsCache = getLucenePlugin().getSearchResultsWithoutChecks(queryString,
               getSortFieldsArray(), null, getLanguageString(), context);
+        } else {
+          searchResultsCache = getLucenePlugin().getSearchResults(queryString, getSortFieldsArray(),
+              null, getLanguageString(), context);
         }
         LOGGER.trace("luceneSearch: new searchResults for: " + this);
       } else {
@@ -169,15 +168,15 @@ public class LuceneSearchResult {
   }
 
   private LuceneSearchException newLuceneSearchException(Throwable cause) {
-    return new LuceneSearchException("Error while executing lucene search query:" 
-        + queryString, cause);
+    return new LuceneSearchException("Error while executing lucene search query:" + queryString,
+        cause);
   }
 
   @Override
   public String toString() {
     return "LuceneSearchResult [queryString=" + queryString + ", sortFields=" + sortFields
-        + ", languages=" + languages + ", skipChecks=" + skipChecks + ", offset="
-        + offset + ", limit=" + limit + "]";
+        + ", languages=" + languages + ", skipChecks=" + skipChecks + ", offset=" + offset
+        + ", limit=" + limit + "]";
   }
 
   private LucenePlugin getLucenePlugin() {
@@ -190,7 +189,7 @@ public class LuceneSearchResult {
   void injectLucenePlugin(LucenePlugin lucenePlugin) {
     this.lucenePlugin = lucenePlugin;
   }
-  
+
   void injectSearchResultsCache(SearchResults searchResults) {
     this.searchResultsCache = searchResults;
   }

@@ -23,7 +23,7 @@ public class LuceneQuery extends QueryRestrictionGroup {
 
   public LuceneQuery(List<String> docTypes) {
     super(Type.AND);
-    this.docTypes = Collections.unmodifiableList(new ArrayList<String>(docTypes));
+    this.docTypes = Collections.unmodifiableList(new ArrayList<>(docTypes));
     wikis = Arrays.asList(Utils.getComponent(IWebUtilsService.class).getWikiRef());
   }
 
@@ -74,7 +74,7 @@ public class LuceneQuery extends QueryRestrictionGroup {
     if ((wikiRefs == null) || wikiRefs.isEmpty()) {
       wikis = Collections.emptyList();
     } else {
-      wikis = Collections.unmodifiableList(new ArrayList<WikiReference>(wikiRefs));
+      wikis = Collections.unmodifiableList(new ArrayList<>(wikiRefs));
     }
   }
 
@@ -88,7 +88,7 @@ public class LuceneQuery extends QueryRestrictionGroup {
 
   @Override
   public LuceneQuery copy() {
-    LuceneQuery copy  = new LuceneQuery(docTypes);
+    LuceneQuery copy = new LuceneQuery(docTypes);
     copy.wikis = wikis;
     copy.addAll(super.copy());
     return copy;
@@ -96,7 +96,6 @@ public class LuceneQuery extends QueryRestrictionGroup {
 
   /**
    * @deprecated use {@link #add} directly
-   * 
    * @param restriction
    * @return
    */
@@ -110,7 +109,6 @@ public class LuceneQuery extends QueryRestrictionGroup {
 
   /**
    * @deprecated use {@link addAll} directly
-   * 
    * @param restriction
    * @return
    */
@@ -124,7 +122,6 @@ public class LuceneQuery extends QueryRestrictionGroup {
 
   /**
    * @deprecated use {@link QueryRestrictionGroup}
-   * 
    * @param restriction
    * @return
    */
@@ -157,21 +154,19 @@ public class LuceneQuery extends QueryRestrictionGroup {
   }
 
   private IQueryRestriction getWikiRestr(WikiReference wikiRef) {
-    return new QueryRestriction(IndexFields.DOCUMENT_WIKI, "\"" + wikiRef.getName() 
-        + "\"");
+    return new QueryRestriction(IndexFields.DOCUMENT_WIKI, "\"" + wikiRef.getName() + "\"");
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(super.hashCode()).append(docTypes).append(wikis
-        ).hashCode();
+    return new HashCodeBuilder().append(super.hashCode()).append(docTypes).append(wikis).hashCode();
   }
 
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof LuceneQuery) {
       LuceneQuery other = (LuceneQuery) obj;
-      return super.equals(obj) && ObjectUtils.equals(docTypes, other.docTypes) 
+      return super.equals(obj) && ObjectUtils.equals(docTypes, other.docTypes)
           && ObjectUtils.equals(wikis, other.wikis);
     } else {
       return false;

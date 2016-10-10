@@ -11,9 +11,9 @@ import com.celements.search.lucene.query.QueryRestriction;
 import com.xpn.xwiki.web.Utils;
 
 public class LuceneSearchScriptServiceTest extends AbstractBridgedComponentTestCase {
-  
+
   private LuceneSearchScriptService scriptService;
-  
+
   @Before
   public void setUp_LuceneSearchServiceTest() throws Exception {
     scriptService = (LuceneSearchScriptService) Utils.getComponent(ScriptService.class,

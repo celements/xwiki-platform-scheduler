@@ -27,6 +27,7 @@ public class WebSearchClasses extends AbstractClassCollection {
     return LOGGER;
   }
 
+  @Override
   public String getConfigName() {
     return "webSearch";
   }
@@ -46,7 +47,7 @@ public class WebSearchClasses extends AbstractClassCollection {
         IWebSearchClassConfig.PROPERTY_PACKAGES, 30);
     needsUpdate |= bclass.addBooleanField(IWebSearchClassConfig.PROPERTY_LINKED_DOCS_ONLY,
         IWebSearchClassConfig.PROPERTY_LINKED_DOCS_ONLY, "yesno");
-    needsUpdate |= bclass.addNumberField(IWebSearchClassConfig.PROPERTY_FUZZY_SEARCH, 
+    needsUpdate |= bclass.addNumberField(IWebSearchClassConfig.PROPERTY_FUZZY_SEARCH,
         IWebSearchClassConfig.PROPERTY_FUZZY_SEARCH, 15, "float");
     needsUpdate |= bclass.addTextField(IWebSearchClassConfig.PROPERTY_DOCS,
         IWebSearchClassConfig.PROPERTY_DOCS, 30);
@@ -62,8 +63,7 @@ public class WebSearchClasses extends AbstractClassCollection {
         IWebSearchClassConfig.PROPERTY_PAGETYPES_BLACK_LIST, 30);
     needsUpdate |= bclass.addTextField(IWebSearchClassConfig.PROPERTY_SORT_FIELDS,
         IWebSearchClassConfig.PROPERTY_SORT_FIELDS, 30);
-    needsUpdate |= bclass.addTextField(
-        IWebSearchClassConfig.PROPERTY_RESULT_ITEM_RENDER_SCRIPT,
+    needsUpdate |= bclass.addTextField(IWebSearchClassConfig.PROPERTY_RESULT_ITEM_RENDER_SCRIPT,
         IWebSearchClassConfig.PROPERTY_RESULT_ITEM_RENDER_SCRIPT, 30);
     setContentAndSaveClassDocument(classDoc, needsUpdate);
     return bclass;

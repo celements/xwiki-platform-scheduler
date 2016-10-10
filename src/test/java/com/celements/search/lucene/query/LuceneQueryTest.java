@@ -17,12 +17,12 @@ import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
 
   private LuceneQuery query;
-  
+
   @Before
   public void setUp_LuceneQueryTest() throws Exception {
     query = new LuceneQuery(Collections.<String>emptyList());
   }
-  
+
   @Test
   public void testGetType() {
     assertEquals(Type.AND, query.getType());
@@ -31,7 +31,7 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
   @Test
   public void testGetDocTypes() {
     assertEquals(Collections.emptyList(), query.getDocTypes());
-    List<String> docTypes = new ArrayList<String>();
+    List<String> docTypes = new ArrayList<>();
     docTypes.add("typeX");
     query = new LuceneQuery(docTypes);
     assertEquals(docTypes, query.getDocTypes());
@@ -58,7 +58,7 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testGetWikis_set() {
-    List<WikiReference> wikis = new ArrayList<WikiReference>();
+    List<WikiReference> wikis = new ArrayList<>();
     wikis.add(new WikiReference("wikiX"));
     query.setWikis(wikis);
     assertEquals(wikis, query.getWikis());
@@ -105,13 +105,12 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testGetQueryString_multiDBs() {
-    query.setWikis(Arrays.asList(new WikiReference("theWiki1"), new WikiReference(
-        "theWiki2")));
+    query.setWikis(Arrays.asList(new WikiReference("theWiki1"), new WikiReference("theWiki2")));
     String queryString = "(wiki:(+\"theWiki1\") OR wiki:(+\"theWiki2\"))";
     assertEquals(queryString, query.getQueryString());
     assertEquals("queryString must stay the same", queryString, query.getQueryString());
   }
-  
+
   @Test
   public void testGetQueryString_emptyRestriction() {
     query.add(new QueryRestriction("object", ""));
@@ -155,14 +154,14 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
     LuceneQuery queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
     assertNotSame(query, queryCopy);
     assertTrue(query.equals(queryCopy));
-    
+
     queryCopy = getNewFilledQuery(Arrays.asList("typeY"));
     assertFalse(query.equals(queryCopy));
-    
+
     queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
     queryCopy.setWiki(new WikiReference("asdf"));
     assertFalse(query.equals(queryCopy));
-    
+
     queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
     queryCopy.add(new QueryRestriction("field6", "value6"));
     assertFalse(query.equals(queryCopy));
@@ -174,19 +173,19 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
     LuceneQuery queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
     assertNotSame(query, queryCopy);
     assertTrue(query.hashCode() == queryCopy.hashCode());
-    
+
     queryCopy = getNewFilledQuery(Arrays.asList("typeY"));
     assertFalse(query.hashCode() == queryCopy.hashCode());
-    
+
     queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
     queryCopy.setWiki(new WikiReference("asdf"));
     assertFalse(query.hashCode() == queryCopy.hashCode());
-    
+
     queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
     queryCopy.add(new QueryRestriction("field6", "value6"));
     assertFalse(query.hashCode() == queryCopy.hashCode());
   }
-  
+
   private LuceneQuery getNewFilledQuery(List<String> docTypes) {
     LuceneQuery query = new LuceneQuery(docTypes);
     QueryRestrictionGroup restrGrpUser = new QueryRestrictionGroup(Type.OR);

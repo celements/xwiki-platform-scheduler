@@ -26,12 +26,12 @@ import com.xpn.xwiki.plugin.lucene.SearchResult;
 import com.xpn.xwiki.plugin.lucene.SearchResults;
 
 public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
-  
+
   private XWikiContext context;
   private LucenePlugin lucenePluginMock;
-  
+
   private LuceneSearchResult result;
-  
+
   @Before
   public void setUp_LuceneSearchResultTest() throws Exception {
     context = getContext();
@@ -39,7 +39,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     newResult(new LuceneQuery(Arrays.asList("docType")), null, null, false);
     result.injectLucenePlugin(lucenePluginMock);
   }
-  
+
   @Test
   public void testGetters() {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -52,21 +52,21 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     assertEquals(languages, result.getLanguages());
     assertEquals(skipChecks, result.isSkipChecks());
   }
-  
+
   @Test
   public void testGetSetOffset() {
     assertEquals(0, result.getOffset());
     result.setOffset(6);
     assertEquals(6, result.getOffset());
   }
-  
+
   @Test
   public void testGetSetLimit() {
     assertEquals(0, result.getLimit());
     result.setLimit(6);
     assertEquals(6, result.getLimit());
   }
-  
+
   @Test
   public void testGetResults() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -76,8 +76,8 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     result.injectSearchResultsCache(sResultsMock);
     result.setOffset(6);
     result.setLimit(10);
-    
-    List<SearchResult> list = new ArrayList<SearchResult>();
+
+    List<SearchResult> list = new ArrayList<>();
     list.add(createMockAndAddToDefault(SearchResult.class));
     list.add(createMockAndAddToDefault(SearchResult.class));
     expect(sResultsMock.getResults(eq(7), eq(10))).andReturn(list).once();
@@ -85,14 +85,14 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     expect(list.get(0).getReference()).andReturn(docRef).once();
     AttachmentReference attRef = new AttachmentReference("file", docRef);
     expect(list.get(1).getReference()).andReturn(attRef).once();
-    
+
     replayDefault();
     List<EntityReference> ret = result.getResults();
     verifyDefault();
 
     assertEquals(Arrays.asList(docRef, attRef), ret);
   }
-  
+
   @Test
   public void testGetResults_empty() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -105,7 +105,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     expect(sResultsMock.getTotalHitcount()).andReturn(totalCount).once();
     expect(sResultsMock.getResults(eq(1), eq(totalCount))).andReturn(
         Collections.<SearchResult>emptyList()).once();
-    
+
     replayDefault();
     List<EntityReference> ret = result.getResults();
     verifyDefault();
@@ -113,7 +113,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     assertNotNull(ret);
     assertEquals(0, ret.size());
   }
-  
+
   @Test
   public void testGetResults_negativeOffsetLimit() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -125,19 +125,19 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     result.setLimit(-10);
 
     expect(sResultsMock.getHitcount()).andReturn(1234);
-    List<SearchResult> list = new ArrayList<SearchResult>();
+    List<SearchResult> list = new ArrayList<>();
     list.add(createMockAndAddToDefault(SearchResult.class));
     expect(sResultsMock.getResults(eq(1), eq(1234))).andReturn(list).once();
     DocumentReference docRef = new DocumentReference("db", "space", "doc");
     expect(list.get(0).getReference()).andReturn(docRef).once();
-    
+
     replayDefault();
     List<EntityReference> ret = result.getResults();
     verifyDefault();
 
     assertEquals(Arrays.asList(docRef), ret);
   }
-  
+
   @Test
   public void testGetResultsScoreMap() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -147,8 +147,8 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     result.injectSearchResultsCache(sResultsMock);
     result.setOffset(6);
     result.setLimit(10);
-    
-    List<SearchResult> list = new ArrayList<SearchResult>();
+
+    List<SearchResult> list = new ArrayList<>();
     list.add(createMockAndAddToDefault(SearchResult.class));
     list.add(createMockAndAddToDefault(SearchResult.class));
     expect(sResultsMock.getResults(eq(7), eq(10))).andReturn(list).once();
@@ -160,7 +160,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     expect(list.get(1).getReference()).andReturn(attRef).once();
     Float attScore = 0.5f;
     expect(list.get(1).getScore()).andReturn(attScore).once();
-    
+
     replayDefault();
     Map<EntityReference, Float> ret = result.getResultsScoreMap();
     verifyDefault();
@@ -171,7 +171,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     assertTrue(ret.containsKey(attRef));
     assertEquals(attScore, ret.get(attRef));
   }
-  
+
   @Test
   public void testGetResultsScoreMap_empty() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -184,7 +184,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     expect(sResultsMock.getTotalHitcount()).andReturn(totalCount).once();
     expect(sResultsMock.getResults(eq(1), eq(totalCount))).andReturn(
         Collections.<SearchResult>emptyList()).once();
-    
+
     replayDefault();
     Map<EntityReference, Float> ret = result.getResultsScoreMap();
     verifyDefault();
@@ -192,7 +192,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     assertNotNull(ret);
     assertEquals(0, ret.size());
   }
-  
+
   @Test
   public void testGetSize() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -200,16 +200,16 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
     result.injectSearchResultsCache(sResultsMock);
-    
+
     expect(sResultsMock.getHitcount()).andReturn(1234);
-    
+
     replayDefault();
     int ret = result.getSize();
     verifyDefault();
 
     assertEquals(1234, ret);
   }
-  
+
   @Test
   public void testGetSize_skipChecks() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -217,16 +217,16 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
     result.injectSearchResultsCache(sResultsMock);
-    
+
     expect(sResultsMock.getTotalHitcount()).andReturn(1234);
-    
+
     replayDefault();
     int ret = result.getSize();
     verifyDefault();
 
     assertEquals(1234, ret);
   }
-  
+
   @Test
   public void testLuceneSearch_alreadySet() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -234,14 +234,14 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     newResult(query, null, null, skipChecks);
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
     result.injectSearchResultsCache(sResultsMock);
-    
+
     replayDefault();
     SearchResults ret = result.luceneSearch();
     verifyDefault();
 
     assertSame(sResultsMock, ret);
   }
-  
+
   @Test
   public void testLuceneSearch_withChecks() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
@@ -249,13 +249,12 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     List<String> languages = Arrays.asList("lang1", "lang2");
     boolean skipChecks = false;
     newResult(query, sortFields, languages, skipChecks);
-    Capture<String[]> sortFieldsCapture = new Capture<String[]>();
+    Capture<String[]> sortFieldsCapture = new Capture<>();
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
-    
-    expect(lucenePluginMock.getSearchResults(eq(query.getQueryString()), capture(
-        sortFieldsCapture), isNull(String.class), eq("lang1,lang2"), same(context))
-        ).andReturn(sResultsMock).once();
-    
+
+    expect(lucenePluginMock.getSearchResults(eq(query.getQueryString()), capture(sortFieldsCapture),
+        isNull(String.class), eq("lang1,lang2"), same(context))).andReturn(sResultsMock).once();
+
     replayDefault();
     SearchResults ret = result.luceneSearch();
     verifyDefault();
@@ -263,19 +262,19 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     assertEquals(sortFields, Arrays.asList(sortFieldsCapture.getValue()));
     assertSame(sResultsMock, ret);
   }
-  
+
   @Test
   public void testLuceneSearch_withoutChecks() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     boolean skipChecks = true;
     newResult(query, null, null, skipChecks);
-    Capture<String[]> sortFieldsCapture = new Capture<String[]>();
+    Capture<String[]> sortFieldsCapture = new Capture<>();
     SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
-    
-    expect(lucenePluginMock.getSearchResultsWithoutChecks(eq(query.getQueryString()), 
-        capture(sortFieldsCapture), isNull(String.class), eq(""), same(context))
-        ).andReturn(sResultsMock).once();
-    
+
+    expect(lucenePluginMock.getSearchResultsWithoutChecks(eq(query.getQueryString()), capture(
+        sortFieldsCapture), isNull(String.class), eq(""), same(context))).andReturn(
+            sResultsMock).once();
+
     replayDefault();
     SearchResults ret = result.luceneSearch();
     verifyDefault();
@@ -283,17 +282,16 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     assertEquals(Collections.emptyList(), Arrays.asList(sortFieldsCapture.getValue()));
     assertSame(sResultsMock, ret);
   }
-  
+
   @Test
   public void testLuceneSearch_IOException() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     boolean skipChecks = false;
     newResult(query, null, null, skipChecks);
-    
-    expect(lucenePluginMock.getSearchResults(eq(query.getQueryString()), anyObject(
-        String[].class), isNull(String.class), eq(""), same(context))).andThrow(
-        new IOException()).once();
-    
+
+    expect(lucenePluginMock.getSearchResults(eq(query.getQueryString()), anyObject(String[].class),
+        isNull(String.class), eq(""), same(context))).andThrow(new IOException()).once();
+
     replayDefault();
     try {
       result.luceneSearch();
@@ -303,17 +301,16 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     }
     verifyDefault();
   }
-  
+
   @Test
   public void testLuceneSearch_ParseException() throws Exception {
     LuceneQuery query = new LuceneQuery(Arrays.asList("docType"));
     boolean skipChecks = false;
     newResult(query, null, null, skipChecks);
-    
-    expect(lucenePluginMock.getSearchResults(eq(query.getQueryString()), anyObject(
-        String[].class), isNull(String.class), eq(""), same(context))).andThrow(
-        new ParseException()).once();
-    
+
+    expect(lucenePluginMock.getSearchResults(eq(query.getQueryString()), anyObject(String[].class),
+        isNull(String.class), eq(""), same(context))).andThrow(new ParseException()).once();
+
     replayDefault();
     try {
       result.luceneSearch();
@@ -323,8 +320,8 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
     }
     verifyDefault();
   }
-  
-  private LuceneSearchResult newResult(LuceneQuery query, List<String> sortFields, 
+
+  private LuceneSearchResult newResult(LuceneQuery query, List<String> sortFields,
       List<String> languages, boolean skipChecks) {
     result = new LuceneSearchResult(query, sortFields, languages, skipChecks, context);
     result.injectLucenePlugin(lucenePluginMock);
