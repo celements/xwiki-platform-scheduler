@@ -21,8 +21,7 @@ public class WebSearchClassConfig implements IWebSearchClassConfig {
 
   @Override
   public DocumentReference getWebAttachmentSearchConfigClassRef(WikiReference wikiRef) {
-    return new DocumentReference(CLASS_WEB_ATTACHMENT_SEARCH_CONFIG_NAME, getSpaceRef(
-        wikiRef));
+    return new DocumentReference(CLASS_WEB_ATTACHMENT_SEARCH_CONFIG_NAME, getSpaceRef(wikiRef));
   }
 
   private SpaceReference getSpaceRef(WikiReference wikiRef) {

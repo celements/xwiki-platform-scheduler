@@ -42,22 +42,21 @@ public class QueryRestrictionString implements IQueryRestriction {
 
   @Override
   public QueryRestrictionString copy() {
-    QueryRestrictionString copy  = new QueryRestrictionString(queryString);
+    QueryRestrictionString copy = new QueryRestrictionString(queryString);
     copy.setNegate(negate);
     return copy;
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(super.hashCode()).append(this.getQueryString()
-        ).hashCode();
+    return new HashCodeBuilder().append(super.hashCode()).append(this.getQueryString()).hashCode();
   }
 
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof QueryRestrictionString) {
       QueryRestrictionString other = (QueryRestrictionString) obj;
-      return super.equals(obj) && new EqualsBuilder().append(this.getQueryString(), 
+      return super.equals(obj) && new EqualsBuilder().append(this.getQueryString(),
           other.getQueryString()).isEquals();
     } else {
       return false;

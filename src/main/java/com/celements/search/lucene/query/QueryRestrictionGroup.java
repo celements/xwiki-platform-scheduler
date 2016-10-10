@@ -6,7 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implements IQueryRestriction {
+public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implements
+    IQueryRestriction {
 
   private static final long serialVersionUID = 20140913164350L;
 
@@ -102,7 +103,7 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
 
   @Override
   public QueryRestrictionGroup copy() {
-    QueryRestrictionGroup copy  = new QueryRestrictionGroup(this.getType());
+    QueryRestrictionGroup copy = new QueryRestrictionGroup(this.getType());
     for (IQueryRestriction restr : this) {
       copy.add(restr.copy());
     }
@@ -117,15 +118,15 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(super.hashCode()).append(this.getType()
-        ).append(this.getNegate()).hashCode();
+    return new HashCodeBuilder().append(super.hashCode()).append(this.getType()).append(
+        this.getNegate()).hashCode();
   }
 
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof QueryRestrictionGroup) {
       QueryRestrictionGroup other = (QueryRestrictionGroup) obj;
-      return super.equals(obj) && new EqualsBuilder().append(this.getType(), 
+      return super.equals(obj) && new EqualsBuilder().append(this.getType(),
           other.getType()).append(this.getNegate(), other.getNegate()).isEquals();
     } else {
       return false;

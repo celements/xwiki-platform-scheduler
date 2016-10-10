@@ -68,6 +68,7 @@ public class QueryRestriction implements IQueryRestriction {
   /**
    * Uses required/AND for multiple keywords when true, e.g. (+keyword1 +keyword2),
    * else (keyword1 keyword2)
+   *
    * @param tokenizeQuery
    * @return
    */
@@ -78,13 +79,15 @@ public class QueryRestriction implements IQueryRestriction {
 
   /**
    * Use fuzzy search to find similar words.
-   * @param fuzzy Allowed distance from 0 to 1 where the closer to 1 the parameter is,
-   *              the higher similarity the match needs to have.
+   *
+   * @param fuzzy
+   *          Allowed distance from 0 to 1 where the closer to 1 the parameter is,
+   *          the higher similarity the match needs to have.
    */
   public QueryRestriction setFuzzy(String fuzzy) {
     try {
       setFuzzy(Float.parseFloat(fuzzy));
-    } catch(NumberFormatException nfe) {
+    } catch (NumberFormatException nfe) {
       LOGGER.error("Exception parsing float of '" + fuzzy + "'.", nfe);
     }
     return this;
@@ -96,18 +99,20 @@ public class QueryRestriction implements IQueryRestriction {
   }
 
   public QueryRestriction setFuzzy() {
-    fuzzy = -1f; //use Lucene's default (which is 0.5)
+    fuzzy = -1f; // use Lucene's default (which is 0.5)
     return this;
   }
 
   /**
    * The term's words have to be in the given proximity e.g. at most 8 words apart.
-   * @param proximity How many words apart can the words be.
+   *
+   * @param proximity
+   *          How many words apart can the words be.
    */
   public QueryRestriction setProximity(String proximity) {
     try {
       setProximity(Integer.parseInt(proximity));
-    } catch(NumberFormatException nfe) {
+    } catch (NumberFormatException nfe) {
       LOGGER.error("Exception parsing float of '" + fuzzy + "'.", nfe);
     }
     return this;
@@ -121,13 +126,15 @@ public class QueryRestriction implements IQueryRestriction {
   /**
    * A boost factor for the term. The higher the boost factor, the more relevant the term.
    * The boost factor has to be positive, can be < 1 though. The default is 1.
-   * @param boost The factor to boost the term.
+   *
+   * @param boost
+   *          The factor to boost the term.
    * @return
    */
   public QueryRestriction setBoost(String boost) {
     try {
       setBoost(Float.parseFloat(boost));
-    } catch(NumberFormatException nfe) {
+    } catch (NumberFormatException nfe) {
       LOGGER.error("Exception parsing float of '" + fuzzy + "'.", nfe);
     }
     return this;
@@ -137,10 +144,9 @@ public class QueryRestriction implements IQueryRestriction {
     this.boost = boost;
     return this;
   }
-  
+
   /**
    * @deprecated instead use {@link #getQueryString()}
-   * 
    * @return
    */
   @Deprecated
@@ -157,16 +163,14 @@ public class QueryRestriction implements IQueryRestriction {
         Matcher m = getQueryTokenMatcher();
         while (m.find()) {
           String token = m.group(0).trim();
-          if(!token.matches("[\"+-]")) {
+          if (!token.matches("[\"+-]")) {
             token = QueryParser.escape(token);
-            token = token.replaceAll("^(\\\\([+-]))?(\\\\(\"))?(.*?)(\\\\(\"))?$",
-                "$2$4$5$7");
+            token = token.replaceAll("^(\\\\([+-]))?(\\\\(\"))?(.*?)(\\\\(\"))?$", "$2$4$5$7");
             token = token.replaceAll("^(.+)\\\\([\\?\\*].*)$", "$1$2");
-            if(!token.matches("^[+-].*")) {
+            if (!token.matches("^[+-].*")) {
               token = "+" + token;
             }
-            if(!token.matches("^.*[\\*\\\"]$")
-                && ((proximity == null) || (proximity <= 1))) {
+            if (!token.matches("^.*[\\*\\\"]$") && ((proximity == null) || (proximity <= 1))) {
               token += "*";
             }
             tokenizedQuery.append(" " + token);
@@ -207,17 +211,17 @@ public class QueryRestriction implements IQueryRestriction {
 
   String makeRestrictionFuzzy(String queryString, DecimalFormat formater) {
     String finalQuery = queryString;
-    if(fuzzy != null) {
+    if (fuzzy != null) {
       String fuzzyStr = "~";
-      if((fuzzy >= 0) && (fuzzy <= 1)) {
+      if ((fuzzy >= 0) && (fuzzy <= 1)) {
         fuzzyStr += formater.format(fuzzy);
       }
       finalQuery = "";
-      for(String term : queryString.split(" ")) {
+      for (String term : queryString.split(" ")) {
         String termString = term + fuzzyStr;
-        if(term.endsWith("*")) {
-          termString = "(" + term.replaceAll("\\+?(.*)", "$1") + " OR " 
-              + term.replaceAll("\\+?(.*)\\*$", "$1" + fuzzyStr) + ")";
+        if (term.endsWith("*")) {
+          termString = "(" + term.replaceAll("\\+?(.*)", "$1") + " OR " + term.replaceAll(
+              "\\+?(.*)\\*$", "$1" + fuzzyStr) + ")";
         }
         finalQuery += termString + " AND ";
       }
@@ -251,18 +255,18 @@ public class QueryRestriction implements IQueryRestriction {
   public boolean equals(Object obj) {
     if (obj instanceof QueryRestriction) {
       QueryRestriction other = (QueryRestriction) obj;
-      return new EqualsBuilder().append(boost, other.boost).append(fuzzy, other.fuzzy
-          ).append(negate, other.negate).append(proximity, other.proximity).append(query, 
-              other.query).append(specifier, other.specifier).append(tokenizeQuery, 
+      return new EqualsBuilder().append(boost, other.boost).append(fuzzy, other.fuzzy).append(
+          negate, other.negate).append(proximity, other.proximity).append(query,
+              other.query).append(specifier, other.specifier).append(tokenizeQuery,
                   other.tokenizeQuery).isEquals();
     } else {
       return false;
     }
   }
-  
+
   @Override
   public String toString() {
     return "QueryRestriction [queryString=" + getQueryString() + "]";
   }
-  
+
 }

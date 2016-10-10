@@ -7,7 +7,7 @@ import org.junit.Test;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 
 public class QueryRestrictionGroupTest {
-  
+
   @Test
   public void testGetType() {
     assertSame(Type.AND, (new QueryRestrictionGroup(Type.AND)).getType());
@@ -73,7 +73,7 @@ public class QueryRestrictionGroupTest {
     assertEquals("(field1:(+value1*) OR field2:(+value2.1* +value2.2*) "
         + "OR field3:(+value3.1* -value3.2*))", restrGrp.getQueryString());
   }
-  
+
   @Test
   public void testGetQueryString_groups_and() {
     QueryRestrictionGroup restrGrp = getNewFilledRestrGrp(Type.AND);
@@ -87,7 +87,7 @@ public class QueryRestrictionGroupTest {
     assertEquals("((field1:(+value1*) AND field2:(+value2*)) OR (field3:(+value3*) "
         + "AND field4:(+value4*)) OR field5:(+value5*))", restrGrp.getQueryString());
   }
-  
+
   @Test
   public void testGetQueryString_not() {
     QueryRestrictionGroup restrGrp = getNewFilledRestrGrp(Type.AND);
@@ -96,7 +96,7 @@ public class QueryRestrictionGroupTest {
     assertEquals("NOT ((field1:(+value1*) OR field2:(+value2*)) AND NOT (field3:(+value3*) "
         + "OR field4:(+value4*)) AND field5:(+value5*))", restrGrp.getQueryString());
   }
-  
+
   @Test
   public void testGetQueryString_not_single() {
     QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
@@ -104,25 +104,23 @@ public class QueryRestrictionGroupTest {
     restrGrp.setNegate(true);
     assertEquals("NOT field:(+value*)", restrGrp.getQueryString());
   }
-  
+
   @Test
   public void testGetQueryString_onlyNegated_and() {
     QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.AND);
     restrGrp.add(new QueryRestriction("field1", "value1").setNegate(true));
     restrGrp.add(new QueryRestriction("field2", "value2").setNegate(true));
-    assertEquals("NOT (field1:(+value1*) OR field2:(+value2*))", 
-        restrGrp.getQueryString());
+    assertEquals("NOT (field1:(+value1*) OR field2:(+value2*))", restrGrp.getQueryString());
   }
-  
+
   @Test
   public void testGetQueryString_onlyNegated_or() {
     QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.OR);
     restrGrp.add(new QueryRestriction("field1", "value1").setNegate(true));
     restrGrp.add(new QueryRestriction("field2", "value2").setNegate(true));
-    assertEquals("NOT (field1:(+value1*) AND field2:(+value2*))", 
-        restrGrp.getQueryString());
+    assertEquals("NOT (field1:(+value1*) AND field2:(+value2*))", restrGrp.getQueryString());
   }
-  
+
   @Test
   public void testGetQueryString_onlyNegated_alreadyNot() {
     QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(Type.OR);
@@ -192,7 +190,7 @@ public class QueryRestrictionGroupTest {
     QueryRestrictionGroup restrGrp2 = new QueryRestrictionGroup(Type.OR);
     assertFalse(restrGrp1.equals(restrGrp2));
   }
-  
+
   private QueryRestrictionGroup getNewFilledRestrGrp(Type type) {
     Type otherType = type == Type.AND ? Type.OR : Type.AND;
     QueryRestrictionGroup restrGrp = new QueryRestrictionGroup(type);

@@ -335,7 +335,7 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   private List<String> exactify(List<String> strs) {
-    List<String> ret = new ArrayList<String>();
+    List<String> ret = new ArrayList<>();
     if (strs != null) {
       for (String str : strs) {
         ret.add(exactify(str));
