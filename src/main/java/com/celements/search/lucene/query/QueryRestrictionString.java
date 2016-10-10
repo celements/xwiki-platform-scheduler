@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.python.google.common.base.Strings;
 
+import com.google.common.base.Optional;
+
 public class QueryRestrictionString implements IQueryRestriction {
 
   private boolean negate = false;
@@ -25,6 +27,16 @@ public class QueryRestrictionString implements IQueryRestriction {
     return this;
   }
 
+  @Override
+  public Optional<Float> getFuzzy() {
+    return Optional.of(1f);
+  }
+
+  @Override
+  public IQueryRestriction setFuzzy(Float fuzzy) {
+    throw new UnsupportedOperationException();
+  }
+
   public QueryRestrictionString setQueryString(String queryString) {
     this.queryString = queryString;
     return this;
@@ -42,22 +54,21 @@ public class QueryRestrictionString implements IQueryRestriction {
 
   @Override
   public QueryRestrictionString copy() {
-    QueryRestrictionString copy  = new QueryRestrictionString(queryString);
+    QueryRestrictionString copy = new QueryRestrictionString(queryString);
     copy.setNegate(negate);
     return copy;
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(super.hashCode()).append(this.getQueryString()
-        ).hashCode();
+    return new HashCodeBuilder().append(super.hashCode()).append(this.getQueryString()).hashCode();
   }
 
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof QueryRestrictionString) {
       QueryRestrictionString other = (QueryRestrictionString) obj;
-      return super.equals(obj) && new EqualsBuilder().append(this.getQueryString(), 
+      return super.equals(obj) && new EqualsBuilder().append(this.getQueryString(),
           other.getQueryString()).isEquals();
     } else {
       return false;
