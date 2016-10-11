@@ -3,12 +3,14 @@ package com.celements.search.web.module;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.navigation.INavigationClassConfig;
 import com.celements.search.lucene.ILuceneSearchService;
 import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
+import com.google.common.base.Optional;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 
@@ -17,7 +19,7 @@ public class MenuWebSearchModule implements WebSearchModule {
 
   public static final String NAME = "menu";
 
-  public static final String CFGSRC_PROP_BOOST = "celements.search.web.menu.boost";
+  public static final String CFGSRC_PROP_BOOST = "celements.search.web." + NAME + ".boost";
 
   @Requirement
   private ILuceneSearchService searchService;
@@ -52,6 +54,11 @@ public class MenuWebSearchModule implements WebSearchModule {
     grp.add(searchService.createRestriction(IndexFields.DOCUMENT_TITLE, searchTerm).setBoost(
         boost));
     return grp;
+  }
+
+  @Override
+  public Optional<DocumentReference> getLinkedClassRef() {
+    return Optional.of(classConf.getMenuItemClassRef());
   }
 
 }

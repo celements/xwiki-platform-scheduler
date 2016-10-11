@@ -1,5 +1,6 @@
 package com.celements.search.web;
 
+import static com.celements.search.lucene.LuceneSearchUtil.*;
 import static com.celements.search.web.classes.IWebSearchClassConfig.*;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.web.classes.IWebSearchClassConfig;
 import com.celements.search.web.module.WebSearchModule;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -62,7 +64,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   private XWikiDocument configDoc;
   private String searchTerm = "";
-  private List<WebSearchModule> modules = new ArrayList<>();
+  private List<WebSearchModule> activatedModules = new ArrayList<>();
 
   @Override
   public DocumentReference getConfigDocRef() {
@@ -79,6 +81,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
       throws DocumentNotExistsException {
     Preconditions.checkState(configDoc == null, "config doc already defined");
     configDoc = modelAccess.getDocument(docRef);
+    Preconditions.checkState(getConfigObj() != null, "invalid config doc");
     return this;
   }
 
@@ -95,7 +98,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   @Override
   public Collection<WebSearchModule> getModules() {
-    Set<WebSearchModule> ret = new LinkedHashSet<>(modules);
+    Set<WebSearchModule> ret = new LinkedHashSet<>(activatedModules);
     boolean addDefault = ret.isEmpty();
     for (WebSearchModule module : availableModules) {
       if ((addDefault && module.isDefault()) || module.isRequired(getConfigDoc())) {
@@ -107,21 +110,23 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   @Override
   public WebSearchQueryBuilder addModule(WebSearchModule module) {
-    modules.add(module);
+    activatedModules.add(module);
     return this;
   }
 
   @Override
   public LuceneQuery build() {
+    Collection<WebSearchModule> modules = getModules();
     LuceneQuery query = searchService.createQuery(getTypes());
     query.add(getRestrExcludeWebPref());
-    query.add(getRestrSpaces(PROPERTY_SPACES));
-    query.add(getRestrSpaces(PROPERTY_SPACES_BLACK_LIST).setNegate(true));
-    query.add(getRestrDocs(PROPERTY_DOCS));
-    query.add(getRestrDocs(PROPERTY_DOCS_BLACK_LIST).setNegate(true));
-    query.add(getRestrPageTypes(PROPERTY_PAGETYPES));
-    query.add(getRestrPageTypes(PROPERTY_PAGETYPES_BLACK_LIST).setNegate(true));
-    query.add(getRestrModules());
+    query.add(getRestrSpaces(false));
+    query.add(getRestrSpaces(true));
+    query.add(getRestrDocs(false));
+    query.add(getRestrDocs(true));
+    query.add(getRestrPageTypes(false));
+    query.add(getRestrPageTypes(true));
+    query.add(getRestrModules(modules));
+    query.add(getRestrLinkedDocsOnly(modules));
     LOGGER.info("build: for '{}' returning '{}'", this, query);
     return query;
   }
@@ -136,58 +141,50 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
         ModelContext.WEB_PREF_DOC_NAME).setNegate(true);
   }
 
-  private IQueryRestriction getRestrSpaces(String fieldName) {
-    return getRestrictionFromField(fieldName, new Function<String, IQueryRestriction>() {
+  private IQueryRestriction getRestrSpaces(boolean isBlacklist) {
+    String fieldName = isBlacklist ? PROPERTY_SPACES_BLACK_LIST : PROPERTY_SPACES;
+    return buildRestrictionFromField(fieldName, new Function<String, IQueryRestriction>() {
 
       @Override
       public IQueryRestriction apply(String str) {
         return searchService.createSpaceRestriction(modelUtils.resolveRef(str,
             SpaceReference.class));
       }
-    });
+    }).setNegate(isBlacklist);
   }
 
-  private IQueryRestriction getRestrDocs(String fieldName) {
-    return getRestrictionFromField(fieldName, new Function<String, IQueryRestriction>() {
+  private IQueryRestriction getRestrDocs(boolean isBlacklist) {
+    String fieldName = isBlacklist ? PROPERTY_DOCS_BLACK_LIST : PROPERTY_DOCS;
+    return buildRestrictionFromField(fieldName, new Function<String, IQueryRestriction>() {
 
       @Override
       public IQueryRestriction apply(String str) {
         return searchService.createDocRestriction(modelUtils.resolveRef(str,
             DocumentReference.class));
       }
-    });
+    }).setNegate(isBlacklist);
   }
 
-  private IQueryRestriction getRestrPageTypes(String fieldName) {
-    return getRestrictionFromField(fieldName, new Function<String, IQueryRestriction>() {
+  private IQueryRestriction getRestrPageTypes(boolean isBlacklist) {
+    String fieldName = isBlacklist ? PROPERTY_PAGETYPES_BLACK_LIST : PROPERTY_PAGETYPES;
+    return buildRestrictionFromField(fieldName, new Function<String, IQueryRestriction>() {
 
       @Override
       public IQueryRestriction apply(String str) {
         return searchService.createFieldRestriction(ptClassConf.getPageTypeClassRef(),
-            IPageTypeClassConfig.PAGE_TYPE_FIELD, "\"" + str + "\"");
+            IPageTypeClassConfig.PAGE_TYPE_FIELD, exactify(str));
       }
-    });
+    }).setNegate(isBlacklist);
   }
 
-  private IQueryRestriction getRestrictionFromField(String fieldName,
+  private IQueryRestriction buildRestrictionFromField(String fieldName,
       Function<String, IQueryRestriction> getRestrFunc) {
-    QueryRestrictionGroup grp = searchService.createRestrictionGroup(Type.OR);
-    for (String str : getConfigObj().getStringValue(fieldName).split("[,;\\| ]+")) {
-      str = str.trim();
-      if (!str.isEmpty()) {
-        try {
-          grp.add(getRestrFunc.apply(str));
-        } catch (IllegalArgumentException iae) {
-          LOGGER.warn("invalid configuration '{}'", str);
-        }
-      }
-    }
-    return grp;
+    return buildRestrictionGroup(getConfigObj().getStringValue(fieldName), Type.OR, getRestrFunc);
   }
 
-  private IQueryRestriction getRestrModules() {
+  private IQueryRestriction getRestrModules(Collection<WebSearchModule> modules) {
     QueryRestrictionGroup grp = searchService.createRestrictionGroup(Type.OR);
-    for (WebSearchModule module : getModules()) {
+    for (WebSearchModule module : modules) {
       grp.add(module.getQueryRestriction(getConfigDoc(), getSearchTerm()));
     }
     String fuzzy = getConfigObj().getStringValue(PROPERTY_FUZZY_SEARCH);
@@ -196,6 +193,19 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
         grp.setFuzzy(Float.parseFloat(fuzzy));
       } catch (NumberFormatException nfe) {
         LOGGER.warn("Failed parsing configured float of '{}'", fuzzy, nfe);
+      }
+    }
+    return grp;
+  }
+
+  private IQueryRestriction getRestrLinkedDocsOnly(Collection<WebSearchModule> modules) {
+    QueryRestrictionGroup grp = searchService.createRestrictionGroup(Type.OR);
+    if (getConfigObj().getIntValue(PROPERTY_LINKED_DOCS_ONLY, 0) == 1) {
+      for (WebSearchModule module : modules) {
+        Optional<DocumentReference> classRef = module.getLinkedClassRef();
+        if (classRef.isPresent()) {
+          grp.add(searchService.createObjectRestriction(classRef.get()));
+        }
       }
     }
     return grp;
