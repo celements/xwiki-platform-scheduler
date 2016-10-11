@@ -86,6 +86,12 @@ public class QueryRestriction implements IQueryRestriction {
     return Optional.fromNullable(fuzzy);
   }
 
+  @Override
+  public QueryRestriction setFuzzy(@Nullable Float fuzzy) {
+    this.fuzzy = fuzzy;
+    return this;
+  }
+
   /**
    * Use fuzzy search to find similar words.
    *
@@ -93,17 +99,11 @@ public class QueryRestriction implements IQueryRestriction {
    *          Allowed distance from 0 to 1 where the closer to 1 the parameter is,
    *          the higher similarity the match needs to have.
    */
-  @Override
-  public QueryRestriction setFuzzy(@Nullable Float fuzzy) {
-    this.fuzzy = fuzzy;
-    return this;
-  }
-
   public QueryRestriction setFuzzy(String fuzzy) {
     try {
       setFuzzy(Float.parseFloat(fuzzy));
     } catch (NumberFormatException nfe) {
-      LOGGER.error("Exception parsing float of '" + fuzzy + "'.", nfe);
+      LOGGER.error("Exception parsing float of '{}'", fuzzy, nfe);
     }
     return this;
   }
@@ -126,7 +126,7 @@ public class QueryRestriction implements IQueryRestriction {
     try {
       setProximity(Integer.parseInt(proximity));
     } catch (NumberFormatException nfe) {
-      LOGGER.error("Exception parsing float of '" + proximity + "'.", nfe);
+      LOGGER.error("Exception parsing float of '{}'", proximity, nfe);
     }
     return this;
   }
@@ -148,7 +148,7 @@ public class QueryRestriction implements IQueryRestriction {
     try {
       setBoost(Float.parseFloat(boost));
     } catch (NumberFormatException nfe) {
-      LOGGER.error("Exception parsing float of '" + boost + "'.", nfe);
+      LOGGER.error("Exception parsing float of '{}'", boost, nfe);
     }
     return this;
   }

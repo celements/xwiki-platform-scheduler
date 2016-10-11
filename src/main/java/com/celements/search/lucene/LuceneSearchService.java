@@ -1,8 +1,9 @@
 package com.celements.search.lucene;
 
+import static com.celements.search.lucene.LuceneSearchUtil.*;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -332,24 +333,6 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public void queueForIndexing(XWikiDocument doc) {
     luceneIndexService.queueForIndexing(doc);
-  }
-
-  private List<String> exactify(List<String> strs) {
-    List<String> ret = new ArrayList<>();
-    if (strs != null) {
-      for (String str : strs) {
-        ret.add(exactify(str));
-      }
-    }
-    return ret;
-  }
-
-  private String exactify(String str) {
-    if (StringUtils.isNotBlank(str)) {
-      return "\"" + str + "\"";
-    } else {
-      return "";
-    }
   }
 
   private String serialize(EntityReference ref) {

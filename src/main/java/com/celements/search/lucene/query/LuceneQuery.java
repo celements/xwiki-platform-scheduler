@@ -1,5 +1,7 @@
 package com.celements.search.lucene.query;
 
+import static com.celements.search.lucene.LuceneSearchUtil.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -150,11 +152,11 @@ public class LuceneQuery extends QueryRestrictionGroup {
   }
 
   private IQueryRestriction getDocTypeRestr(String type) {
-    return new QueryRestriction(IndexFields.DOCUMENT_TYPE, "\"" + type + "\"");
+    return new QueryRestriction(IndexFields.DOCUMENT_TYPE, exactify(type));
   }
 
   private IQueryRestriction getWikiRestr(WikiReference wikiRef) {
-    return new QueryRestriction(IndexFields.DOCUMENT_WIKI, "\"" + wikiRef.getName() + "\"");
+    return new QueryRestriction(IndexFields.DOCUMENT_WIKI, exactify(wikiRef.getName()));
   }
 
   @Override
