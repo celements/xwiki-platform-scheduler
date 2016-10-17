@@ -5,6 +5,7 @@ import static com.celements.search.web.classes.IWebSearchClassConfig.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,7 @@ import com.celements.model.util.ModelUtils;
 import com.celements.pagetype.IPageTypeClassConfig;
 import com.celements.search.lucene.ILuceneSearchService;
 import com.celements.search.lucene.query.IQueryRestriction;
+import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
@@ -34,6 +36,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
@@ -48,7 +51,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   private ILuceneSearchService searchService;
 
   @Requirement
-  private List<WebSearchModule> availableModules;
+  private List<WebSearchModule> modules;
 
   @Requirement
   private IWebSearchClassConfig classConf;
@@ -99,12 +102,21 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   @Override
   public Collection<WebSearchModule> getModules() {
     Set<WebSearchModule> ret = new LinkedHashSet<>(activatedModules);
-    boolean addDefault = ret.isEmpty();
-    for (WebSearchModule module : availableModules) {
-      if ((addDefault && module.isDefault()) || module.isRequired(getConfigDoc())) {
+    Set<String> moduleNames = ImmutableSet.copyOf(getConfigObj().getStringValue(
+        PROPERTY_PACKAGES).split("[,;\\| ]+"));
+    for (WebSearchModule module : modules) {
+      if (moduleNames.contains(module.getName()) || module.isRequired(getConfigDoc())) {
         ret.add(module);
       }
     }
+    if (ret.isEmpty()) {
+      for (WebSearchModule module : modules) {
+        if (module.isDefault()) {
+          ret.add(module);
+        }
+      }
+    }
+    Preconditions.checkState(!ret.isEmpty(), "no WebSearchModules defined");
     return ret;
   }
 
@@ -116,8 +128,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   @Override
   public LuceneQuery build() {
-    Collection<WebSearchModule> modules = getModules();
-    LuceneQuery query = searchService.createQuery(getTypes());
+    LuceneQuery query = new LuceneQuery(Collections.<LuceneDocType>emptyList());
     query.add(getRestrExcludeWebPref());
     query.add(getRestrSpaces(false));
     query.add(getRestrSpaces(true));
@@ -125,15 +136,11 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
     query.add(getRestrDocs(true));
     query.add(getRestrPageTypes(false));
     query.add(getRestrPageTypes(true));
+    Collection<WebSearchModule> modules = getModules();
     query.add(getRestrModules(modules));
     query.add(getRestrLinkedDocsOnly(modules));
     LOGGER.info("build: for '{}' returning '{}'", this, query);
     return query;
-  }
-
-  private List<String> getTypes() {
-    // TODO fix velo bug with types
-    return null;
   }
 
   private IQueryRestriction getRestrExcludeWebPref() {
@@ -185,7 +192,10 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   private IQueryRestriction getRestrModules(Collection<WebSearchModule> modules) {
     QueryRestrictionGroup grp = searchService.createRestrictionGroup(Type.OR);
     for (WebSearchModule module : modules) {
-      grp.add(module.getQueryRestriction(getConfigDoc(), getSearchTerm()));
+      QueryRestrictionGroup moduleGrp = searchService.createRestrictionGroup(Type.AND);
+      moduleGrp.add(searchService.createDocTypeRestriction(module.getDocTypes()));
+      moduleGrp.add(module.getQueryRestriction(getConfigDoc(), getSearchTerm()));
+      grp.add(moduleGrp);
     }
     String fuzzy = getConfigObj().getStringValue(PROPERTY_FUZZY_SEARCH);
     if (!fuzzy.isEmpty()) {

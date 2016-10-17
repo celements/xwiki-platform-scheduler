@@ -3,6 +3,8 @@ package com.celements.search.web.module;
 import static com.celements.search.lucene.LuceneSearchUtil.*;
 import static com.celements.search.web.classes.IWebSearchClassConfig.*;
 
+import java.util.Set;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.model.reference.DocumentReference;
@@ -10,11 +12,13 @@ import org.xwiki.model.reference.DocumentReference;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.search.lucene.ILuceneSearchService;
 import com.celements.search.lucene.query.IQueryRestriction;
+import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.web.classes.IWebSearchClassConfig;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
@@ -49,6 +53,11 @@ public class AttachmentWebSearchModule implements WebSearchModule {
   @Override
   public boolean isRequired(XWikiDocument cfgDoc) {
     return hasConfigObj(cfgDoc);
+  }
+
+  @Override
+  public Set<LuceneDocType> getDocTypes() {
+    return ImmutableSet.of(LuceneDocType.ATT);
   }
 
   @Override

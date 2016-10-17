@@ -1,5 +1,7 @@
 package com.celements.search.web.module;
 
+import java.util.Set;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
@@ -7,7 +9,9 @@ import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.search.lucene.ILuceneSearchService;
 import com.celements.search.lucene.query.IQueryRestriction;
+import com.celements.search.lucene.query.LuceneDocType;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 
@@ -37,6 +41,11 @@ public class ContentWebSearchModule implements WebSearchModule {
   @Override
   public boolean isRequired(XWikiDocument cfgDoc) {
     return false;
+  }
+
+  @Override
+  public Set<LuceneDocType> getDocTypes() {
+    return ImmutableSet.of(LuceneDocType.DOC);
   }
 
   @Override
