@@ -109,7 +109,7 @@ public class QueryRestriction implements IQueryRestriction {
   }
 
   public QueryRestriction setFuzzy(float fuzzy) {
-    return setFuzzy(fuzzy);
+    return setFuzzy((Float) fuzzy);
   }
 
   public QueryRestriction setFuzzy() {

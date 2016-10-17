@@ -4,6 +4,7 @@ import static com.celements.search.lucene.LuceneSearchUtil.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,6 +24,17 @@ public class LuceneQuery extends QueryRestrictionGroup {
   private final List<String> docTypes;
   private List<WikiReference> wikis;
 
+  public LuceneQuery(Collection<LuceneDocType> docTypes) {
+    super(Type.AND);
+    List<String> docTypeKeys = new ArrayList<>();
+    for (LuceneDocType type : docTypes) {
+      docTypeKeys.add(type.key);
+    }
+    this.docTypes = Collections.unmodifiableList(docTypeKeys);
+    wikis = Arrays.asList(Utils.getComponent(IWebUtilsService.class).getWikiRef());
+  }
+
+  @Deprecated
   public LuceneQuery(List<String> docTypes) {
     super(Type.AND);
     this.docTypes = Collections.unmodifiableList(new ArrayList<>(docTypes));

@@ -4,17 +4,17 @@ import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 
 public enum LuceneDocType {
 
-  VOID("void"), DOC(LucenePlugin.DOCTYPE_WIKIPAGE), ATT(LucenePlugin.DOCTYPE_ATTACHMENT);
+  NONE("none"), DOC(LucenePlugin.DOCTYPE_WIKIPAGE), ATT(LucenePlugin.DOCTYPE_ATTACHMENT);
 
-  public final String name;
+  public final String key;
 
-  private LuceneDocType(String name) {
-    this.name = name;
+  private LuceneDocType(String key) {
+    this.key = key;
   }
 
   @Override
   public String toString() {
-    return name;
+    return key;
   }
 
 }

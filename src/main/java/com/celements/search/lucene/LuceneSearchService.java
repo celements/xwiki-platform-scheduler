@@ -4,7 +4,9 @@ import static com.celements.search.lucene.LuceneSearchUtil.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -28,6 +30,7 @@ import org.xwiki.model.reference.SpaceReference;
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.search.lucene.query.IQueryRestriction;
+import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
@@ -82,7 +85,7 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public LuceneQuery createQuery() {
-    return new LuceneQuery(Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE));
+    return new LuceneQuery(Arrays.asList(LuceneDocType.DOC));
   }
 
   @Override
@@ -156,6 +159,15 @@ public class LuceneSearchService implements ILuceneSearchService {
       boolean fuzzy) {
     QueryRestriction restriction = new QueryRestriction(field, value, tokenize);
     return fuzzy ? restriction.setFuzzy() : restriction;
+  }
+
+  @Override
+  public QueryRestrictionGroup createDocTypeRestriction(Collection<LuceneDocType> docTypes) {
+    List<String> docTypeKeys = new ArrayList<>();
+    for (LuceneDocType type : docTypes) {
+      docTypeKeys.add(exactify(type.key));
+    }
+    return createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.DOCUMENT_TYPE), docTypeKeys);
   }
 
   @Override
