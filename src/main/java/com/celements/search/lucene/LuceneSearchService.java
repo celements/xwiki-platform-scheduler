@@ -288,25 +288,25 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public LuceneSearchResult search(LuceneQuery query, List<String> sortFields,
       List<String> languages) {
-    return new LuceneSearchResult(query, sortFields, languages, false, getContext());
+    return new LuceneSearchResult(query, sortFields, languages, false);
   }
 
   @Override
   public LuceneSearchResult searchWithoutChecks(LuceneQuery query, List<String> sortFields,
       List<String> languages) {
-    return new LuceneSearchResult(query, sortFields, languages, true, getContext());
+    return new LuceneSearchResult(query, sortFields, languages, true);
   }
 
   @Override
   public LuceneSearchResult search(String queryString, List<String> sortFields,
       List<String> languages) {
-    return new LuceneSearchResult(queryString, sortFields, languages, false, getContext());
+    return new LuceneSearchResult(queryString, sortFields, languages, false);
   }
 
   @Override
   public LuceneSearchResult searchWithoutChecks(String queryString, List<String> sortFields,
       List<String> languages) {
-    return new LuceneSearchResult(queryString, sortFields, languages, true, getContext());
+    return new LuceneSearchResult(queryString, sortFields, languages, true);
   }
 
   @Override

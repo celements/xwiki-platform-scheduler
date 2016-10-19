@@ -323,7 +323,7 @@ public class LuceneSearchResultTest extends AbstractBridgedComponentTestCase {
 
   private LuceneSearchResult newResult(LuceneQuery query, List<String> sortFields,
       List<String> languages, boolean skipChecks) {
-    result = new LuceneSearchResult(query, sortFields, languages, skipChecks, context);
+    result = new LuceneSearchResult(query, sortFields, languages, skipChecks);
     result.injectLucenePlugin(lucenePluginMock);
     return result;
   }
