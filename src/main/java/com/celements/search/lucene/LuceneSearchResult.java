@@ -13,11 +13,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.model.reference.EntityReference;
 
+import com.celements.model.context.ModelContext;
+import com.celements.model.util.References;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 import com.xpn.xwiki.plugin.lucene.SearchResult;
 import com.xpn.xwiki.plugin.lucene.SearchResults;
+import com.xpn.xwiki.web.Utils;
 
 public class LuceneSearchResult {
 
@@ -25,8 +28,6 @@ public class LuceneSearchResult {
 
   private SearchResults searchResultsCache;
   private LucenePlugin lucenePlugin;
-
-  private final XWikiContext context;
 
   private final String queryString;
   private final List<String> sortFields;
@@ -37,17 +38,16 @@ public class LuceneSearchResult {
   private int limit = 0;
 
   LuceneSearchResult(LuceneQuery query, List<String> sortFields, List<String> languages,
-      boolean skipChecks, XWikiContext context) {
-    this(query.getQueryString(), sortFields, languages, skipChecks, context);
+      boolean skipChecks) {
+    this(query.getQueryString(), sortFields, languages, skipChecks);
   }
 
   LuceneSearchResult(String queryString, List<String> sortFields, List<String> languages,
-      boolean skipChecks, XWikiContext context) {
+      boolean skipChecks) {
     this.queryString = queryString;
     this.sortFields = getList(sortFields);
     this.languages = getList(languages);
     this.skipChecks = skipChecks;
-    this.context = context;
   }
 
   private List<String> getList(List<String> list) {
@@ -101,15 +101,25 @@ public class LuceneSearchResult {
   }
 
   public List<EntityReference> getResults(int offset, int limit) throws LuceneSearchException {
-    return this.setOffset(offset).setLimit(limit).getResults();
+    return getResults(offset, limit, EntityReference.class);
+  }
+
+  public <T extends EntityReference> List<T> getResults(int offset, int limit, Class<T> token)
+      throws LuceneSearchException {
+    return this.setOffset(offset).setLimit(limit).getResults(token);
   }
 
   public List<EntityReference> getResults() throws LuceneSearchException {
-    List<EntityReference> ret = new ArrayList<>();
+    return getResults(EntityReference.class);
+  }
+
+  public <T extends EntityReference> List<T> getResults(Class<T> token)
+      throws LuceneSearchException {
+    List<T> ret = new ArrayList<>();
     for (SearchResult result : getSearchResultList()) {
-      ret.add(result.getReference());
+      ret.add(References.cloneRef(result.getReference(), token));
     }
-    LOGGER.info("getResults: returning '" + ret.size() + "' results for: " + this);
+    LOGGER.info("getResults: returning '{}' results for: {}", ret.size(), this);
     return ret;
   }
 
@@ -150,10 +160,10 @@ public class LuceneSearchResult {
       if (searchResultsCache == null) {
         if (skipChecks) {
           searchResultsCache = getLucenePlugin().getSearchResultsWithoutChecks(queryString,
-              getSortFieldsArray(), null, getLanguageString(), context);
+              getSortFieldsArray(), null, getLanguageString(), getContext());
         } else {
           searchResultsCache = getLucenePlugin().getSearchResults(queryString, getSortFieldsArray(),
-              null, getLanguageString(), context);
+              null, getLanguageString(), getContext());
         }
         LOGGER.trace("luceneSearch: new searchResults for: " + this);
       } else {
@@ -181,9 +191,13 @@ public class LuceneSearchResult {
 
   private LucenePlugin getLucenePlugin() {
     if (lucenePlugin == null) {
-      lucenePlugin = (LucenePlugin) context.getWiki().getPlugin("lucene", context);
+      lucenePlugin = (LucenePlugin) getContext().getWiki().getPlugin("lucene", getContext());
     }
     return lucenePlugin;
+  }
+
+  private XWikiContext getContext() {
+    return Utils.getComponent(ModelContext.class).getXWikiContext();
   }
 
   void injectLucenePlugin(LucenePlugin lucenePlugin) {
