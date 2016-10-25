@@ -9,7 +9,7 @@ import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.search.lucene.query.LuceneQuery;
-import com.celements.search.web.module.WebSearchModule;
+import com.celements.search.web.packages.WebSearchPackage;
 
 @ComponentRole
 public interface WebSearchQueryBuilder {
@@ -28,10 +28,10 @@ public interface WebSearchQueryBuilder {
   public WebSearchQueryBuilder setSearchTerm(@NotNull String searchTerm);
 
   @NotNull
-  public Collection<WebSearchModule> getModules();
+  public Collection<WebSearchPackage> getPackages();
 
   @NotNull
-  public WebSearchQueryBuilder addModule(@NotNull WebSearchModule module);
+  public WebSearchQueryBuilder addPackage(@NotNull WebSearchPackage searchPackage);
 
   @NotNull
   public LuceneQuery build();

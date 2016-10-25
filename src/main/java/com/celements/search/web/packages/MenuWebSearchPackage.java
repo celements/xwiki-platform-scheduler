@@ -1,4 +1,4 @@
-package com.celements.search.web.module;
+package com.celements.search.web.packages;
 
 import java.util.Set;
 
@@ -18,8 +18,8 @@ import com.google.common.collect.ImmutableSet;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 
-@Component(MenuWebSearchModule.NAME)
-public class MenuWebSearchModule implements WebSearchModule {
+@Component(MenuWebSearchPackage.NAME)
+public class MenuWebSearchPackage implements WebSearchPackage {
 
   public static final String NAME = "menu";
 

@@ -31,7 +31,7 @@ import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.web.classes.IWebSearchClassConfig;
-import com.celements.search.web.module.WebSearchModule;
+import com.celements.search.web.packages.WebSearchPackage;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -51,7 +51,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   private ILuceneSearchService searchService;
 
   @Requirement
-  private List<WebSearchModule> modules;
+  private List<WebSearchPackage> webSearchPackages;
 
   @Requirement
   private IWebSearchClassConfig classConf;
@@ -67,7 +67,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   private XWikiDocument configDoc;
   private String searchTerm = "";
-  private List<WebSearchModule> activatedModules = new ArrayList<>();
+  private List<WebSearchPackage> activatedPackages = new ArrayList<>();
 
   @Override
   public DocumentReference getConfigDocRef() {
@@ -100,29 +100,29 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   }
 
   @Override
-  public Collection<WebSearchModule> getModules() {
-    Set<WebSearchModule> ret = new LinkedHashSet<>(activatedModules);
-    Set<String> moduleNames = ImmutableSet.copyOf(getConfigObj().getStringValue(
-        PROPERTY_PACKAGES).split("[,;\\| ]+"));
-    for (WebSearchModule module : modules) {
-      if (moduleNames.contains(module.getName()) || module.isRequired(getConfigDoc())) {
-        ret.add(module);
+  public Collection<WebSearchPackage> getPackages() {
+    Set<WebSearchPackage> ret = new LinkedHashSet<>(activatedPackages);
+    Set<String> names = ImmutableSet.copyOf(getConfigObj().getStringValue(PROPERTY_PACKAGES).split(
+        "[,;\\| ]+"));
+    for (WebSearchPackage searchPackage : webSearchPackages) {
+      if (names.contains(searchPackage.getName()) || searchPackage.isRequired(getConfigDoc())) {
+        ret.add(searchPackage);
       }
     }
     if (ret.isEmpty()) {
-      for (WebSearchModule module : modules) {
-        if (module.isDefault()) {
-          ret.add(module);
+      for (WebSearchPackage searchPackage : webSearchPackages) {
+        if (searchPackage.isDefault()) {
+          ret.add(searchPackage);
         }
       }
     }
-    Preconditions.checkState(!ret.isEmpty(), "no WebSearchModules defined");
+    Preconditions.checkState(!ret.isEmpty(), "no WebSearchPackages defined");
     return ret;
   }
 
   @Override
-  public WebSearchQueryBuilder addModule(WebSearchModule module) {
-    activatedModules.add(module);
+  public WebSearchQueryBuilder addPackage(WebSearchPackage searchPackage) {
+    activatedPackages.add(searchPackage);
     return this;
   }
 
@@ -136,9 +136,9 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
     query.add(getRestrDocs(true));
     query.add(getRestrPageTypes(false));
     query.add(getRestrPageTypes(true));
-    Collection<WebSearchModule> modules = getModules();
-    query.add(getRestrModules(modules));
-    query.add(getRestrLinkedDocsOnly(modules));
+    Collection<WebSearchPackage> searchPackages = getPackages();
+    query.add(getRestrPackages(searchPackages));
+    query.add(getRestrLinkedDocsOnly(searchPackages));
     LOGGER.info("build: for '{}' returning '{}'", this, query);
     return query;
   }
@@ -189,13 +189,13 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
     return buildRestrictionGroup(getConfigObj().getStringValue(fieldName), Type.OR, getRestrFunc);
   }
 
-  private IQueryRestriction getRestrModules(Collection<WebSearchModule> modules) {
+  private IQueryRestriction getRestrPackages(Collection<WebSearchPackage> searchPackages) {
     QueryRestrictionGroup grp = searchService.createRestrictionGroup(Type.OR);
-    for (WebSearchModule module : modules) {
-      QueryRestrictionGroup moduleGrp = searchService.createRestrictionGroup(Type.AND);
-      moduleGrp.add(searchService.createDocTypeRestriction(module.getDocTypes()));
-      moduleGrp.add(module.getQueryRestriction(getConfigDoc(), getSearchTerm()));
-      grp.add(moduleGrp);
+    for (WebSearchPackage searchPackage : searchPackages) {
+      QueryRestrictionGroup searchPackageGrp = searchService.createRestrictionGroup(Type.AND);
+      searchPackageGrp.add(searchService.createDocTypeRestriction(searchPackage.getDocTypes()));
+      searchPackageGrp.add(searchPackage.getQueryRestriction(getConfigDoc(), getSearchTerm()));
+      grp.add(searchPackageGrp);
     }
     String fuzzy = getConfigObj().getStringValue(PROPERTY_FUZZY_SEARCH);
     if (!fuzzy.isEmpty()) {
@@ -208,11 +208,11 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
     return grp;
   }
 
-  private IQueryRestriction getRestrLinkedDocsOnly(Collection<WebSearchModule> modules) {
+  private IQueryRestriction getRestrLinkedDocsOnly(Collection<WebSearchPackage> searchPackages) {
     QueryRestrictionGroup grp = searchService.createRestrictionGroup(Type.OR);
     if (getConfigObj().getIntValue(PROPERTY_LINKED_DOCS_ONLY, 0) == 1) {
-      for (WebSearchModule module : modules) {
-        Optional<DocumentReference> classRef = module.getLinkedClassRef();
+      for (WebSearchPackage searchPackage : searchPackages) {
+        Optional<DocumentReference> classRef = searchPackage.getLinkedClassRef();
         if (classRef.isPresent()) {
           grp.add(searchService.createObjectRestriction(classRef.get()));
         }

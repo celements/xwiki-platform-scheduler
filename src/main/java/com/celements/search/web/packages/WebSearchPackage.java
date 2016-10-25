@@ -1,4 +1,4 @@
-package com.celements.search.web.module;
+package com.celements.search.web.packages;
 
 import java.util.Set;
 
@@ -13,7 +13,7 @@ import com.google.common.base.Optional;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 @ComponentRole
-public interface WebSearchModule {
+public interface WebSearchPackage {
 
   @NotNull
   public String getName();

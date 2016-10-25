@@ -1,4 +1,4 @@
-package com.celements.search.web.module;
+package com.celements.search.web.packages;
 
 import static com.celements.search.lucene.LuceneSearchUtil.*;
 import static com.celements.search.web.classes.IWebSearchClassConfig.*;
@@ -23,8 +23,8 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 
-@Component(AttachmentWebSearchModule.NAME)
-public class AttachmentWebSearchModule implements WebSearchModule {
+@Component(AttachmentWebSearchPackage.NAME)
+public class AttachmentWebSearchPackage implements WebSearchPackage {
 
   public static final String NAME = "attachment";
 
@@ -37,8 +37,8 @@ public class AttachmentWebSearchModule implements WebSearchModule {
   @Requirement
   private IModelAccessFacade modelAccess;
 
-  @Requirement(ContentWebSearchModule.NAME)
-  private WebSearchModule contentModule;
+  @Requirement(ContentWebSearchPackage.NAME)
+  private WebSearchPackage contentModule;
 
   @Override
   public String getName() {
