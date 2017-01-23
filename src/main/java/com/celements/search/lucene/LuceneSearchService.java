@@ -19,22 +19,22 @@ import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
+import org.xwiki.model.reference.WikiReference;
 
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
+import com.celements.model.context.ModelContext;
+import com.celements.model.util.ModelUtils;
 import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.lucene.query.QueryRestrictionString;
-import com.celements.web.service.IWebUtilsService;
 import com.google.common.base.MoreObjects;
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
@@ -54,14 +54,10 @@ public class LuceneSearchService implements ILuceneSearchService {
   private ConfigurationSource cfgSrc;
 
   @Requirement
-  private IWebUtilsService webUtils;
+  private ModelUtils modelUtils;
 
   @Requirement
-  private Execution execution;
-
-  private XWikiContext getContext() {
-    return (XWikiContext) execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
-  }
+  private ModelContext context;
 
   @Override
   public DateFormat getSDF() {
@@ -206,7 +202,8 @@ public class LuceneSearchService implements ILuceneSearchService {
       String fieldStr = serialize(classRef) + "." + field;
       if (ref != null) {
         restriction = createRestriction(fieldStr, exactify(serialize(ref, false)));
-        if (webUtils.getWikiRef(classRef).equals(webUtils.getWikiRef(ref))) {
+        if (modelUtils.extractRef(classRef, WikiReference.class).equals(modelUtils.extractRef(ref,
+            WikiReference.class))) {
           QueryRestrictionGroup restrGrp = createRestrictionGroup(Type.OR);
           restrGrp.add(restriction);
           restrGrp.add(createRestriction(fieldStr, exactify(serialize(ref, true))));
@@ -316,7 +313,7 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public int getResultLimit(boolean skipChecks) {
-    int limit = getLucenePlugin().getResultLimit(skipChecks, getContext());
+    int limit = getLucenePlugin().getResultLimit(skipChecks, context.getXWikiContext());
     LOGGER.debug("getResultLimit: got '{}' for skipChecks '{}'", limit, skipChecks);
     return limit;
   }
@@ -358,14 +355,15 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   private String serialize(EntityReference ref, boolean local) {
     if (ref != null) {
-      return webUtils.serializeRef(ref, local);
+      return local ? modelUtils.serializeRefLocal(ref) : modelUtils.serializeRef(ref);
     } else {
       return "";
     }
   }
 
   private LucenePlugin getLucenePlugin() {
-    return (LucenePlugin) getContext().getWiki().getPlugin("lucene", getContext());
+    return (LucenePlugin) context.getXWikiContext().getWiki().getPlugin("lucene",
+        context.getXWikiContext());
   }
 
 }
