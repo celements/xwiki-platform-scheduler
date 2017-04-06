@@ -117,7 +117,11 @@ public class LuceneSearchResult {
       throws LuceneSearchException {
     List<T> ret = new ArrayList<>();
     for (SearchResult result : getSearchResultList()) {
-      ret.add(References.cloneRef(result.getReference(), token));
+      try {
+        ret.add(References.cloneRef(result.getReference(), token));
+      } catch (IllegalArgumentException iae) {
+        throw new LuceneSearchException("Invalid token for query results", iae);
+      }
     }
     LOGGER.info("getResults: returning '{}' results for: {}", ret.size(), this);
     return ret;
