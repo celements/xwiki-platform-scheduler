@@ -1,8 +1,9 @@
 package com.celements.search.lucene;
 
+import static com.celements.search.lucene.LuceneUtils.*;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -35,6 +36,8 @@ import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.lucene.query.QueryRestrictionString;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
@@ -155,25 +158,19 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef) {
-    return createRestriction(IndexFields.DOCUMENT_SPACE, exactify(serialize(spaceRef)));
+    return createRestriction(IndexFields.DOCUMENT_SPACE, exactify(spaceRef));
   }
 
   @Override
   public QueryRestriction createDocRestriction(DocumentReference docRef) {
-    return createRestriction(IndexFields.DOCUMENT_FULLNAME, exactify(serialize(docRef)));
+    return createRestriction(IndexFields.DOCUMENT_FULLNAME, exactify(docRef));
   }
 
   @Override
   public QueryRestriction createObjectRestriction(DocumentReference classRef) {
     QueryRestriction restriction = null;
     if (classRef != null) {
-      String className = serialize(classRef);
-      // XXX workaround issue CELDEV-35
-      String spaceName = classRef.getLastSpaceReference().getName();
-      if (!Character.isDigit(spaceName.charAt(spaceName.length() - 1))) {
-        className = exactify(className);
-      }
-      restriction = createRestriction(IndexFields.OBJECT, className);
+      restriction = createRestriction(IndexFields.OBJECT, exactify(classRef));
     }
     return restriction;
   }
@@ -189,7 +186,7 @@ public class LuceneSearchService implements ILuceneSearchService {
       String value, boolean tokenize) {
     QueryRestriction restriction = null;
     if ((classRef != null) && StringUtils.isNotBlank(field)) {
-      restriction = createRestriction(serialize(classRef) + "." + field, value, tokenize);
+      restriction = createRestriction(asFieldName(classRef, field), value, tokenize);
     }
     return restriction;
   }
@@ -199,14 +196,14 @@ public class LuceneSearchService implements ILuceneSearchService {
       EntityReference ref) {
     IQueryRestriction restriction = null;
     if ((classRef != null) && StringUtils.isNotBlank(field)) {
-      String fieldStr = serialize(classRef) + "." + field;
+      String fieldStr = asFieldName(classRef, field);
       if (ref != null) {
-        restriction = createRestriction(fieldStr, exactify(serialize(ref, false)));
-        if (modelUtils.extractRef(classRef, WikiReference.class).equals(modelUtils.extractRef(ref,
-            WikiReference.class))) {
+        restriction = createRestriction(fieldStr, exactify(ref, false));
+        if (classRef.getWikiReference().equals(modelUtils.extractRef(ref,
+            WikiReference.class).orNull())) {
           QueryRestrictionGroup restrGrp = createRestrictionGroup(Type.OR);
           restrGrp.add(restriction);
-          restrGrp.add(createRestriction(fieldStr, exactify(serialize(ref, true))));
+          restrGrp.add(createRestriction(fieldStr, exactify(ref)));
           restriction = restrGrp;
         }
       } else {
@@ -273,11 +270,14 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public QueryRestrictionGroup createAttachmentRestrictionGroup(List<String> mimeTypes,
       List<String> mimeTypesBlackList, List<String> filenamePrefs) {
+    mimeTypes = MoreObjects.firstNonNull(mimeTypes, ImmutableList.<String>of());
+    mimeTypesBlackList = MoreObjects.firstNonNull(mimeTypesBlackList, ImmutableList.<String>of());
+    filenamePrefs = MoreObjects.firstNonNull(filenamePrefs, ImmutableList.<String>of());
     QueryRestrictionGroup attGrp = createRestrictionGroup(Type.AND);
-    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), exactify(
-        mimeTypes)));
-    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), exactify(
-        mimeTypesBlackList)).setNegate(true));
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), Lists.transform(
+        mimeTypes, FUNC_EXACTIFY)));
+    attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.MIMETYPE), Lists.transform(
+        mimeTypesBlackList, FUNC_EXACTIFY)).setNegate(true));
     attGrp.add(createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.FILENAME), filenamePrefs));
     return attGrp;
   }
@@ -329,36 +329,6 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public void queueForIndexing(XWikiDocument doc) {
     luceneIndexService.queueForIndexing(doc);
-  }
-
-  private List<String> exactify(List<String> strs) {
-    List<String> ret = new ArrayList<>();
-    if (strs != null) {
-      for (String str : strs) {
-        ret.add(exactify(str));
-      }
-    }
-    return ret;
-  }
-
-  private String exactify(String str) {
-    if (StringUtils.isNotBlank(str)) {
-      return "\"" + str + "\"";
-    } else {
-      return "";
-    }
-  }
-
-  private String serialize(EntityReference ref) {
-    return serialize(ref, true);
-  }
-
-  private String serialize(EntityReference ref, boolean local) {
-    if (ref != null) {
-      return local ? modelUtils.serializeRefLocal(ref) : modelUtils.serializeRef(ref);
-    } else {
-      return "";
-    }
   }
 
   private LucenePlugin getLucenePlugin() {
