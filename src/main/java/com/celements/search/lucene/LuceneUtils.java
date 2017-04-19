@@ -44,13 +44,18 @@ public class LuceneUtils {
 
   public static String exactify(EntityReference ref, boolean local) {
     String ret = serialize(ref, local);
-    // XXX workaround issue CELDEV-35
-    EntityReference spaceRef = ref.extractReference(EntityType.SPACE);
-    if ((spaceRef == null) || !Character.isDigit(spaceRef.getName().charAt(
-        spaceRef.getName().length() - 1))) {
+    if (!spaceEndsWithDigit(ref)) {
       ret = exactify(ret);
     }
     return ret;
+  }
+
+  // XXX workaround issue CELDEV-35
+  private static boolean spaceEndsWithDigit(EntityReference ref) {
+    EntityReference spaceRef = ref.extractReference(EntityType.SPACE);
+    boolean isAtLeastDocRef = (ref.getType().ordinal() > EntityType.SPACE.ordinal());
+    return isAtLeastDocRef && Character.isDigit(spaceRef.getName().charAt(
+        spaceRef.getName().length() - 1));
   }
 
   public static String serialize(EntityReference ref) {
