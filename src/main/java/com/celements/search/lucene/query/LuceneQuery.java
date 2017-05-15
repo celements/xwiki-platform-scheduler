@@ -1,7 +1,10 @@
 package com.celements.search.lucene.query;
 
+import static com.celements.search.lucene.LuceneSearchUtil.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,6 +16,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.model.reference.WikiReference;
 
 import com.celements.model.context.ModelContext;
+import com.celements.web.service.IWebUtilsService;
 import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 import com.xpn.xwiki.web.Utils;
@@ -26,6 +30,21 @@ public class LuceneQuery extends QueryRestrictionGroup {
 
   public LuceneQuery() {
     super(Type.AND);
+  }
+
+  /**
+   * @deprecated instead use {{@link #LuceneQuery()} with {@link #setDocTypes(List)} and
+   *             {@link #setWikis(List)}
+   */
+  @Deprecated
+  public LuceneQuery(Collection<LuceneDocType> docTypes) {
+    super(Type.AND);
+    List<String> docTypeKeys = new ArrayList<>();
+    for (LuceneDocType type : docTypes) {
+      docTypeKeys.add(type.key);
+    }
+    this.docTypes = Collections.unmodifiableList(docTypeKeys);
+    wikis = Arrays.asList(Utils.getComponent(IWebUtilsService.class).getWikiRef());
   }
 
   /**
@@ -166,11 +185,11 @@ public class LuceneQuery extends QueryRestrictionGroup {
   }
 
   private IQueryRestriction getDocTypeRestr(String type) {
-    return new QueryRestriction(IndexFields.DOCUMENT_TYPE, "\"" + type + "\"");
+    return new QueryRestriction(IndexFields.DOCUMENT_TYPE, exactify(type));
   }
 
   private IQueryRestriction getWikiRestr(WikiReference wikiRef) {
-    return new QueryRestriction(IndexFields.DOCUMENT_WIKI, "\"" + wikiRef.getName() + "\"");
+    return new QueryRestriction(IndexFields.DOCUMENT_WIKI, exactify(wikiRef.getName()));
   }
 
   @Override

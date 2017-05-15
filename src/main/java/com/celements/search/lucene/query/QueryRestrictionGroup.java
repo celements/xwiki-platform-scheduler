@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.google.common.base.Optional;
+
 public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implements
     IQueryRestriction {
 
@@ -45,6 +47,21 @@ public class QueryRestrictionGroup extends ArrayList<IQueryRestriction> implemen
   @Override
   public QueryRestrictionGroup setNegate(boolean negate) {
     this.negate = negate;
+    return this;
+  }
+
+  @Override
+  public Optional<Float> getFuzzy() {
+    return Optional.absent();
+  }
+
+  @Override
+  public IQueryRestriction setFuzzy(Float fuzzy) {
+    for (IQueryRestriction restr : this) {
+      if (!restr.getFuzzy().isPresent()) {
+        restr.setFuzzy(fuzzy);
+      }
+    }
     return this;
   }
 

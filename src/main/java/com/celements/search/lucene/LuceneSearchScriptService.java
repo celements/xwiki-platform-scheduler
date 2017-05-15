@@ -14,6 +14,7 @@ import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.script.service.ScriptService;
 
 import com.celements.model.access.exception.DocumentAccessException;
+import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
 import com.celements.rights.access.IRightsAccessFacadeRole;
@@ -21,8 +22,10 @@ import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
+import com.celements.search.web.WebSearchQueryBuilder;
 import com.celements.web.service.IWebUtilsService;
 import com.google.common.base.MoreObjects;
+import com.xpn.xwiki.web.Utils;
 
 @Component(LuceneSearchScriptService.NAME)
 public class LuceneSearchScriptService implements ScriptService {
@@ -250,6 +253,16 @@ public class LuceneSearchScriptService implements ScriptService {
       ret = true;
     }
     return ret;
+  }
+
+  public LuceneQuery buildWebSearchQuery(DocumentReference configDocRef, String searchTerm) {
+    try {
+      return Utils.getComponent(WebSearchQueryBuilder.class).setConfigDoc(
+          configDocRef).setSearchTerm(searchTerm).build();
+    } catch (DocumentNotExistsException exc) {
+      LOGGER.error("buildWebSearchQuery: provided configDoc '{}' doesn't exist", configDocRef);
+    }
+    return null;
   }
 
 }

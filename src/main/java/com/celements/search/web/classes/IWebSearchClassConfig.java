@@ -1,5 +1,8 @@
 package com.celements.search.web.classes;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.WikiReference;
@@ -27,8 +30,16 @@ public interface IWebSearchClassConfig {
   public static final String PROPERTY_MIMETYPES_BLACK_LIST = "mimeTypesBlackList";
   public static final String PROPERTY_FILENAME_PREFIXES = "fileNamePrefixes";
 
-  public DocumentReference getWebSearchConfigClassRef(WikiReference wikiRef);
+  @NotNull
+  public DocumentReference getWebSearchConfigClassRef();
 
-  public DocumentReference getWebAttachmentSearchConfigClassRef(WikiReference wikiRef);
+  @NotNull
+  public DocumentReference getWebSearchConfigClassRef(@Nullable WikiReference wikiRef);
+
+  @NotNull
+  public DocumentReference getWebAttachmentSearchConfigClassRef();
+
+  @NotNull
+  public DocumentReference getWebAttachmentSearchConfigClassRef(@Nullable WikiReference wikiRef);
 
 }

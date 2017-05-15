@@ -2,6 +2,7 @@ package com.celements.search.lucene;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.xwiki.model.reference.SpaceReference;
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.search.lucene.query.IQueryRestriction;
+import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
@@ -65,6 +67,8 @@ public interface ILuceneSearchService {
 
   public QueryRestriction createRestriction(String field, String value, boolean tokenize,
       boolean fuzzy);
+
+  public QueryRestrictionGroup createDocTypeRestriction(Collection<LuceneDocType> docTypes);
 
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef);
 
