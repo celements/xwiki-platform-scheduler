@@ -1,6 +1,6 @@
 package com.celements.search.lucene.query;
 
-import static com.celements.search.lucene.LuceneSearchUtil.*;
+import static com.celements.search.lucene.LuceneUtils.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

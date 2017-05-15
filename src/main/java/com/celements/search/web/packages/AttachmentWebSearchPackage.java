@@ -1,6 +1,6 @@
 package com.celements.search.web.packages;
 
-import static com.celements.search.lucene.LuceneSearchUtil.*;
+import static com.celements.search.lucene.LuceneUtils.*;
 import static com.celements.search.web.classes.IWebSearchClassConfig.*;
 
 import java.util.Set;
@@ -95,8 +95,8 @@ public class AttachmentWebSearchPackage implements WebSearchPackage {
   }
 
   private IQueryRestriction buildRestrictionFromField(XWikiDocument cfgDoc, String fieldName,
-      Function<String, IQueryRestriction> getRestrFunc) {
-    return buildRestrictionGroup(cfgDoc.getStringValue(fieldName), Type.OR, getRestrFunc);
+      Function<String, IQueryRestriction> restrictionFunc) {
+    return buildRestrictionGroup(Type.OR, cfgDoc.getStringValue(fieldName), restrictionFunc);
   }
 
   @Override

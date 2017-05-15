@@ -1,11 +1,10 @@
 package com.celements.search.web;
 
-import static com.celements.search.lucene.LuceneSearchUtil.*;
+import static com.celements.search.lucene.LuceneUtils.*;
 import static com.celements.search.web.classes.IWebSearchClassConfig.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +25,6 @@ import com.celements.model.util.ModelUtils;
 import com.celements.pagetype.IPageTypeClassConfig;
 import com.celements.search.lucene.ILuceneSearchService;
 import com.celements.search.lucene.query.IQueryRestriction;
-import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
@@ -128,7 +126,8 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   @Override
   public LuceneQuery build() {
-    LuceneQuery query = new LuceneQuery(Collections.<LuceneDocType>emptyList());
+    LuceneQuery query = new LuceneQuery();
+    // TODO ? query.setWiki(wikiRef);
     query.add(getRestrExcludeWebPref());
     query.add(getRestrSpaces(false));
     query.add(getRestrSpaces(true));
@@ -185,8 +184,9 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   }
 
   private IQueryRestriction buildRestrictionFromField(String fieldName,
-      Function<String, IQueryRestriction> getRestrFunc) {
-    return buildRestrictionGroup(getConfigObj().getStringValue(fieldName), Type.OR, getRestrFunc);
+      Function<String, IQueryRestriction> restrictionFunc) {
+    return buildRestrictionGroup(Type.OR, getConfigObj().getStringValue(fieldName),
+        restrictionFunc);
   }
 
   private IQueryRestriction getRestrPackages(Collection<WebSearchPackage> searchPackages) {
