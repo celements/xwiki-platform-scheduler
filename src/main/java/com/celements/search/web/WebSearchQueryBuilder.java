@@ -2,38 +2,36 @@ package com.celements.search.web;
 
 import java.util.Collection;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.WikiReference;
 
-import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.web.packages.WebSearchPackage;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 @ComponentRole
 public interface WebSearchQueryBuilder {
 
-  @NotNull
-  public DocumentReference getConfigDocRef();
+  public @NotNull WikiReference getWikiRef();
 
-  @NotNull
-  public WebSearchQueryBuilder setConfigDoc(@NotNull DocumentReference docRef)
-      throws DocumentNotExistsException;
+  public @NotNull WebSearchQueryBuilder setWikiRef(@Nullable WikiReference wikiRef);
 
-  @NotNull
-  public String getSearchTerm();
+  public @NotNull DocumentReference getConfigDocRef();
 
-  @NotNull
-  public WebSearchQueryBuilder setSearchTerm(@NotNull String searchTerm);
+  public @NotNull WebSearchQueryBuilder setConfigDoc(@NotNull XWikiDocument doc);
 
-  @NotNull
-  public Collection<WebSearchPackage> getPackages();
+  public @NotNull String getSearchTerm();
 
-  @NotNull
-  public WebSearchQueryBuilder addPackage(@NotNull WebSearchPackage searchPackage);
+  public @NotNull WebSearchQueryBuilder setSearchTerm(@NotNull String searchTerm);
 
-  @NotNull
-  public LuceneQuery build();
+  public @NotNull Collection<WebSearchPackage> getPackages();
+
+  public @NotNull WebSearchQueryBuilder addPackage(@NotNull WebSearchPackage searchPackage);
+
+  public @NotNull LuceneQuery build();
 
 }

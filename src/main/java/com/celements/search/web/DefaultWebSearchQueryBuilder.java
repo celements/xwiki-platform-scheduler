@@ -2,12 +2,16 @@ package com.celements.search.web;
 
 import static com.celements.search.lucene.LuceneUtils.*;
 import static com.celements.search.web.classes.IWebSearchClassConfig.*;
+import static com.google.common.base.MoreObjects.*;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.annotation.concurrent.NotThreadSafe;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +21,9 @@ import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
+import org.xwiki.model.reference.WikiReference;
 
 import com.celements.model.access.IModelAccessFacade;
-import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
 import com.celements.pagetype.IPageTypeClassConfig;
@@ -39,6 +43,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 
+@NotThreadSafe
 @Component
 @InstantiationStrategy(ComponentInstantiationStrategy.PER_LOOKUP)
 public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
@@ -63,9 +68,24 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   @Requirement
   private ModelUtils modelUtils;
 
+  @Requirement
+  private ModelContext context;
+
+  private WikiReference wikiRef;
   private XWikiDocument configDoc;
   private String searchTerm = "";
   private List<WebSearchPackage> activatedPackages = new ArrayList<>();
+
+  @Override
+  public WikiReference getWikiRef() {
+    return firstNonNull(wikiRef, context.getWikiRef());
+  }
+
+  @Override
+  public WebSearchQueryBuilder setWikiRef(WikiReference wikiRef) {
+    this.wikiRef = wikiRef;
+    return this;
+  }
 
   @Override
   public DocumentReference getConfigDocRef() {
@@ -73,16 +93,15 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   }
 
   private XWikiDocument getConfigDoc() {
-    Preconditions.checkState(configDoc != null, "no config doc defined");
+    checkState(configDoc != null, "no config doc defined");
     return configDoc;
   }
 
   @Override
-  public WebSearchQueryBuilder setConfigDoc(DocumentReference docRef)
-      throws DocumentNotExistsException {
-    Preconditions.checkState(configDoc == null, "config doc already defined");
-    configDoc = modelAccess.getDocument(docRef);
-    Preconditions.checkState(getConfigObj() != null, "invalid config doc");
+  public WebSearchQueryBuilder setConfigDoc(XWikiDocument doc) {
+    checkState(configDoc == null, "config doc already defined");
+    configDoc = doc;
+    checkState(getConfigObj() != null, "invalid config doc");
     return this;
   }
 
@@ -127,7 +146,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   @Override
   public LuceneQuery build() {
     LuceneQuery query = new LuceneQuery();
-    // TODO ? query.setWiki(wikiRef);
+    query.setWiki(getWikiRef());
     query.add(getRestrExcludeWebPref());
     query.add(getRestrSpaces(false));
     query.add(getRestrSpaces(true));
