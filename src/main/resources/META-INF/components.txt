@@ -3,3 +3,4 @@ com.celements.search.lucene.LuceneSearchScriptService
 com.celements.search.web.classes.WebSearchClassConfig
 com.celements.search.web.classes.WebSearchClasses
 com.celements.search.lucene.LuceneIndexService
+com.celements.search.web.classes.WebSearchConfigClass
