@@ -6,11 +6,16 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 
 import com.celements.common.classes.AbstractClassCollection;
+import com.celements.model.classes.ClassDefinition;
 import com.celements.web.service.IWebUtilsService;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.classes.BaseClass;
 
+/**
+ * @deprecated instead use {@link ClassDefinition}
+ */
+@Deprecated
 @Component("WebSearchClasses")
 public class WebSearchClasses extends AbstractClassCollection {
 
@@ -34,8 +39,7 @@ public class WebSearchClasses extends AbstractClassCollection {
 
   @Override
   protected void initClasses() throws XWikiException {
-    getWebSearchConfigClass();
-    getWebAttachmentSearchConfigClass();
+    LOGGER.warn("class collection 'webSearch' is deprecated and should be disabled");
   }
 
   private BaseClass getWebSearchConfigClass() throws XWikiException {
