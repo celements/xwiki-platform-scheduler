@@ -3,6 +3,8 @@ com.celements.search.lucene.LuceneSearchScriptService
 com.celements.search.web.classes.WebSearchClassConfig
 com.celements.search.web.classes.WebSearchClasses
 com.celements.search.lucene.LuceneIndexService
+com.celements.search.web.classes.WebSearchConfigClass
+com.celements.search.web.classes.WebAttachmentSearchConfigClass
 com.celements.search.web.DefaultWebSearchQueryBuilder
 com.celements.search.web.packages.ContentWebSearchPackage
 com.celements.search.web.packages.MenuWebSearchPackage

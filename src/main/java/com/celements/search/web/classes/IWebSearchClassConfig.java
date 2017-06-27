@@ -7,6 +7,12 @@ import org.xwiki.component.annotation.ComponentRole;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.WikiReference;
 
+import com.celements.model.classes.ClassDefinition;
+
+/**
+ * @deprecated instead use {@link ClassDefinition}
+ */
+@Deprecated
 @ComponentRole
 public interface IWebSearchClassConfig {
 
