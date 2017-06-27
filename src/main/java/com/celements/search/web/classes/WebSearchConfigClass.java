@@ -12,10 +12,12 @@ import com.celements.model.classes.AbstractClassDefinition;
 import com.celements.model.classes.fields.BooleanField;
 import com.celements.model.classes.fields.ClassField;
 import com.celements.model.classes.fields.StringField;
+import com.celements.model.classes.fields.list.ComponentListField;
 import com.celements.model.classes.fields.list.CustomListField;
 import com.celements.model.classes.fields.list.StringListField;
 import com.celements.model.classes.fields.number.FloatField;
 import com.celements.pagetype.PageTypeReference;
+import com.celements.search.web.packages.WebSearchPackage;
 
 @Component(WebSearchConfigClass.CLASS_DEF_HINT)
 public class WebSearchConfigClass extends AbstractClassDefinition {
@@ -24,8 +26,8 @@ public class WebSearchConfigClass extends AbstractClassDefinition {
   public static final String DOC_NAME = "WebSearchConfigClass";
   public static final String CLASS_DEF_HINT = SPACE_NAME + "." + DOC_NAME;
 
-  public ClassField<List<String>> FIELD_PACKAGES = new StringListField.Builder(CLASS_DEF_HINT,
-      "packages").build();
+  public ClassField<List<WebSearchPackage>> FIELD_PACKAGES = new ComponentListField.Builder<>(
+      CLASS_DEF_HINT, "packages", WebSearchPackage.class).build();
 
   public ClassField<Boolean> FIELD_LINKED_DOCS_ONLY = new BooleanField.Builder(CLASS_DEF_HINT,
       "linkedDocsOnly").displayType("yesno").build();
