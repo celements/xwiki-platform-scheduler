@@ -4,3 +4,4 @@ com.celements.search.web.classes.WebSearchClassConfig
 com.celements.search.web.classes.WebSearchClasses
 com.celements.search.lucene.LuceneIndexService
 com.celements.search.web.classes.WebSearchConfigClass
+com.celements.search.web.classes.WebAttachmentSearchConfigClass
