@@ -98,15 +98,15 @@ public class LuceneUtils {
     return buildRestrictionGroup(type, SPLITTER.split(valuesStr), restrictionFunc);
   }
 
-  public static IQueryRestriction buildRestrictionGroup(Type type, Iterable<String> values,
-      Function<String, IQueryRestriction> restrictionFunc) {
+  public static <T> IQueryRestriction buildRestrictionGroup(Type type, Iterable<T> values,
+      Function<T, IQueryRestriction> restrictionFunc) {
     QueryRestrictionGroup grp = new QueryRestrictionGroup(type);
-    for (String str : firstNonNull(values, Collections.<String>emptyList())) {
-      if (Strings.nullToEmpty(str).trim().isEmpty()) {
+    for (T obj : firstNonNull(values, Collections.<T>emptyList())) {
+      if (obj != null) {
         try {
-          grp.add(restrictionFunc.apply(str));
+          grp.add(restrictionFunc.apply(obj));
         } catch (IllegalArgumentException iae) {
-          LOGGER.warn("building restriction failed for value '{}' ", str);
+          LOGGER.warn("building restriction failed for value '{}' ", obj);
         }
       }
     }
