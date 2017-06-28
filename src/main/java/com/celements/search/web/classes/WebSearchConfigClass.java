@@ -24,37 +24,37 @@ public class WebSearchConfigClass extends AbstractClassDefinition {
   public static final String DOC_NAME = "WebSearchConfigClass";
   public static final String CLASS_DEF_HINT = SPACE_NAME + "." + DOC_NAME;
 
-  public ClassField<List<String>> FIELD_PACKAGES = new StringListField.Builder(CLASS_DEF_HINT,
-      "packages").build();
+  public static ClassField<List<String>> FIELD_PACKAGES = new StringListField.Builder(
+      CLASS_DEF_HINT, "packages").build();
 
-  public ClassField<Boolean> FIELD_LINKED_DOCS_ONLY = new BooleanField.Builder(CLASS_DEF_HINT,
-      "linkedDocsOnly").displayType("yesno").build();
+  public static ClassField<Boolean> FIELD_LINKED_DOCS_ONLY = new BooleanField.Builder(
+      CLASS_DEF_HINT, "linkedDocsOnly").displayType("yesno").build();
 
-  public ClassField<Float> FIELD_FUZZY_SEARCH = new FloatField.Builder(CLASS_DEF_HINT,
+  public static ClassField<Float> FIELD_FUZZY_SEARCH = new FloatField.Builder(CLASS_DEF_HINT,
       "fuzzySearch").build();
 
-  public ClassField<List<DocumentReference>> FIELD_DOCS = new CustomListField.Builder<>(
+  public static ClassField<List<DocumentReference>> FIELD_DOCS = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "docs", new ReferenceMarshaller<>(DocumentReference.class)).build();
 
-  public ClassField<List<DocumentReference>> FIELD_DOCS_BLACK_LIST = new CustomListField.Builder<>(
+  public static ClassField<List<DocumentReference>> FIELD_DOCS_BLACK_LIST = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "docsBlackList", new ReferenceMarshaller<>(DocumentReference.class)).build();
 
-  public ClassField<List<DocumentReference>> FIELD_SPACES = new CustomListField.Builder<>(
-      CLASS_DEF_HINT, "spaces", new ReferenceMarshaller<>(DocumentReference.class)).build();
+  public static ClassField<List<SpaceReference>> FIELD_SPACES = new CustomListField.Builder<>(
+      CLASS_DEF_HINT, "spaces", new ReferenceMarshaller<>(SpaceReference.class)).build();
 
-  public ClassField<List<SpaceReference>> FIELD_SPACES_BLACK_LIST = new CustomListField.Builder<>(
+  public static ClassField<List<SpaceReference>> FIELD_SPACES_BLACK_LIST = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "spacesBlackList", new ReferenceMarshaller<>(SpaceReference.class)).build();
 
-  public ClassField<List<PageTypeReference>> FIELD_PAGETYPES = new CustomListField.Builder<>(
+  public static ClassField<List<PageTypeReference>> FIELD_PAGETYPES = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "pageTypes", new PageTypeMarshaller()).build();
 
-  public ClassField<List<PageTypeReference>> FIELD_PAGETYPES_BLACK_LIST = new CustomListField.Builder<>(
+  public static ClassField<List<PageTypeReference>> FIELD_PAGETYPES_BLACK_LIST = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "pageTypesBlackList", new PageTypeMarshaller()).build();
 
-  public ClassField<List<String>> FIELD_SORT_FIELDS = new StringListField.Builder(CLASS_DEF_HINT,
-      "sortFields").build();
+  public static ClassField<List<String>> FIELD_SORT_FIELDS = new StringListField.Builder(
+      CLASS_DEF_HINT, "sortFields").build();
 
-  public ClassField<String> FIELD_RESULT_ITEM_RENDER_SCRIPT = new StringField.Builder(
+  public static ClassField<String> FIELD_RESULT_ITEM_RENDER_SCRIPT = new StringField.Builder(
       CLASS_DEF_HINT, "resultItemRenderScript").build();
 
   @Override
