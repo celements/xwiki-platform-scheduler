@@ -2,6 +2,9 @@ package com.celements.search.web.classes;
 
 import java.util.List;
 
+import javax.annotation.concurrent.Immutable;
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 
 import com.celements.marshalling.AbstractMarshaller;
@@ -12,6 +15,8 @@ import com.celements.model.classes.fields.list.StringListField;
 import com.google.common.base.Optional;
 import com.google.common.net.MediaType;
 
+@Immutable
+@Singleton
 @Component(WebAttachmentSearchConfigClass.CLASS_DEF_HINT)
 public class WebAttachmentSearchConfigClass extends AbstractClassDefinition {
 

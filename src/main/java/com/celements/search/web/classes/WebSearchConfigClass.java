@@ -2,6 +2,9 @@ package com.celements.search.web.classes;
 
 import java.util.List;
 
+import javax.annotation.concurrent.Immutable;
+import javax.inject.Singleton;
+
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
@@ -17,6 +20,8 @@ import com.celements.model.classes.fields.list.StringListField;
 import com.celements.model.classes.fields.number.FloatField;
 import com.celements.pagetype.PageTypeReference;
 
+@Immutable
+@Singleton
 @Component(WebSearchConfigClass.CLASS_DEF_HINT)
 public class WebSearchConfigClass extends AbstractClassDefinition {
 
