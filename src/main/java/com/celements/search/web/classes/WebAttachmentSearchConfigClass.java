@@ -24,13 +24,13 @@ public class WebAttachmentSearchConfigClass extends AbstractClassDefinition impl
   public static final String CLASS_DEF_HINT = SPACE_NAME + "." + DOC_NAME;
 
   public static ClassField<List<MediaType>> FIELD_MIMETYPES = new CustomListField.Builder<>(
-      CLASS_DEF_HINT, "mimeTypes", new MediaTypeMarshaller()).build();
+      CLASS_DEF_HINT, "mimeTypes", new MediaTypeMarshaller()).multiSelect(true).build();
 
   public static ClassField<List<MediaType>> FIELD_MIMETYPES_BLACK_LIST = new CustomListField.Builder<>(
-      CLASS_DEF_HINT, "mimeTypesBlackList", new MediaTypeMarshaller()).build();
+      CLASS_DEF_HINT, "mimeTypesBlackList", new MediaTypeMarshaller()).multiSelect(true).build();
 
   public static ClassField<List<String>> FIELD_FILENAME_PREFIXES = new StringListField.Builder(
-      CLASS_DEF_HINT, "fileNamePrefixes").build();
+      CLASS_DEF_HINT, "fileNamePrefixes").multiSelect(true).build();
 
   @Override
   public String getName() {
