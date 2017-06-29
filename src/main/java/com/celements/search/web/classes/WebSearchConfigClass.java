@@ -23,7 +23,8 @@ import com.celements.pagetype.PageTypeReference;
 @Immutable
 @Singleton
 @Component(WebSearchConfigClass.CLASS_DEF_HINT)
-public class WebSearchConfigClass extends AbstractClassDefinition {
+public class WebSearchConfigClass extends AbstractClassDefinition implements
+    WebSearchClassDefinition {
 
   public static final String SPACE_NAME = "Celements2";
   public static final String DOC_NAME = "WebSearchConfigClass";
