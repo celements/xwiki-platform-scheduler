@@ -43,7 +43,6 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 
 @NotThreadSafe
@@ -104,7 +103,8 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   public WebSearchQueryBuilder setConfigDoc(XWikiDocument doc) {
     checkState(configDoc == null, "config doc already defined");
     configDoc = doc;
-    checkState(getConfigObj() != null, "invalid config doc");
+    checkState(modelAccess.getXObject(configDoc, webSearchConfigClass.getClassRef()) != null,
+        "invalid config doc");
     return this;
   }
 
@@ -246,10 +246,6 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
       }
     }
     return grp;
-  }
-
-  private BaseObject getConfigObj() {
-    return modelAccess.getXObject(getConfigDoc(), webSearchConfigClass.getClassRef());
   }
 
   @Override
