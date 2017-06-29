@@ -33,7 +33,7 @@ public class WebSearchConfigClass extends AbstractClassDefinition implements
   public static final String CLASS_DEF_HINT = SPACE_NAME + "." + DOC_NAME;
 
   public static ClassField<List<WebSearchPackage>> FIELD_PACKAGES = new ComponentListField.Builder<>(
-      CLASS_DEF_HINT, "packages", WebSearchPackage.class).build();
+      CLASS_DEF_HINT, "packages", WebSearchPackage.class).multiSelect(true).build();
 
   public static ClassField<Boolean> FIELD_LINKED_DOCS_ONLY = new BooleanField.Builder(
       CLASS_DEF_HINT, "linkedDocsOnly").displayType("yesno").build();
