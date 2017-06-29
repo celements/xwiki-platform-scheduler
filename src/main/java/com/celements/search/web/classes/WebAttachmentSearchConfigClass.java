@@ -1,5 +1,7 @@
 package com.celements.search.web.classes;
 
+import static com.google.common.base.Preconditions.*;
+
 import java.util.List;
 
 import javax.annotation.concurrent.Immutable;
@@ -53,6 +55,7 @@ public class WebAttachmentSearchConfigClass extends AbstractClassDefinition {
     return DOC_NAME;
   }
 
+  @Immutable
   private class MediaTypeMarshaller extends AbstractMarshaller<MediaType> {
 
     public MediaTypeMarshaller() {
@@ -60,15 +63,15 @@ public class WebAttachmentSearchConfigClass extends AbstractClassDefinition {
     }
 
     @Override
-    public Object serialize(MediaType val) {
+    public String serialize(MediaType val) {
       return val.toString();
     }
 
     @Override
-    public Optional<MediaType> resolve(Object val) {
+    public Optional<MediaType> resolve(String val) {
       MediaType mediaType = null;
       try {
-        mediaType = MediaType.parse(val.toString());
+        mediaType = MediaType.parse(checkNotNull(val));
       } catch (IllegalArgumentException exc) {
         LOGGER.info("failed to resolve '{}' for '{}'", val, getToken(), exc);
       }
