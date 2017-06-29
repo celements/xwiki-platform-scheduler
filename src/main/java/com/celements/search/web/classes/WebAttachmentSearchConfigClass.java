@@ -16,7 +16,8 @@ import com.google.common.net.MediaType;
 @Immutable
 @Singleton
 @Component(WebAttachmentSearchConfigClass.CLASS_DEF_HINT)
-public class WebAttachmentSearchConfigClass extends AbstractClassDefinition {
+public class WebAttachmentSearchConfigClass extends AbstractClassDefinition implements
+    WebSearchClassDefinition {
 
   public static final String SPACE_NAME = "Celements2";
   public static final String DOC_NAME = "WebAttachmentSearchConfigClass";
