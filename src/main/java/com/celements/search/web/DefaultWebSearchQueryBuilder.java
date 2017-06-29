@@ -25,6 +25,7 @@ import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
 
 import com.celements.model.access.IModelAccessFacade;
+import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.classes.ClassDefinition;
 import com.celements.model.classes.fields.ClassField;
 import com.celements.model.context.ModelContext;
@@ -93,20 +94,32 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   @Override
   public DocumentReference getConfigDocRef() {
-    return getConfigDoc().getDocumentReference();
+    if (configDoc != null) {
+      return getConfigDoc().getDocumentReference();
+    }
+    return null;
   }
 
   private XWikiDocument getConfigDoc() {
-    checkState(configDoc != null, "no config doc defined");
+    if (configDoc == null) {
+      configDoc = getDefaultConfigDoc();
+    }
     return configDoc;
+  }
+
+  private XWikiDocument getDefaultConfigDoc() {
+    try {
+      return modelAccess.getDocument(new DocumentReference("XWikiPreferences", new SpaceReference(
+          "XWiki", context.getWikiRef())));
+    } catch (DocumentNotExistsException exc) {
+      throw new RuntimeException("XWiki.XWikiPreferences should always exist", exc);
+    }
   }
 
   @Override
   public WebSearchQueryBuilder setConfigDoc(XWikiDocument doc) {
     checkState(configDoc == null, "config doc already defined");
     configDoc = doc;
-    checkState(modelAccess.getXObject(configDoc, webSearchConfigClass.getClassRef()) != null,
-        "invalid config doc");
     return this;
   }
 

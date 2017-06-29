@@ -12,7 +12,7 @@ import com.celements.model.classes.ClassDefinition;
 @Component(WebSearchClassPackage.NAME)
 public class WebSearchClassPackage extends AbstractClassPackage {
 
-  public static final String NAME = "webSearch";
+  public static final String NAME = "websearch";
 
   @Requirement
   private List<WebSearchClassDefinition> classDefs;
