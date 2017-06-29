@@ -32,6 +32,8 @@ public interface WebSearchQueryBuilder {
 
   public @NotNull WebSearchQueryBuilder addPackage(@NotNull WebSearchPackage searchPackage);
 
+  public @NotNull WebSearchQueryBuilder addPackage(@NotNull String packageName);
+
   public @NotNull LuceneQuery build();
 
 }

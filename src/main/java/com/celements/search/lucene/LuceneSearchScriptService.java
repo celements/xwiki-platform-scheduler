@@ -1,5 +1,7 @@
 package com.celements.search.lucene;
 
+import static com.google.common.base.MoreObjects.*;
+
 import java.util.Date;
 import java.util.List;
 
@@ -13,10 +15,12 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.script.service.ScriptService;
 
+import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentAccessException;
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
+import com.celements.rights.access.EAccessLevel;
 import com.celements.rights.access.IRightsAccessFacadeRole;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
@@ -25,6 +29,7 @@ import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.web.WebSearchQueryBuilder;
 import com.celements.web.service.IWebUtilsService;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.web.Utils;
 
 @Component(LuceneSearchScriptService.NAME)
@@ -55,6 +60,9 @@ public class LuceneSearchScriptService implements ScriptService {
 
   @Requirement
   private IRightsAccessFacadeRole rightsAccess;
+
+  @Requirement
+  private IModelAccessFacade modelAccess;
 
   @Requirement
   private ModelUtils modelUtils;
@@ -255,14 +263,24 @@ public class LuceneSearchScriptService implements ScriptService {
     return ret;
   }
 
-  public LuceneQuery buildWebSearchQuery(DocumentReference configDocRef, String searchTerm) {
+  public LuceneQuery buildWebSearchQuery(DocumentReference configDocRef, String searchTerm,
+      List<String> packages) {
+    LuceneQuery ret = null;
     try {
-      return Utils.getComponent(WebSearchQueryBuilder.class).setConfigDoc(
-          configDocRef).setSearchTerm(searchTerm).build();
+      if (rightsAccess.hasAccessLevel(configDocRef, EAccessLevel.VIEW)) {
+        WebSearchQueryBuilder builder = Utils.getComponent(WebSearchQueryBuilder.class);
+        builder.setConfigDoc(modelAccess.getDocument(configDocRef));
+        builder.setSearchTerm(searchTerm);
+        for (String packageName : firstNonNull(packages, ImmutableList.<String>of())) {
+          builder.addPackage(packageName);
+        }
+        ret = builder.build();
+      }
     } catch (DocumentNotExistsException exc) {
       LOGGER.error("buildWebSearchQuery: provided configDoc '{}' doesn't exist", configDocRef);
     }
-    return null;
+    LOGGER.debug("buildWebSearchQuery: returning '{}'", ret);
+    return ret;
   }
 
 }

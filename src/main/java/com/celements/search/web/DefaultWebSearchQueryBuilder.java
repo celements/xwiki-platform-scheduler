@@ -19,6 +19,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
+import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
@@ -44,6 +45,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
+import com.xpn.xwiki.web.Utils;
 
 @NotThreadSafe
 @Component
@@ -154,6 +156,16 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   @Override
   public WebSearchQueryBuilder addPackage(WebSearchPackage searchPackage) {
     activatedPackages.add(searchPackage);
+    return this;
+  }
+
+  @Override
+  public WebSearchQueryBuilder addPackage(String packageName) {
+    try {
+      addPackage(Utils.getComponentManager().lookup(WebSearchPackage.class, packageName));
+    } catch (ComponentLookupException exc) {
+      LOGGER.info("addPackage: invalid package '{}'", packageName);
+    }
     return this;
   }
 
