@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -47,6 +48,9 @@ import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 
 @Component
 public class LuceneSearchService implements ILuceneSearchService {
+
+  // yyyyMMddHHmm
+  public static final Pattern DATE_PATTERN = Pattern.compile("^(\\d{12}|\\d{1,12}\\*)$");
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LuceneSearchService.class);
 

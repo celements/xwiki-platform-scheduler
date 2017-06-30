@@ -355,4 +355,12 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
     assertEquals(limit, ret);
   }
 
+  @Test
+  public void test_date_pattern() {
+    assertFalse(LuceneSearchService.DATE_PATTERN.matcher("asdf").matches());
+    assertFalse(LuceneSearchService.DATE_PATTERN.matcher("20170101").matches());
+    assertTrue(LuceneSearchService.DATE_PATTERN.matcher("20170101*").matches());
+    assertTrue(LuceneSearchService.DATE_PATTERN.matcher("201701012015").matches());
+  }
+
 }

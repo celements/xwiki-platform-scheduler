@@ -20,6 +20,7 @@ import org.xwiki.component.annotation.InstantiationStrategy;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.component.descriptor.ComponentInstantiationStrategy;
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
@@ -28,6 +29,7 @@ import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.classes.ClassDefinition;
 import com.celements.model.classes.fields.ClassField;
+import com.celements.model.classes.fields.list.ListField;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
 import com.celements.pagetype.IPageTypeClassConfig;
@@ -42,8 +44,10 @@ import com.celements.search.web.packages.WebSearchPackage;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 import com.xpn.xwiki.web.Utils;
@@ -66,6 +70,9 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   @Requirement
   private IPageTypeClassConfig ptClassConf;
+
+  @Requirement
+  private ConfigurationSource configSrc;
 
   @Requirement
   private IModelAccessFacade modelAccess;
@@ -242,8 +249,19 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   private <T> IQueryRestriction buildRestrictionFromField(ClassField<List<T>> field,
       Function<T, IQueryRestriction> restrictionFunc) {
-    return buildRestrictionGroup(Type.OR, modelAccess.getFieldValue(getConfigDoc(), field).orNull(),
-        restrictionFunc);
+    List<T> values = new ArrayList<>();
+    if (field instanceof ListField) {
+      values.addAll(getDefaultValues((ListField<T>) field));
+    }
+    values.addAll(modelAccess.getFieldValue(getConfigDoc(), field).or(ImmutableList.<T>of()));
+    return buildRestrictionGroup(Type.OR, values, restrictionFunc);
+  }
+
+  private <T> List<T> getDefaultValues(ListField<T> field) {
+    List<String> valueStrs = configSrc.getProperty("celements.search.web.defaultValue."
+        + field.getName(), ImmutableList.<String>of());
+    return FluentIterable.from(valueStrs).transform(field.getMarshaller().getResolver()).filter(
+        Predicates.notNull()).toList();
   }
 
   private IQueryRestriction getRestrPackages(Collection<WebSearchPackage> searchPackages) {
