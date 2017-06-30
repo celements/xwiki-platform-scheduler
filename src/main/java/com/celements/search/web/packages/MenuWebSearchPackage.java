@@ -58,7 +58,7 @@ public class MenuWebSearchPackage implements WebSearchPackage {
   public IQueryRestriction getQueryRestriction(XWikiDocument cfgDoc, String searchTerm) {
     float boost = cfgSrc.getProperty(CFGSRC_PROP_BOOST, 30f);
     QueryRestrictionGroup grp = searchService.createRestrictionGroup(Type.OR);
-    grp.add(searchService.createFieldRestriction(classConf.getMenuItemClassRef(),
+    grp.add(searchService.createFieldRestriction(classConf.getMenuNameClassRef(),
         INavigationClassConfig.MENU_NAME_FIELD, searchTerm).setBoost(boost));
     grp.add(searchService.createRestriction(IndexFields.DOCUMENT_TITLE, searchTerm).setBoost(
         boost));
