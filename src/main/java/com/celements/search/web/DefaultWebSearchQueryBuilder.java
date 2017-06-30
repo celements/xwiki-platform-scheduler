@@ -36,6 +36,7 @@ import com.celements.pagetype.IPageTypeClassConfig;
 import com.celements.pagetype.PageTypeReference;
 import com.celements.search.lucene.ILuceneSearchService;
 import com.celements.search.lucene.query.IQueryRestriction;
+import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
@@ -268,7 +269,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
     QueryRestrictionGroup grp = searchService.createRestrictionGroup(Type.OR);
     for (WebSearchPackage searchPackage : searchPackages) {
       QueryRestrictionGroup searchPackageGrp = searchService.createRestrictionGroup(Type.AND);
-      searchPackageGrp.add(searchService.createDocTypeRestriction(searchPackage.getDocTypes()));
+      searchPackageGrp.add(searchService.createDocTypeRestriction(searchPackage.getDocType()));
       searchPackageGrp.add(searchPackage.getQueryRestriction(getConfigDoc(), getSearchTerm()));
       grp.add(searchPackageGrp);
     }
@@ -283,12 +284,20 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
     QueryRestrictionGroup grp = searchService.createRestrictionGroup(Type.OR);
     if (modelAccess.getFieldValue(getConfigDoc(), FIELD_LINKED_DOCS_ONLY).or(false)) {
       for (WebSearchPackage searchPackage : searchPackages) {
-        if (searchPackage.getLinkedClassRef().isPresent()) {
-          grp.add(searchService.createObjectRestriction(searchPackage.getLinkedClassRef().get()));
-        }
+        grp.add(getLinkedDocsOnlyPackageRestr(searchPackage));
       }
     }
     return grp;
+  }
+
+  private IQueryRestriction getLinkedDocsOnlyPackageRestr(WebSearchPackage searchPackage) {
+    if (searchPackage.getDocType() == LuceneDocType.DOC) {
+      return searchService.createObjectRestriction(searchPackage.getLinkedClassRef().orNull());
+    } else {
+      // since objects don't exist on e.g. attachment lucene docs, this restriction makes sure
+      // that these lucene docs are also found if linkedDocsOnly is activated
+      return searchService.createDocTypeRestriction(searchPackage.getDocType());
+    }
   }
 
   @Override
