@@ -1,7 +1,5 @@
 package com.celements.search.lucene;
 
-import static com.google.common.base.MoreObjects.*;
-
 import java.util.Date;
 import java.util.List;
 
@@ -27,9 +25,9 @@ import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.web.WebSearchQueryBuilder;
+import com.celements.search.web.classes.WebSearchConfigClass;
 import com.celements.web.service.IWebUtilsService;
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.web.Utils;
 
 @Component(LuceneSearchScriptService.NAME)
@@ -263,19 +261,19 @@ public class LuceneSearchScriptService implements ScriptService {
     return ret;
   }
 
-  public LuceneQuery buildWebSearchQuery(DocumentReference configDocRef, String searchTerm,
-      List<String> packages) {
-    LuceneQuery ret = null;
+  public LuceneSearchResult webSearch(String searchTerm, DocumentReference configDocRef,
+      List<String> languages) {
+    LuceneSearchResult ret = null;
     try {
-      if (rightsAccess.hasAccessLevel(configDocRef, EAccessLevel.VIEW)) {
-        WebSearchQueryBuilder builder = Utils.getComponent(WebSearchQueryBuilder.class);
+      WebSearchQueryBuilder builder = Utils.getComponent(WebSearchQueryBuilder.class);
+      if ((configDocRef != null) && rightsAccess.hasAccessLevel(configDocRef, EAccessLevel.VIEW)) {
         builder.setConfigDoc(modelAccess.getDocument(configDocRef));
-        builder.setSearchTerm(searchTerm);
-        for (String packageName : firstNonNull(packages, ImmutableList.<String>of())) {
-          builder.addPackage(packageName);
-        }
-        ret = builder.build();
       }
+      builder.setSearchTerm(searchTerm);
+      LuceneQuery query = builder.build();
+      List<String> sortFields = modelAccess.getFieldValue(builder.getConfigDocRef(),
+          WebSearchConfigClass.FIELD_SORT_FIELDS).orNull();
+      ret = searchService.search(query, sortFields, languages);
     } catch (DocumentNotExistsException exc) {
       LOGGER.error("buildWebSearchQuery: provided configDoc '{}' doesn't exist", configDocRef);
     }
