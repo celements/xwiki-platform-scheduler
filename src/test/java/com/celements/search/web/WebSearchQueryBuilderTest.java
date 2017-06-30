@@ -10,7 +10,9 @@ import org.junit.Test;
 import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.common.test.AbstractComponentTest;
-import com.celements.search.web.classes.IWebSearchClassConfig;
+import com.celements.model.classes.ClassDefinition;
+import com.celements.search.lucene.query.LuceneQuery;
+import com.celements.search.web.classes.WebSearchConfigClass;
 import com.celements.search.web.packages.AttachmentWebSearchPackage;
 import com.celements.search.web.packages.ContentWebSearchPackage;
 import com.celements.search.web.packages.MenuWebSearchPackage;
@@ -60,66 +62,90 @@ public class WebSearchQueryBuilderTest extends AbstractComponentTest {
     assertTrue(ret.contains(webPackage));
   }
 
-  // TODO
-  // @Test
-  // public void test_build_noTerm() throws Exception {
-  // builder.setConfigDoc(createCfDoc(docRef));
-  //
-  // replayDefault();
-  // LuceneQuery query = builder.build();
-  // verifyDefault();
-  //
-  // assertNotNull(query);
-  // assertEquals("", query.getQueryString());
-  // }
-  //
-  // @Test
-  // public void test_build() throws Exception {
-  // builder.setConfigDoc(createCfDoc(docRef));
-  // builder.setSearchTerm("welt");
-  //
-  // replayDefault();
-  // LuceneQuery query = builder.build();
-  // verifyDefault();
-  //
-  // assertNotNull(query);
-  // assertEquals("", query.getQueryString());
-  // }
-  //
-  // @Test
-  // public void test_build_noCfgDoc() throws Exception {
-  // replayDefault();
-  // new ExceptionAsserter<IllegalStateException>(IllegalStateException.class) {
-  //
-  // @Override
-  // protected void execute() throws Exception {
-  // builder.build();
-  // }
-  // }.evaluate();
-  // verifyDefault();
-  // }
-  //
-  // @Test
-  // public void test_build_noCfgObj() throws Exception {
-  // DocumentReference docRef = new DocumentReference("wiki", "space", "doc");
-  // final XWikiDocument doc = new XWikiDocument(docRef);
-  // replayDefault();
-  // new ExceptionAsserter<IllegalStateException>(IllegalStateException.class) {
-  //
-  // @Override
-  // protected void execute() throws Exception {
-  // builder.setConfigDoc(doc);
-  // }
-  //
-  // }.evaluate();
-  // verifyDefault();
-  // }
+  @Test
+  public void test_build_noTerm() throws Exception {
+    builder.setConfigDoc(createCfDoc(docRef));
+
+    replayDefault();
+    LuceneQuery query = builder.build();
+    verifyDefault();
+
+    assertNotNull(query);
+    assertEquals("(wiki:(+\"wiki\") AND NOT name:(+WebPreferences*) AND type:(+\"wikipage\"))",
+        query.getQueryString());
+  }
+
+  @Test
+  public void test_build_content() throws Exception {
+    builder.setConfigDoc(createCfDoc(docRef));
+    builder.setSearchTerm("welt");
+    builder.addPackage(ContentWebSearchPackage.NAME);
+
+    replayDefault();
+    LuceneQuery query = builder.build();
+    verifyDefault();
+
+    assertNotNull(query);
+    assertEquals(builder.getPackages().size(), 1);
+    assertEquals("(wiki:(+\"wiki\") AND NOT name:(+WebPreferences*) "
+        + "AND (type:(+\"wikipage\") AND ft:(+welt*)^20))", query.getQueryString());
+  }
+
+  @Test
+  public void test_build_menu() throws Exception {
+    builder.setConfigDoc(createCfDoc(docRef));
+    builder.setSearchTerm("welt");
+    builder.addPackage(MenuWebSearchPackage.NAME);
+
+    replayDefault();
+    LuceneQuery query = builder.build();
+    verifyDefault();
+
+    assertNotNull(query);
+    assertEquals(builder.getPackages().size(), 1);
+    assertEquals("(wiki:(+\"wiki\") AND NOT name:(+WebPreferences*) AND (type:(+\"wikipage\") "
+        + "AND (Celements2.MenuName.menu_name:(+welt*)^30 OR title:(+welt*)^30)))",
+        query.getQueryString());
+  }
+
+  @Test
+  public void test_build_default() throws Exception {
+    builder.setConfigDoc(createCfDoc(docRef));
+    builder.setSearchTerm("welt");
+
+    replayDefault();
+    LuceneQuery query = builder.build();
+    verifyDefault();
+
+    assertNotNull(query);
+    assertEquals(builder.getPackages().size(), 2);
+    assertEquals("(wiki:(+\"wiki\") AND NOT name:(+WebPreferences*) "
+        + "AND ((type:(+\"wikipage\") AND ft:(+welt*)^20) OR (type:(+\"wikipage\") "
+        + "AND (Celements2.MenuName.menu_name:(+welt*)^30 OR title:(+welt*)^30))))",
+        query.getQueryString());
+  }
+
+  @Test
+  public void test_build_attachment() throws Exception {
+    builder.setConfigDoc(createCfDoc(docRef));
+    builder.setSearchTerm("welt");
+    builder.addPackage(AttachmentWebSearchPackage.NAME);
+
+    replayDefault();
+    LuceneQuery query = builder.build();
+    verifyDefault();
+
+    assertNotNull(query);
+    assertEquals(builder.getPackages().size(), 1);
+    assertEquals("(wiki:(+\"wiki\") AND NOT name:(+WebPreferences*) AND type:(+\"attachment\"))",
+        query.getQueryString());
+  }
 
   private XWikiDocument createCfDoc(DocumentReference docRef) {
     XWikiDocument doc = new XWikiDocument(docRef);
     BaseObject obj = new BaseObject();
-    obj.setXClassReference(Utils.getComponent(
-        IWebSearchClassConfig.class).getWebSearchConfigClassRef(docRef.getWikiReference()));
+    obj.setXClassReference(Utils.getComponent(ClassDefinition.class,
+        WebSearchConfigClass.CLASS_DEF_HINT).getClassRef(docRef.getWikiReference()));
     doc.addXObject(obj);
     return doc;
   }
