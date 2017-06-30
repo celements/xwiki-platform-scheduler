@@ -20,7 +20,8 @@ public class LuceneQueryTest extends AbstractComponentTest {
 
   @Before
   public void prepareTest() throws Exception {
-    query = new LuceneQuery(Collections.<LuceneDocType>emptyList());
+    query = new LuceneQuery();
+    query.setWiki(new WikiReference("xwikidb"));
   }
 
   @Test
@@ -33,9 +34,9 @@ public class LuceneQueryTest extends AbstractComponentTest {
     assertEquals(Collections.emptyList(), query.getDocTypes());
     List<LuceneDocType> docTypes = new ArrayList<>();
     docTypes.add(LuceneDocType.DOC);
-    query = new LuceneQuery(docTypes);
+    query.setDocTypes(docTypes);
     assertEquals(1, query.getDocTypes().size());
-    assertEquals(LuceneDocType.DOC.key, query.getDocTypes().get(0));
+    assertEquals(LuceneDocType.DOC, query.getDocTypes().get(0));
     docTypes.add(LuceneDocType.ATT);
     assertEquals(1, query.getDocTypes().size());
     try {
@@ -82,7 +83,7 @@ public class LuceneQueryTest extends AbstractComponentTest {
 
   @Test
   public void testGetQueryString_withType() {
-    query = new LuceneQuery(Arrays.asList(LuceneDocType.DOC));
+    query.setDocTypes(Arrays.asList(LuceneDocType.DOC));
     String queryString = "(type:(+\"" + LuceneDocType.DOC.key + "\") AND wiki:(+\"xwikidb\"))";
     assertEquals(queryString, query.getQueryString());
     assertEquals("queryString must stay the same", queryString, query.getQueryString());
@@ -90,7 +91,7 @@ public class LuceneQueryTest extends AbstractComponentTest {
 
   @Test
   public void testGetQueryString_multiTypes() {
-    query = new LuceneQuery(Arrays.asList(LuceneDocType.DOC, LuceneDocType.ATT));
+    query.setDocTypes(Arrays.asList(LuceneDocType.DOC, LuceneDocType.ATT));
     String queryString = "((type:(+\"" + LuceneDocType.DOC.key + "\") OR type:(+\""
         + LuceneDocType.ATT + "\")) AND wiki:(+\"xwikidb\"))";
     assertEquals(queryString, query.getQueryString());
@@ -132,7 +133,7 @@ public class LuceneQueryTest extends AbstractComponentTest {
   @Test
   public void testGetQueryString_filled() {
     LuceneQuery query = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
-    String queryString = "(type:(+\"" + LuceneDocType.DOC + "\") AND wiki:(+\"xwikidb\") "
+    String queryString = "(type:(+\"" + LuceneDocType.DOC + "\") "
         + "AND (field1:(+value1*) OR field2:(+value2*)) "
         + "AND (field3:(+value3*) OR field4:(+value4*)) AND field5:(+value5*))";
     assertEquals(queryString, query.getQueryString());
@@ -189,7 +190,8 @@ public class LuceneQueryTest extends AbstractComponentTest {
   }
 
   private LuceneQuery getNewFilledQuery(List<LuceneDocType> docTypes) {
-    LuceneQuery query = new LuceneQuery(docTypes);
+    LuceneQuery query = new LuceneQuery();
+    query.setDocTypes(docTypes);
     QueryRestrictionGroup restrGrpUser = new QueryRestrictionGroup(Type.OR);
     restrGrpUser.add(new QueryRestriction("field1", "value1"));
     restrGrpUser.add(new QueryRestriction("field2", "value2"));

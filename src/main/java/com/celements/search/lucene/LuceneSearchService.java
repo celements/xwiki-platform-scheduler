@@ -87,7 +87,7 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public LuceneQuery createQuery() {
-    return new LuceneQuery(Arrays.asList(LuceneDocType.DOC));
+    return new LuceneQuery(Arrays.asList(LucenePlugin.DOCTYPE_WIKIPAGE));
   }
 
   @Override

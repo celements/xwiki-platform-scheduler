@@ -16,7 +16,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.xwiki.model.reference.WikiReference;
 
 import com.celements.model.context.ModelContext;
-import com.celements.web.service.IWebUtilsService;
 import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 import com.xpn.xwiki.web.Utils;
@@ -25,7 +24,7 @@ public class LuceneQuery extends QueryRestrictionGroup {
 
   private static final long serialVersionUID = 20140913181251L;
 
-  private List<String> docTypes = ImmutableList.of();
+  private List<LuceneDocType> docTypes = ImmutableList.of();
   private List<WikiReference> wikis = ImmutableList.of();
 
   public LuceneQuery() {
@@ -37,33 +36,30 @@ public class LuceneQuery extends QueryRestrictionGroup {
    *             {@link #setWikis(List)}
    */
   @Deprecated
-  public LuceneQuery(Collection<LuceneDocType> docTypes) {
-    super(Type.AND);
-    List<String> docTypeKeys = new ArrayList<>();
-    for (LuceneDocType type : docTypes) {
-      docTypeKeys.add(type.key);
-    }
-    this.docTypes = Collections.unmodifiableList(docTypeKeys);
-    wikis = Arrays.asList(Utils.getComponent(IWebUtilsService.class).getWikiRef());
-  }
-
-  /**
-   * @deprecated instead use {{@link #LuceneQuery()} with {@link #setDocTypes(List)} and
-   *             {@link #setWikis(List)}
-   */
-  @Deprecated
   public LuceneQuery(List<String> docTypes) {
     super(Type.AND);
-    this.docTypes = Collections.unmodifiableList(new ArrayList<>(docTypes));
-    wikis = Arrays.asList(Utils.getComponent(ModelContext.class).getWikiRef());
+    setDocTypes(docTypes);
+    setWiki(Utils.getComponent(ModelContext.class).getWikiRef());
   }
 
-  public List<String> getDocTypes() {
+  public List<LuceneDocType> getDocTypes() {
     return docTypes;
   }
 
-  public void setDocTypes(@NotNull List<String> docTypes) {
-    docTypes = ImmutableList.copyOf(docTypes);
+  public void setDocTypes(@NotNull Collection<LuceneDocType> docTypes) {
+    this.docTypes = ImmutableList.copyOf(docTypes);
+  }
+
+  /**
+   * @deprecated instead use {@link #setDocTypes(Collection)}
+   */
+  @Deprecated
+  public void setDocTypes(@NotNull List<String> docTypeKeys) {
+    List<LuceneDocType> docTypes = new ArrayList<>();
+    for (String type : docTypeKeys) {
+      docTypes.add(LuceneDocType.parseEnum(type));
+    }
+    setDocTypes(docTypes);
   }
 
   /**
@@ -123,7 +119,8 @@ public class LuceneQuery extends QueryRestrictionGroup {
 
   @Override
   public LuceneQuery copy() {
-    LuceneQuery copy = new LuceneQuery(docTypes);
+    LuceneQuery copy = new LuceneQuery();
+    copy.docTypes = docTypes;
     copy.wikis = wikis;
     copy.addAll(super.copy());
     return copy;
@@ -177,15 +174,15 @@ public class LuceneQuery extends QueryRestrictionGroup {
       if (elem instanceof WikiReference) {
         restr = getWikiRestr((WikiReference) elem);
       } else {
-        restr = getDocTypeRestr((String) elem);
+        restr = getDocTypeRestr((LuceneDocType) elem);
       }
       ret.add(restr);
     }
     return ret;
   }
 
-  private IQueryRestriction getDocTypeRestr(String type) {
-    return new QueryRestriction(IndexFields.DOCUMENT_TYPE, exactify(type));
+  private IQueryRestriction getDocTypeRestr(LuceneDocType type) {
+    return new QueryRestriction(IndexFields.DOCUMENT_TYPE, exactify(type.key));
   }
 
   private IQueryRestriction getWikiRestr(WikiReference wikiRef) {
