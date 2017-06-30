@@ -4,9 +4,7 @@ import static com.celements.search.lucene.LuceneUtils.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
@@ -164,12 +162,8 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
-  public QueryRestrictionGroup createDocTypeRestriction(Collection<LuceneDocType> docTypes) {
-    List<String> docTypeKeys = new ArrayList<>();
-    for (LuceneDocType type : docTypes) {
-      docTypeKeys.add(exactify(type.key));
-    }
-    return createRestrictionGroup(Type.OR, Arrays.asList(IndexFields.DOCUMENT_TYPE), docTypeKeys);
+  public QueryRestriction createDocTypeRestriction(LuceneDocType docType) {
+    return createRestriction(IndexFields.DOCUMENT_TYPE, exactify(docType.key));
   }
 
   @Override

@@ -2,7 +2,6 @@ package com.celements.search.lucene;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -68,7 +67,7 @@ public interface ILuceneSearchService {
   public QueryRestriction createRestriction(String field, String value, boolean tokenize,
       boolean fuzzy);
 
-  public QueryRestrictionGroup createDocTypeRestriction(Collection<LuceneDocType> docTypes);
+  public QueryRestriction createDocTypeRestriction(LuceneDocType docType);
 
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef);
 

@@ -4,7 +4,6 @@ import static com.celements.search.lucene.LuceneUtils.*;
 import static com.celements.search.web.classes.WebAttachmentSearchConfigClass.*;
 
 import java.util.List;
-import java.util.Set;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
@@ -21,7 +20,6 @@ import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.web.classes.WebAttachmentSearchConfigClass;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.net.MediaType;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
@@ -59,8 +57,8 @@ public class AttachmentWebSearchPackage implements WebSearchPackage {
   }
 
   @Override
-  public Set<LuceneDocType> getDocTypes() {
-    return ImmutableSet.of(LuceneDocType.ATT);
+  public LuceneDocType getDocType() {
+    return LuceneDocType.ATT;
   }
 
   @Override

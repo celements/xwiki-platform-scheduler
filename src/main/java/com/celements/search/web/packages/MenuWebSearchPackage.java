@@ -1,7 +1,5 @@
 package com.celements.search.web.packages;
 
-import java.util.Set;
-
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
@@ -14,7 +12,6 @@ import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 
@@ -50,8 +47,8 @@ public class MenuWebSearchPackage implements WebSearchPackage {
   }
 
   @Override
-  public Set<LuceneDocType> getDocTypes() {
-    return ImmutableSet.of(LuceneDocType.DOC);
+  public LuceneDocType getDocType() {
+    return LuceneDocType.DOC;
   }
 
   @Override
