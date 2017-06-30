@@ -119,10 +119,11 @@ public class WebSearchQueryBuilderTest extends AbstractComponentTest {
 
     assertNotNull(query);
     assertEquals(builder.getPackages().size(), 2);
-    assertEquals("(wiki:(+\"wiki\") AND NOT name:(+WebPreferences*) "
-        + "AND ((type:(+\"wikipage\") AND ft:(+welt*)^20) OR (type:(+\"wikipage\") "
-        + "AND (Celements2.MenuName.menu_name:(+welt*)^30 OR title:(+welt*)^30))))",
-        query.getQueryString());
+    String queryString = query.getQueryString();
+    assertTrue(queryString.startsWith("(wiki:(+\"wiki\") AND NOT name:(+WebPreferences*) AND "));
+    assertTrue(queryString.contains("(type:(+\"wikipage\") AND ft:(+welt*)^20)"));
+    assertTrue(queryString.contains("(type:(+\"wikipage\") "
+        + "AND (Celements2.MenuName.menu_name:(+welt*)^30 OR title:(+welt*)^30)"));
   }
 
   @Test
