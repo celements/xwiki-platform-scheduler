@@ -31,7 +31,7 @@ public class WebSearchConfigClass extends AbstractClassDefinition implements
   public static final String CLASS_DEF_HINT = SPACE_NAME + "." + DOC_NAME;
 
   public static ClassField<List<String>> FIELD_PACKAGES = new StringListField.Builder(
-      CLASS_DEF_HINT, "packages").multiSelect(true).build();
+      CLASS_DEF_HINT, "packages").multiSelect(true).separator(",").build();
 
   public static ClassField<Boolean> FIELD_LINKED_DOCS_ONLY = new BooleanField.Builder(
       CLASS_DEF_HINT, "linkedDocsOnly").displayType("yesno").build();
@@ -41,28 +41,30 @@ public class WebSearchConfigClass extends AbstractClassDefinition implements
 
   public static ClassField<List<DocumentReference>> FIELD_DOCS = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "docs", new ReferenceMarshaller<>(DocumentReference.class)).multiSelect(
-          true).build();
+          true).separator(",").build();
 
   public static ClassField<List<DocumentReference>> FIELD_DOCS_BLACK_LIST = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "docsBlackList", new ReferenceMarshaller<>(
-          DocumentReference.class)).multiSelect(true).build();
+          DocumentReference.class)).multiSelect(true).separator(",").build();
 
   public static ClassField<List<SpaceReference>> FIELD_SPACES = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "spaces", new ReferenceMarshaller<>(SpaceReference.class)).multiSelect(
-          true).build();
+          true).separator(",").build();
 
   public static ClassField<List<SpaceReference>> FIELD_SPACES_BLACK_LIST = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "spacesBlackList", new ReferenceMarshaller<>(
-          SpaceReference.class)).multiSelect(true).build();
+          SpaceReference.class)).multiSelect(true).separator(",").build();
 
   public static ClassField<List<PageTypeReference>> FIELD_PAGETYPES = new CustomListField.Builder<>(
-      CLASS_DEF_HINT, "pageTypes", new PageTypeMarshaller()).multiSelect(true).build();
+      CLASS_DEF_HINT, "pageTypes", new PageTypeMarshaller()).multiSelect(true).separator(
+          ",").build();
 
   public static ClassField<List<PageTypeReference>> FIELD_PAGETYPES_BLACK_LIST = new CustomListField.Builder<>(
-      CLASS_DEF_HINT, "pageTypesBlackList", new PageTypeMarshaller()).multiSelect(true).build();
+      CLASS_DEF_HINT, "pageTypesBlackList", new PageTypeMarshaller()).multiSelect(true).separator(
+          ",").build();
 
   public static ClassField<List<String>> FIELD_SORT_FIELDS = new StringListField.Builder(
-      CLASS_DEF_HINT, "sortFields").multiSelect(true).build();
+      CLASS_DEF_HINT, "sortFields").multiSelect(true).separator(",").build();
 
   public static ClassField<String> FIELD_RESULT_ITEM_RENDER_SCRIPT = new StringField.Builder(
       CLASS_DEF_HINT, "resultItemRenderScript").build();
