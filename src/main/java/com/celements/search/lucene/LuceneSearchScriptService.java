@@ -275,7 +275,7 @@ public class LuceneSearchScriptService implements ScriptService {
           WebSearchConfigClass.FIELD_SORT_FIELDS).orNull();
       ret = searchService.search(query, sortFields, languages);
     } catch (DocumentNotExistsException exc) {
-      LOGGER.error("webSearch: provided configDoc '{}' doesn't exist", configDocRef);
+      LOGGER.info("webSearch: provided configDoc '{}' doesn't exist", configDocRef);
     }
     LOGGER.debug("webSearch: returning '{}'", ret);
     return ret;
