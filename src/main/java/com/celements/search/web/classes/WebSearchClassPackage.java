@@ -6,12 +6,11 @@ import java.util.List;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 
-import com.celements.model.classes.AbstractClassPackage;
+import com.celements.model.classes.AbstractLegacyClassPackage;
 import com.celements.model.classes.ClassDefinition;
-import com.google.common.base.Optional;
 
 @Component(WebSearchClassPackage.NAME)
-public class WebSearchClassPackage extends AbstractClassPackage {
+public class WebSearchClassPackage extends AbstractLegacyClassPackage {
 
   public static final String NAME = "websearch";
 
@@ -29,8 +28,8 @@ public class WebSearchClassPackage extends AbstractClassPackage {
   }
 
   @Override
-  protected Optional<String> getLegacyName() {
-    return Optional.of("webSearch");
+  public String getLegacyName() {
+    return "webSearch";
   }
 
 }
