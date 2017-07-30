@@ -3,7 +3,7 @@ package com.celements.search.web.packages;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.ClassReference;
 
 import com.celements.search.lucene.ILuceneSearchService;
 import com.celements.search.lucene.query.IQueryRestriction;
@@ -52,7 +52,7 @@ public class ContentWebSearchPackage implements WebSearchPackage {
   }
 
   @Override
-  public Optional<DocumentReference> getLinkedClassRef() {
+  public Optional<ClassReference> getLinkedClassRef() {
     return Optional.absent();
   }
 

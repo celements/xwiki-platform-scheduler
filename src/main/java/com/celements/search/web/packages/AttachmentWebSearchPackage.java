@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.ClassReference;
 
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.classes.ClassDefinition;
@@ -103,12 +103,13 @@ public class AttachmentWebSearchPackage implements WebSearchPackage {
   }
 
   @Override
-  public Optional<DocumentReference> getLinkedClassRef() {
+  public Optional<ClassReference> getLinkedClassRef() {
     return Optional.absent();
   }
 
   private boolean hasConfigObj(XWikiDocument cfgDoc) {
-    return modelAccess.getXObject(cfgDoc, webAttSearchConfigClass.getClassRef()) != null;
+    return modelAccess.getXObject(cfgDoc,
+        webAttSearchConfigClass.getClassReference().getDocRef()) != null;
   }
 
 }

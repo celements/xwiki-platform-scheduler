@@ -3,7 +3,7 @@ package com.celements.search.web.packages;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.ClassReference;
 
 import com.celements.navigation.INavigationClassConfig;
 import com.celements.search.lucene.ILuceneSearchService;
@@ -63,8 +63,8 @@ public class MenuWebSearchPackage implements WebSearchPackage {
   }
 
   @Override
-  public Optional<DocumentReference> getLinkedClassRef() {
-    return Optional.of(classConf.getMenuItemClassRef());
+  public Optional<ClassReference> getLinkedClassRef() {
+    return Optional.of(new ClassReference(classConf.getMenuItemClassRef()));
   }
 
 }

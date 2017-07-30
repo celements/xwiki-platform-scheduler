@@ -3,7 +3,7 @@ package com.celements.search.web.packages;
 import javax.validation.constraints.NotNull;
 
 import org.xwiki.component.annotation.ComponentRole;
-import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.ClassReference;
 
 import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneDocType;
@@ -25,7 +25,7 @@ public interface WebSearchPackage {
   public @NotNull IQueryRestriction getQueryRestriction(@NotNull XWikiDocument cfgDoc,
       @NotNull String searchTerm);
 
-  public @NotNull Optional<DocumentReference> getLinkedClassRef();
+  public @NotNull Optional<ClassReference> getLinkedClassRef();
 
   public static final Predicate<WebSearchPackage> PREDICATE_DEFAULT = new Predicate<WebSearchPackage>() {
 

@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.util.Version;
 import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
@@ -73,7 +74,13 @@ public interface ILuceneSearchService {
 
   public QueryRestriction createDocRestriction(DocumentReference docRef);
 
+  /**
+   * @deprecated instead use {@link #createObjectRestriction(ClassReference)}
+   */
+  @Deprecated
   public QueryRestriction createObjectRestriction(DocumentReference classRef);
+
+  public QueryRestriction createObjectRestriction(ClassReference classRef);
 
   public QueryRestriction createFieldRestriction(DocumentReference classRef, String field,
       String value);
