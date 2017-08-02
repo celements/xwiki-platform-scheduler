@@ -9,10 +9,11 @@ import org.xwiki.model.reference.WikiReference;
 import com.celements.model.util.ModelUtils;
 
 @Component
+@Deprecated
 public class WebSearchClassConfig implements IWebSearchClassConfig {
 
   @Requirement
-  ModelUtils modelUtils;
+  private ModelUtils modelUtils;
 
   @Override
   public DocumentReference getWebSearchConfigClassRef() {
