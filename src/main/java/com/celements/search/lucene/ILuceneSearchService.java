@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.util.Version;
 import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
@@ -15,6 +16,7 @@ import org.xwiki.model.reference.SpaceReference;
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.search.lucene.query.IQueryRestriction;
+import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
@@ -66,11 +68,19 @@ public interface ILuceneSearchService {
   public QueryRestriction createRestriction(String field, String value, boolean tokenize,
       boolean fuzzy);
 
+  public QueryRestriction createDocTypeRestriction(LuceneDocType docType);
+
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef);
 
   public QueryRestriction createDocRestriction(DocumentReference docRef);
 
+  /**
+   * @deprecated instead use {@link #createObjectRestriction(ClassReference)}
+   */
+  @Deprecated
   public QueryRestriction createObjectRestriction(DocumentReference classRef);
+
+  public QueryRestriction createObjectRestriction(ClassReference classRef);
 
   public QueryRestriction createFieldRestriction(DocumentReference classRef, String field,
       String value);

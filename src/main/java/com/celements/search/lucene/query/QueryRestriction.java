@@ -6,12 +6,16 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.lucene.queryParser.QueryParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
 
 public class QueryRestriction implements IQueryRestriction {
 
@@ -77,6 +81,17 @@ public class QueryRestriction implements IQueryRestriction {
     return this;
   }
 
+  @Override
+  public Optional<Float> getFuzzy() {
+    return Optional.fromNullable(fuzzy);
+  }
+
+  @Override
+  public QueryRestriction setFuzzy(@Nullable Float fuzzy) {
+    this.fuzzy = fuzzy;
+    return this;
+  }
+
   /**
    * Use fuzzy search to find similar words.
    *
@@ -88,19 +103,17 @@ public class QueryRestriction implements IQueryRestriction {
     try {
       setFuzzy(Float.parseFloat(fuzzy));
     } catch (NumberFormatException nfe) {
-      LOGGER.error("Exception parsing float of '" + fuzzy + "'.", nfe);
+      LOGGER.error("Exception parsing float of '{}'", fuzzy, nfe);
     }
     return this;
   }
 
   public QueryRestriction setFuzzy(float fuzzy) {
-    this.fuzzy = fuzzy;
-    return this;
+    return setFuzzy((Float) fuzzy);
   }
 
   public QueryRestriction setFuzzy() {
-    fuzzy = -1f; // use Lucene's default (which is 0.5)
-    return this;
+    return setFuzzy(-1f); // use Lucene's default (which is 0.5)
   }
 
   /**
@@ -113,7 +126,7 @@ public class QueryRestriction implements IQueryRestriction {
     try {
       setProximity(Integer.parseInt(proximity));
     } catch (NumberFormatException nfe) {
-      LOGGER.error("Exception parsing float of '" + fuzzy + "'.", nfe);
+      LOGGER.error("Exception parsing float of '{}'", proximity, nfe);
     }
     return this;
   }
@@ -135,7 +148,7 @@ public class QueryRestriction implements IQueryRestriction {
     try {
       setBoost(Float.parseFloat(boost));
     } catch (NumberFormatException nfe) {
-      LOGGER.error("Exception parsing float of '" + fuzzy + "'.", nfe);
+      LOGGER.error("Exception parsing float of '{}'", boost, nfe);
     }
     return this;
   }

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.configuration.ConfigurationSource;
+import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
@@ -30,6 +32,7 @@ import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
 import com.celements.search.lucene.query.IQueryRestriction;
+import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
@@ -44,6 +47,9 @@ import com.xpn.xwiki.plugin.lucene.LucenePlugin;
 
 @Component
 public class LuceneSearchService implements ILuceneSearchService {
+
+  // yyyyMMddHHmm
+  public static final Pattern DATE_PATTERN = Pattern.compile("^(\\d{12}|\\d{1,12}\\*)$");
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LuceneSearchService.class);
 
@@ -157,6 +163,11 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
+  public QueryRestriction createDocTypeRestriction(LuceneDocType docType) {
+    return createRestriction(IndexFields.DOCUMENT_TYPE, exactify(docType.key));
+  }
+
+  @Override
   public QueryRestriction createSpaceRestriction(SpaceReference spaceRef) {
     return createRestriction(IndexFields.DOCUMENT_SPACE, exactify(spaceRef));
   }
@@ -167,7 +178,13 @@ public class LuceneSearchService implements ILuceneSearchService {
   }
 
   @Override
+  @Deprecated
   public QueryRestriction createObjectRestriction(DocumentReference classRef) {
+    return createObjectRestriction(new ClassReference(classRef));
+  }
+
+  @Override
+  public QueryRestriction createObjectRestriction(ClassReference classRef) {
     QueryRestriction restriction = null;
     if (classRef != null) {
       restriction = createRestriction(IndexFields.OBJECT, exactify(classRef));

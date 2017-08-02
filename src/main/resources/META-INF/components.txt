@@ -6,3 +6,7 @@ com.celements.search.lucene.LuceneIndexService
 com.celements.search.web.classes.WebSearchClassPackage
 com.celements.search.web.classes.WebSearchConfigClass
 com.celements.search.web.classes.WebAttachmentSearchConfigClass
+com.celements.search.web.DefaultWebSearchQueryBuilder
+com.celements.search.web.packages.ContentWebSearchPackage
+com.celements.search.web.packages.MenuWebSearchPackage
+com.celements.search.web.packages.AttachmentWebSearchPackage

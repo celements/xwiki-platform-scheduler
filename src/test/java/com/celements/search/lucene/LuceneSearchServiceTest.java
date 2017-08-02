@@ -66,9 +66,9 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testCreateQuery_multiType() {
-    LuceneQuery query = searchService.createQuery(Arrays.asList("typeX", "typeY"));
+    LuceneQuery query = searchService.createQuery(Arrays.asList("wikipage", "attachment"));
     assertNotNull(query);
-    assertEquals("((type:(+\"typeX\") OR type:(+\"typeY\")) " + "AND wiki:(+\"xwikidb\"))",
+    assertEquals("((type:(+\"wikipage\") OR type:(+\"attachment\")) " + "AND wiki:(+\"xwikidb\"))",
         query.getQueryString());
   }
 
@@ -353,6 +353,14 @@ public class LuceneSearchServiceTest extends AbstractBridgedComponentTestCase {
     verifyDefault();
 
     assertEquals(limit, ret);
+  }
+
+  @Test
+  public void test_date_pattern() {
+    assertFalse(LuceneSearchService.DATE_PATTERN.matcher("asdf").matches());
+    assertFalse(LuceneSearchService.DATE_PATTERN.matcher("20170101").matches());
+    assertTrue(LuceneSearchService.DATE_PATTERN.matcher("20170101*").matches());
+    assertTrue(LuceneSearchService.DATE_PATTERN.matcher("201701012015").matches());
   }
 
 }

@@ -6,13 +6,13 @@ import java.util.List;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 
-import com.celements.model.classes.AbstractClassPackage;
+import com.celements.model.classes.AbstractLegacyClassPackage;
 import com.celements.model.classes.ClassDefinition;
 
 @Component(WebSearchClassPackage.NAME)
-public class WebSearchClassPackage extends AbstractClassPackage {
+public class WebSearchClassPackage extends AbstractLegacyClassPackage {
 
-  public static final String NAME = "webSearch";
+  public static final String NAME = "websearch";
 
   @Requirement
   private List<WebSearchClassDefinition> classDefs;
@@ -25,6 +25,11 @@ public class WebSearchClassPackage extends AbstractClassPackage {
   @Override
   public List<? extends ClassDefinition> getClassDefinitions() {
     return new ArrayList<>(classDefs);
+  }
+
+  @Override
+  public String getLegacyName() {
+    return "webSearch";
   }
 
 }

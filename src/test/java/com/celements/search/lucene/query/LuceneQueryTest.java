@@ -11,16 +11,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.model.reference.WikiReference;
 
-import com.celements.common.test.AbstractBridgedComponentTestCase;
+import com.celements.common.test.AbstractComponentTest;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 
-public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
+public class LuceneQueryTest extends AbstractComponentTest {
 
   private LuceneQuery query;
 
   @Before
-  public void setUp_LuceneQueryTest() throws Exception {
-    query = new LuceneQuery(Collections.<String>emptyList());
+  public void prepareTest() throws Exception {
+    query = new LuceneQuery();
+    query.setWiki(new WikiReference("xwikidb"));
   }
 
   @Test
@@ -31,12 +32,13 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
   @Test
   public void testGetDocTypes() {
     assertEquals(Collections.emptyList(), query.getDocTypes());
-    List<String> docTypes = new ArrayList<>();
-    docTypes.add("typeX");
-    query = new LuceneQuery(docTypes);
-    assertEquals(docTypes, query.getDocTypes());
-    docTypes.add("typeY");
-    assertFalse(docTypes.equals(query.getDocTypes()));
+    List<LuceneDocType> docTypes = new ArrayList<>();
+    docTypes.add(LuceneDocType.DOC);
+    query.setDocTypes(docTypes);
+    assertEquals(1, query.getDocTypes().size());
+    assertEquals(LuceneDocType.DOC, query.getDocTypes().get(0));
+    docTypes.add(LuceneDocType.ATT);
+    assertEquals(1, query.getDocTypes().size());
     try {
       query.getDocTypes().remove(0);
       fail("expecting UnsupportedOperationException");
@@ -81,16 +83,17 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testGetQueryString_withType() {
-    query = new LuceneQuery(Arrays.asList("typeX"));
-    String queryString = "(type:(+\"typeX\") AND wiki:(+\"xwikidb\"))";
+    query.setDocTypes(Arrays.asList(LuceneDocType.DOC));
+    String queryString = "(type:(+\"" + LuceneDocType.DOC.key + "\") AND wiki:(+\"xwikidb\"))";
     assertEquals(queryString, query.getQueryString());
     assertEquals("queryString must stay the same", queryString, query.getQueryString());
   }
 
   @Test
   public void testGetQueryString_multiTypes() {
-    query = new LuceneQuery(Arrays.asList("typeX", "typeY"));
-    String queryString = "((type:(+\"typeX\") OR type:(+\"typeY\")) AND wiki:(+\"xwikidb\"))";
+    query.setDocTypes(Arrays.asList(LuceneDocType.DOC, LuceneDocType.ATT));
+    String queryString = "((type:(+\"" + LuceneDocType.DOC.key + "\") OR type:(+\""
+        + LuceneDocType.ATT + "\")) AND wiki:(+\"xwikidb\"))";
     assertEquals(queryString, query.getQueryString());
     assertEquals("queryString must stay the same", queryString, query.getQueryString());
   }
@@ -129,8 +132,8 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testGetQueryString_filled() {
-    LuceneQuery query = getNewFilledQuery(Arrays.asList("typeX"));
-    String queryString = "(type:(+\"typeX\") AND wiki:(+\"xwikidb\") "
+    LuceneQuery query = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
+    String queryString = "(type:(+\"" + LuceneDocType.DOC + "\") "
         + "AND (field1:(+value1*) OR field2:(+value2*)) "
         + "AND (field3:(+value3*) OR field4:(+value4*)) AND field5:(+value5*))";
     assertEquals(queryString, query.getQueryString());
@@ -139,7 +142,7 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testCopy() {
-    LuceneQuery query = getNewFilledQuery(Arrays.asList("typeX"));
+    LuceneQuery query = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
     LuceneQuery queryCopy = query.copy();
     assertNotSame(query, queryCopy);
     assertEquals(query, queryCopy);
@@ -150,44 +153,45 @@ public class LuceneQueryTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testEquals() {
-    LuceneQuery query = getNewFilledQuery(Arrays.asList("typeX"));
-    LuceneQuery queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    LuceneQuery query = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
+    LuceneQuery queryCopy = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
     assertNotSame(query, queryCopy);
     assertTrue(query.equals(queryCopy));
 
-    queryCopy = getNewFilledQuery(Arrays.asList("typeY"));
+    queryCopy = getNewFilledQuery(Arrays.asList(LuceneDocType.ATT));
     assertFalse(query.equals(queryCopy));
 
-    queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    queryCopy = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
     queryCopy.setWiki(new WikiReference("asdf"));
     assertFalse(query.equals(queryCopy));
 
-    queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    queryCopy = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
     queryCopy.add(new QueryRestriction("field6", "value6"));
     assertFalse(query.equals(queryCopy));
   }
 
   @Test
   public void testHashCode() {
-    LuceneQuery query = getNewFilledQuery(Arrays.asList("typeX"));
-    LuceneQuery queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    LuceneQuery query = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
+    LuceneQuery queryCopy = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
     assertNotSame(query, queryCopy);
     assertTrue(query.hashCode() == queryCopy.hashCode());
 
-    queryCopy = getNewFilledQuery(Arrays.asList("typeY"));
+    queryCopy = getNewFilledQuery(Arrays.asList(LuceneDocType.ATT));
     assertFalse(query.hashCode() == queryCopy.hashCode());
 
-    queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    queryCopy = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
     queryCopy.setWiki(new WikiReference("asdf"));
     assertFalse(query.hashCode() == queryCopy.hashCode());
 
-    queryCopy = getNewFilledQuery(Arrays.asList("typeX"));
+    queryCopy = getNewFilledQuery(Arrays.asList(LuceneDocType.DOC));
     queryCopy.add(new QueryRestriction("field6", "value6"));
     assertFalse(query.hashCode() == queryCopy.hashCode());
   }
 
-  private LuceneQuery getNewFilledQuery(List<String> docTypes) {
-    LuceneQuery query = new LuceneQuery(docTypes);
+  private LuceneQuery getNewFilledQuery(List<LuceneDocType> docTypes) {
+    LuceneQuery query = new LuceneQuery();
+    query.setDocTypes(docTypes);
     QueryRestrictionGroup restrGrpUser = new QueryRestrictionGroup(Type.OR);
     restrGrpUser.add(new QueryRestriction("field1", "value1"));
     restrGrpUser.add(new QueryRestriction("field2", "value2"));

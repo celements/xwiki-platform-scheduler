@@ -13,16 +13,22 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.script.service.ScriptService;
 
+import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentAccessException;
+import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
+import com.celements.rights.access.EAccessLevel;
 import com.celements.rights.access.IRightsAccessFacadeRole;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
+import com.celements.search.web.WebSearchQueryBuilder;
+import com.celements.search.web.classes.WebSearchConfigClass;
 import com.celements.web.service.IWebUtilsService;
 import com.google.common.base.MoreObjects;
+import com.xpn.xwiki.web.Utils;
 
 @Component(LuceneSearchScriptService.NAME)
 public class LuceneSearchScriptService implements ScriptService {
@@ -52,6 +58,9 @@ public class LuceneSearchScriptService implements ScriptService {
 
   @Requirement
   private IRightsAccessFacadeRole rightsAccess;
+
+  @Requirement
+  private IModelAccessFacade modelAccess;
 
   @Requirement
   private ModelUtils modelUtils;
@@ -249,6 +258,26 @@ public class LuceneSearchScriptService implements ScriptService {
       indexService.optimizeIndex();
       ret = true;
     }
+    return ret;
+  }
+
+  public LuceneSearchResult webSearch(String searchTerm, DocumentReference configDocRef,
+      List<String> languages) {
+    LuceneSearchResult ret = null;
+    try {
+      WebSearchQueryBuilder builder = Utils.getComponent(WebSearchQueryBuilder.class);
+      if ((configDocRef != null) && rightsAccess.hasAccessLevel(configDocRef, EAccessLevel.VIEW)) {
+        builder.setConfigDoc(modelAccess.getDocument(configDocRef));
+      }
+      builder.setSearchTerm(searchTerm);
+      LuceneQuery query = builder.build();
+      List<String> sortFields = modelAccess.getFieldValue(builder.getConfigDocRef(),
+          WebSearchConfigClass.FIELD_SORT_FIELDS).orNull();
+      ret = searchService.search(query, sortFields, languages);
+    } catch (DocumentNotExistsException exc) {
+      LOGGER.info("webSearch: provided configDoc '{}' doesn't exist", configDocRef);
+    }
+    LOGGER.debug("webSearch: returning '{}'", ret);
     return ret;
   }
 

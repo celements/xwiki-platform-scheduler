@@ -3,7 +3,9 @@ package com.celements.search.lucene.query;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.python.google.common.base.Strings;
+
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 
 public class QueryRestrictionString implements IQueryRestriction {
 
@@ -23,6 +25,16 @@ public class QueryRestrictionString implements IQueryRestriction {
   public QueryRestrictionString setNegate(boolean negate) {
     this.negate = negate;
     return this;
+  }
+
+  @Override
+  public Optional<Float> getFuzzy() {
+    return Optional.of(1f);
+  }
+
+  @Override
+  public IQueryRestriction setFuzzy(Float fuzzy) {
+    throw new UnsupportedOperationException();
   }
 
   public QueryRestrictionString setQueryString(String queryString) {
