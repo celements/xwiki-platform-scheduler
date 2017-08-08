@@ -115,22 +115,6 @@ public class WebSearchQueryBuilderTest extends AbstractComponentTest {
   }
 
   @Test
-  public void test_build_default() throws Exception {
-    String searchTerm = "welt";
-    builder.setConfigDoc(createCfDoc(docRef, false));
-    builder.setSearchTerm(searchTerm);
-
-    replayDefault();
-    LuceneQuery query = builder.build();
-    verifyDefault();
-
-    assertNotNull(query);
-    assertEquals(builder.getPackages().size(), 2);
-    assertEquals(buildQueryString("(" + QUERY_CONTENT + " OR " + QUERY_MENU + ")", searchTerm),
-        query.getQueryString());
-  }
-
-  @Test
   public void test_build_attachment() throws Exception {
     String searchTerm = "welt";
     builder.setConfigDoc(createCfDoc(docRef, false));
