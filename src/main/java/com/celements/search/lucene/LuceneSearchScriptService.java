@@ -261,19 +261,32 @@ public class LuceneSearchScriptService implements ScriptService {
     return ret;
   }
 
+  public WebSearchQueryBuilder createWebSearchBuilder(DocumentReference configDocRef) {
+    WebSearchQueryBuilder ret = null;
+    try {
+      ret = Utils.getComponent(WebSearchQueryBuilder.class);
+      if ((configDocRef != null) && rightsAccess.hasAccessLevel(configDocRef, EAccessLevel.VIEW)) {
+        ret.setConfigDoc(modelAccess.getDocument(configDocRef));
+      }
+    } catch (DocumentNotExistsException exc) {
+      LOGGER.info("createWebSearchBuilder: provided configDoc '{}' doesn't exist", configDocRef);
+    }
+    LOGGER.debug("createWebSearchBuilder: returning '{}'", ret);
+    return ret;
+  }
+
   public LuceneSearchResult webSearch(String searchTerm, DocumentReference configDocRef,
       List<String> languages) {
     LuceneSearchResult ret = null;
     try {
-      WebSearchQueryBuilder builder = Utils.getComponent(WebSearchQueryBuilder.class);
-      if ((configDocRef != null) && rightsAccess.hasAccessLevel(configDocRef, EAccessLevel.VIEW)) {
-        builder.setConfigDoc(modelAccess.getDocument(configDocRef));
+      WebSearchQueryBuilder builder = createWebSearchBuilder(configDocRef);
+      if (builder != null) {
+        builder.setSearchTerm(searchTerm);
+        LuceneQuery query = builder.build();
+        List<String> sortFields = modelAccess.getFieldValue(builder.getConfigDocRef(),
+            WebSearchConfigClass.FIELD_SORT_FIELDS).orNull();
+        ret = searchService.search(query, sortFields, languages);
       }
-      builder.setSearchTerm(searchTerm);
-      LuceneQuery query = builder.build();
-      List<String> sortFields = modelAccess.getFieldValue(builder.getConfigDocRef(),
-          WebSearchConfigClass.FIELD_SORT_FIELDS).orNull();
-      ret = searchService.search(query, sortFields, languages);
     } catch (DocumentNotExistsException exc) {
       LOGGER.info("webSearch: provided configDoc '{}' doesn't exist", configDocRef);
     }
