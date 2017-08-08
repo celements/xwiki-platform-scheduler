@@ -68,8 +68,8 @@ public class AttachmentWebSearchPackage implements WebSearchPackage {
       grp.add(getRestrMimeTypes(cfgDoc, false));
       grp.add(getRestrMimeTypes(cfgDoc, true));
       grp.add(getRestrFilenamePrefixes(cfgDoc));
-      grp.add(contentModule.getQueryRestriction(cfgDoc, searchTerm));
     }
+    grp.add(contentModule.getQueryRestriction(cfgDoc, searchTerm));
     return grp;
   }
 

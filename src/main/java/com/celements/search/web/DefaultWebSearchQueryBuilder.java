@@ -35,6 +35,7 @@ import com.celements.model.util.ModelUtils;
 import com.celements.pagetype.IPageTypeClassConfig;
 import com.celements.pagetype.PageTypeReference;
 import com.celements.search.lucene.ILuceneSearchService;
+import com.celements.search.lucene.LuceneUtils;
 import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneDocType;
 import com.celements.search.lucene.query.LuceneQuery;
@@ -146,11 +147,11 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   public Collection<WebSearchPackage> getPackages() {
     Set<WebSearchPackage> ret = new LinkedHashSet<>();
     ret.addAll(activatedPackages);
-    ret.addAll(getRequiredPackages());
     ret.addAll(getConfiguredPackages());
     if (ret.isEmpty()) {
       ret.addAll(getDefaultPackages());
     }
+    ret.addAll(getRequiredPackages());
     checkState(!ret.isEmpty(), "no WebSearchPackages defined");
     return ret;
   }
@@ -209,8 +210,8 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   }
 
   private IQueryRestriction getRestrExcludeWebPref() {
-    return searchService.createRestriction(IndexFields.DOCUMENT_NAME,
-        ModelContext.WEB_PREF_DOC_NAME).setNegate(true);
+    return searchService.createRestriction(IndexFields.DOCUMENT_NAME, LuceneUtils.exactify(
+        ModelContext.WEB_PREF_DOC_NAME)).setNegate(true);
   }
 
   private IQueryRestriction getRestrSpaces(boolean isBlacklist) {

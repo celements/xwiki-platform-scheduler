@@ -10,7 +10,7 @@ import org.xwiki.component.annotation.Component;
 import com.celements.model.classes.AbstractClassDefinition;
 import com.celements.model.classes.fields.ClassField;
 import com.celements.model.classes.fields.list.CustomListField;
-import com.celements.model.classes.fields.list.StringListField;
+import com.celements.model.classes.fields.list.StaticListField;
 import com.google.common.net.MediaType;
 
 @Immutable
@@ -29,7 +29,7 @@ public class WebAttachmentSearchConfigClass extends AbstractClassDefinition impl
   public static ClassField<List<MediaType>> FIELD_MIMETYPES_BLACK_LIST = new CustomListField.Builder<>(
       CLASS_DEF_HINT, "mimeTypesBlackList", new MediaTypeMarshaller()).multiSelect(true).build();
 
-  public static ClassField<List<String>> FIELD_FILENAME_PREFIXES = new StringListField.Builder(
+  public static ClassField<List<String>> FIELD_FILENAME_PREFIXES = new StaticListField.Builder(
       CLASS_DEF_HINT, "fileNamePrefixes").multiSelect(true).build();
 
   @Override
