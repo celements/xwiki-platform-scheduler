@@ -1,5 +1,7 @@
 package com.celements.search.lucene;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -277,14 +279,22 @@ public class LuceneSearchScriptService implements ScriptService {
 
   public LuceneSearchResult webSearch(String searchTerm, DocumentReference configDocRef,
       List<String> languages) {
+    return webSearch(searchTerm, configDocRef, languages, null);
+  }
+
+  public LuceneSearchResult webSearch(String searchTerm, DocumentReference configDocRef,
+      List<String> languages, List<String> sortFields) {
     LuceneSearchResult ret = null;
     try {
       WebSearchQueryBuilder builder = createWebSearchBuilder(configDocRef);
       if (builder != null) {
         builder.setSearchTerm(searchTerm);
         LuceneQuery query = builder.build();
-        List<String> sortFields = modelAccess.getFieldValue(builder.getConfigDocRef(),
-            WebSearchConfigClass.FIELD_SORT_FIELDS).orNull();
+        if (sortFields == null) {
+          sortFields = new ArrayList<String>();
+        }
+        sortFields.addAll(modelAccess.getFieldValue(builder.getConfigDocRef(),
+            WebSearchConfigClass.FIELD_SORT_FIELDS).or(Collections.<String>emptyList()));
         ret = searchService.search(query, sortFields, languages);
       }
     } catch (DocumentNotExistsException exc) {
