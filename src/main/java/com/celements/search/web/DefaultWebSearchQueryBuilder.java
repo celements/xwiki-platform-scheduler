@@ -7,7 +7,7 @@ import static com.google.common.base.Preconditions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,11 +45,11 @@ import com.celements.search.web.classes.WebSearchConfigClass;
 import com.celements.search.web.packages.WebSearchPackage;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Strings;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 import com.xpn.xwiki.web.Utils;
@@ -80,6 +80,9 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   private IModelAccessFacade modelAccess;
 
   @Requirement
+  private IWebSearchService webSearchService;
+
+  @Requirement
   private ModelUtils modelUtils;
 
   @Requirement
@@ -88,7 +91,7 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
   private WikiReference wikiRef;
   private XWikiDocument configDoc;
   private String searchTerm = "";
-  private List<WebSearchPackage> activatedPackages = new ArrayList<>();
+  private Set<WebSearchPackage> activatedPackages = new HashSet<>();
 
   @Override
   public WikiReference getWikiRef() {
@@ -145,34 +148,13 @@ public class DefaultWebSearchQueryBuilder implements WebSearchQueryBuilder {
 
   @Override
   public Collection<WebSearchPackage> getPackages() {
-    Set<WebSearchPackage> ret = new LinkedHashSet<>();
-    ret.addAll(activatedPackages);
-    ret.addAll(getConfiguredPackages());
-    if (ret.isEmpty()) {
-      ret.addAll(getDefaultPackages());
+    Set<WebSearchPackage> ret = webSearchService.getAvailablePackages(
+        getConfigDoc().getDocumentReference());
+    if (!activatedPackages.isEmpty()) {
+      ret = Sets.intersection(ret, activatedPackages);
     }
-    ret.addAll(getRequiredPackages());
     checkState(!ret.isEmpty(), "no WebSearchPackages defined");
     return ret;
-  }
-
-  private List<WebSearchPackage> getRequiredPackages() {
-    return FluentIterable.from(webSearchPackages).filter(new Predicate<WebSearchPackage>() {
-
-      @Override
-      public boolean apply(WebSearchPackage searchPackage) {
-        return searchPackage.isRequired(getConfigDoc());
-      }
-    }).toList();
-  }
-
-  private List<WebSearchPackage> getDefaultPackages() {
-    return FluentIterable.from(webSearchPackages).filter(
-        WebSearchPackage.PREDICATE_DEFAULT).toList();
-  }
-
-  private List<WebSearchPackage> getConfiguredPackages() {
-    return modelAccess.getFieldValue(getConfigDoc(), WebSearchConfigClass.FIELD_PACKAGES).orNull();
   }
 
   @Override

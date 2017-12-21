@@ -1,10 +1,12 @@
 package com.celements.search.web;
 
 import static com.celements.common.test.CelementsTestUtils.*;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import com.celements.search.web.packages.AttachmentWebSearchPackage;
 import com.celements.search.web.packages.ContentWebSearchPackage;
 import com.celements.search.web.packages.MenuWebSearchPackage;
 import com.celements.search.web.packages.WebSearchPackage;
+import com.google.common.collect.ImmutableSet;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.Utils;
@@ -33,17 +36,25 @@ public class WebSearchQueryBuilderTest extends AbstractComponentTest {
 
   private DocumentReference docRef;
   private WebSearchQueryBuilder builder;
+  private IWebSearchService webSearchServiceMock;
 
   @Before
   public void prepareTest() throws Exception {
     docRef = new DocumentReference("wiki", "space", "doc");
     getContext().setDatabase(docRef.getWikiReference().getName());
+    webSearchServiceMock = registerComponentMock(IWebSearchService.class);
     builder = Utils.getComponent(WebSearchQueryBuilder.class);
   }
 
   @Test
-  public void test_getPackages_default() {
+  public void test_getPackages_default() throws Exception {
     builder.setConfigDoc(createCfDoc(docRef, false));
+
+    Set<WebSearchPackage> webSearchPackage = ImmutableSet.<WebSearchPackage>of(Utils.getComponent(
+        WebSearchPackage.class, MenuWebSearchPackage.NAME), Utils.getComponent(
+            WebSearchPackage.class, ContentWebSearchPackage.NAME));
+    expect(webSearchServiceMock.getAvailablePackages(builder.getConfigDocRef())).andReturn(
+        webSearchPackage).atLeastOnce();
 
     replayDefault();
     Collection<WebSearchPackage> ret = builder.getPackages();
@@ -56,23 +67,30 @@ public class WebSearchQueryBuilderTest extends AbstractComponentTest {
   }
 
   @Test
-  public void test_addPackage() {
+  public void test_addPackage() throws Exception {
     builder.setConfigDoc(createCfDoc(docRef, false));
-    WebSearchPackage webPackage = Utils.getComponent(WebSearchPackage.class,
+    WebSearchPackage webSearchPackage = Utils.getComponent(WebSearchPackage.class,
         AttachmentWebSearchPackage.NAME);
-    builder.addPackage(webPackage);
+    builder.addPackage(webSearchPackage);
+    expect(webSearchServiceMock.getAvailablePackages(builder.getConfigDocRef())).andReturn(
+        ImmutableSet.<WebSearchPackage>of(webSearchPackage)).atLeastOnce();
 
     replayDefault();
     Collection<WebSearchPackage> ret = builder.getPackages();
     verifyDefault();
 
     assertEquals(1, ret.size());
-    assertTrue(ret.contains(webPackage));
+    assertTrue(ret.contains(webSearchPackage));
   }
 
   @Test
   public void test_build_noTerm() throws Exception {
     builder.setConfigDoc(createCfDoc(docRef, false));
+    Set<WebSearchPackage> webSearchPackages = ImmutableSet.<WebSearchPackage>of(Utils.getComponent(
+        WebSearchPackage.class, MenuWebSearchPackage.NAME), Utils.getComponent(
+            WebSearchPackage.class, ContentWebSearchPackage.NAME));
+    expect(webSearchServiceMock.getAvailablePackages(builder.getConfigDocRef())).andReturn(
+        webSearchPackages).atLeastOnce();
 
     replayDefault();
     LuceneQuery query = builder.build();
@@ -85,59 +103,80 @@ public class WebSearchQueryBuilderTest extends AbstractComponentTest {
   @Test
   public void test_build_content() throws Exception {
     String searchTerm = "welt";
+
     builder.setConfigDoc(createCfDoc(docRef, false));
     builder.setSearchTerm(searchTerm);
     builder.addPackage(ContentWebSearchPackage.NAME);
+
+    expect(webSearchServiceMock.getAvailablePackages(builder.getConfigDocRef())).andReturn(
+        ImmutableSet.<WebSearchPackage>of(Utils.getComponent(WebSearchPackage.class,
+            ContentWebSearchPackage.NAME))).atLeastOnce();
 
     replayDefault();
     LuceneQuery query = builder.build();
     verifyDefault();
 
     assertNotNull(query);
-    assertEquals(builder.getPackages().size(), 1);
+    assertEquals(1, builder.getPackages().size());
     assertEquals(buildQueryString(QUERY_CONTENT, searchTerm), query.getQueryString());
   }
 
   @Test
   public void test_build_menu() throws Exception {
     String searchTerm = "welt";
+
     builder.setConfigDoc(createCfDoc(docRef, false));
     builder.setSearchTerm(searchTerm);
     builder.addPackage(MenuWebSearchPackage.NAME);
+
+    expect(webSearchServiceMock.getAvailablePackages(builder.getConfigDocRef())).andReturn(
+        ImmutableSet.<WebSearchPackage>of(Utils.getComponent(WebSearchPackage.class,
+            MenuWebSearchPackage.NAME))).atLeastOnce();
 
     replayDefault();
     LuceneQuery query = builder.build();
     verifyDefault();
 
     assertNotNull(query);
-    assertEquals(builder.getPackages().size(), 1);
+    assertEquals(1, builder.getPackages().size());
     assertEquals(buildQueryString(QUERY_MENU, searchTerm), query.getQueryString());
   }
 
   @Test
   public void test_build_attachment() throws Exception {
     String searchTerm = "welt";
+
     builder.setConfigDoc(createCfDoc(docRef, false));
     builder.setSearchTerm(searchTerm);
     builder.addPackage(AttachmentWebSearchPackage.NAME);
+
+    expect(webSearchServiceMock.getAvailablePackages(builder.getConfigDocRef())).andReturn(
+        ImmutableSet.<WebSearchPackage>of(Utils.getComponent(WebSearchPackage.class,
+            AttachmentWebSearchPackage.NAME))).atLeastOnce();
 
     replayDefault();
     LuceneQuery query = builder.build();
     verifyDefault();
 
     assertNotNull(query);
-    assertEquals(builder.getPackages().size(), 1);
+    assertEquals(1, builder.getPackages().size());
     assertEquals(buildQueryString(QUERY_ATTACHMENT, searchTerm), query.getQueryString());
   }
 
   @Test
-  public void test_build_linkedDocsOnly() {
+  public void test_build_linkedDocsOnly() throws Exception {
     String searchTerm = "welt";
     builder.setConfigDoc(createCfDoc(docRef, true));
     builder.setSearchTerm(searchTerm);
     builder.addPackage(MenuWebSearchPackage.NAME);
     builder.addPackage(ContentWebSearchPackage.NAME);
     builder.addPackage(AttachmentWebSearchPackage.NAME);
+
+    expect(webSearchServiceMock.getAvailablePackages(builder.getConfigDocRef())).andReturn(
+        ImmutableSet.<WebSearchPackage>of(Utils.getComponent(WebSearchPackage.class,
+            MenuWebSearchPackage.NAME), Utils.getComponent(WebSearchPackage.class,
+                ContentWebSearchPackage.NAME), Utils.getComponent(WebSearchPackage.class,
+                    AttachmentWebSearchPackage.NAME))).atLeastOnce();
 
     replayDefault();
     LuceneQuery query = builder.build();
