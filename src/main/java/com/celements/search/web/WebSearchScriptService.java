@@ -80,4 +80,12 @@ public class WebSearchScriptService implements ScriptService {
     return ret;
   }
 
+  public List<String> getAvailablePackages(DocumentReference configDocRef) {
+    List<String> ret = new ArrayList<>();
+    for (WebSearchPackage webSearchPackage : searchService.getAvailablePackages(configDocRef)) {
+      ret.add(webSearchPackage.getName());
+    }
+    return ret;
+  }
+
 }
