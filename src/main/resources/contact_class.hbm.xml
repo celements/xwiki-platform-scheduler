@@ -3,7 +3,7 @@
         "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
 <class entity-name="Celements.ContactClass" table="cel_contactclass">
-  <id name="id" type="integer" unsaved-value="undefined">
+  <id name="id" type="long" unsaved-value="undefined">
     <column name="CON_ID" not-null="true" />
     <generator class="assigned" />
   </id>
@@ -22,7 +22,7 @@
 </class>
 
 <class entity-name="Celements.ContactAddressClass" table="cel_contactaddressclass">
-  <id name="id" type="integer" unsaved-value="undefined">
+  <id name="id" type="long" unsaved-value="undefined">
     <column name="COA_ID" not-null="true" />
     <generator class="assigned" />
   </id>
@@ -41,7 +41,7 @@
 </class>
 
 <class entity-name="Classes.MemberClass" table="cel_memberclass">
-  <id name="id" type="integer" unsaved-value="undefined">
+  <id name="id" type="long" unsaved-value="undefined">
     <column name="MCR_ID" not-null="true" />
     <generator class="assigned" />
   </id>
