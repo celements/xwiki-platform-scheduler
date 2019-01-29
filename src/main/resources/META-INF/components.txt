@@ -1,0 +1,3 @@
+com.celements.cleverreach.CleverReachRest
+com.celements.cleverreach.CleverReachScriptService
+com.celements.cleverreach.DefaultRestClientFactory

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>com.celements</groupId>
+    <artifactId>celements</artifactId>
+    <version>3.3-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.celements</groupId>
+  <artifactId>celements-cleverreach</artifactId>
+  <version>3.0-SNAPSHOT</version>
+  <description>Celements connector to Clever Reach API</description>
+  <dependencies>
+    <dependency>
+      <groupId>com.celements</groupId>
+      <artifactId>celements-xwiki-core</artifactId>
+      <version>3.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.celements</groupId>
+      <artifactId>celements-model</artifactId>
+      <version>3.11</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.celements</groupId>
+      <artifactId>celements-core</artifactId>
+      <version>3.7</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
+      <!-- Java 8 required before including 2.26+ -->
+      <version>2.25.1</version>
+    </dependency>
+  </dependencies>
+  <scm>
+    <connection>scm:git:git@github.com:synventis/syn-cel.git</connection>
+    <developerConnection>scm:git:git@github.com:synventis/syn-cel.git</developerConnection>
+    <url>https://github.com/synventis/syn-cel</url>
+    <tag>HEAD</tag>
+  </scm>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ssh-synventis-snapshot-repository</id>
+      <url>scpexe://maven.synventis.ch/var/www-synventis/snapshots</url>
+      <uniqueVersion>true</uniqueVersion>
+    </snapshotRepository>
+    <repository>
+      <id>ssh-synventis-release-repository</id>
+      <url>scpexe://maven.synventis.ch/var/www-synventis/releases</url>
+      <uniqueVersion>true</uniqueVersion>
+    </repository>
+  </distributionManagement>
+</project>
