@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.validation.constraints.NotNull;
 
 import org.xwiki.component.annotation.ComponentRole;
+import org.xwiki.model.reference.DocumentReference;
 
 @ComponentRole
 public interface CleverReachService {
@@ -36,5 +37,13 @@ public interface CleverReachService {
    */
   @NotNull
   String ttl() throws IOException;
+
+  /**
+   * Get the default configuration document reference.
+   *
+   * @return DocumentReference of the configuration document
+   */
+  @NotNull
+  DocumentReference getConfigDocRef();
 
 }

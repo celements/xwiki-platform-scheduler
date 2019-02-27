@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.celements</groupId>
   <artifactId>celements-cleverreach</artifactId>
-  <version>3.0-SNAPSHOT</version>
+  <version>3.1-SNAPSHOT</version>
   <description>Celements connector to Clever Reach API</description>
   <dependencies>
     <dependency>
@@ -37,21 +37,9 @@
     </dependency>
   </dependencies>
   <scm>
-    <connection>scm:git:git@github.com:synventis/syn-cel.git</connection>
-    <developerConnection>scm:git:git@github.com:synventis/syn-cel.git</developerConnection>
-    <url>https://github.com/synventis/syn-cel</url>
+    <connection>scm:git:git@github.com:celements/celements-cleverreach.git</connection>
+    <developerConnection>scm:git:git@github.com:celements/celements-cleverreach.git</developerConnection>
+    <url>https://github.com/celements/celements-cleverreach</url>
     <tag>HEAD</tag>
   </scm>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ssh-synventis-snapshot-repository</id>
-      <url>scpexe://maven.synventis.ch/var/www-synventis/snapshots</url>
-      <uniqueVersion>true</uniqueVersion>
-    </snapshotRepository>
-    <repository>
-      <id>ssh-synventis-release-repository</id>
-      <url>scpexe://maven.synventis.ch/var/www-synventis/releases</url>
-      <uniqueVersion>true</uniqueVersion>
-    </repository>
-  </distributionManagement>
 </project>

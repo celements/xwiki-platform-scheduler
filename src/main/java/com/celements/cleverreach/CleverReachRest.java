@@ -79,7 +79,7 @@ public class CleverReachRest implements CleverReachService {
     checkNotNull(mailingConf);
     Mailing formData = new Mailing();
     formData.subject = mailingConf.getSubject();
-    formData.content.html = mailingConf.getContentHtml();
+    formData.content.html = mailingConf.getContentHtmlCssInlined();
     formData.content.text = mailingConf.getContentPlain();
     Response response = sendRestRequest(PATH_MAILINGS + mailingConf.getId(), formData,
         SubmitMethod.PUT);
@@ -107,6 +107,12 @@ public class CleverReachRest implements CleverReachService {
   @Override
   public String ttl() throws IOException {
     return runDebugRequest(PATH_TTL);
+  }
+
+  @Override
+  public DocumentReference getConfigDocRef() {
+    return create(DocumentReference.class, REST_CONFIG_DOC_NAME, create(SpaceReference.class,
+        REST_CONFIG_SPACE_NAME, modelContext.getWikiRef()));
   }
 
   Response sendRestRequest(String path, Object data, SubmitMethod method) throws IOException {
@@ -271,11 +277,6 @@ public class CleverReachRest implements CleverReachService {
   @SuppressWarnings("unchecked")
   MultivaluedMap<String, String> getMultivalueMapFromOjb(Object data) {
     return (MultivaluedMap<String, String>) data;
-  }
-
-  DocumentReference getConfigDocRef() {
-    return create(DocumentReference.class, REST_CONFIG_DOC_NAME, create(SpaceReference.class,
-        REST_CONFIG_SPACE_NAME, modelContext.getWikiRef()));
   }
 
   void traceLogLoginResponse(Response response, String content) {
