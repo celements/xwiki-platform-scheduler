@@ -1,0 +1,35 @@
+#contentTable,
+.wholeContent ul {
+  background-color: #ff0;
+}
+
+<!-- overwriting style in testStyles1 -->
+ul li.listitem {
+  color: #00f;
+}
+
+body table#contentTable .column4,
+.column2 {
+  padding-right: 2px;
+  color: #fff;
+}
+
+<!-- less specific than padding: 2px, thus should be ignored -->
+body .specialCell {
+  padding-right: 4px;
+}
+
+<!-- overwrites color: #fff -->
+body table#contentTable .specialCell {
+  color: #0ff;
+}
+
+<!-- + operator to select .column3 -->
+body table#contentTable td + td + td {
+  color: #abc;
+}
+
+<!-- LIBRARY LIMITATION: should overwrite color: #0ff, but doesn't in 0.42.3 -->
+body table#contentTable .column4.specialCell {
+  color: #000;
+}

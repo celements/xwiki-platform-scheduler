@@ -1,0 +1,12 @@
+body {
+  background-color: #f00;
+}
+
+<!-- should get overwritten by testStyles2 -->
+ul li.listitem {
+  color: #0f0;
+}
+
+table {
+  width: 800px;
+}
