@@ -33,7 +33,7 @@ public class ReCaptchaResponse {
   private DateTime timestamp; // ISO format yyyy-MM-dd'T'HH:mm:ssZZ
                               // ==> ISODateTimeFormat.dateTimeNoMillis()
   private String hostname;
-  private List<String> errorCodes = Collections.emptyList();
+  private List<String> errorCodes;
 
   public ReCaptchaResponse(@JsonProperty("success") boolean success,
       @JsonProperty("challenge_ts") String timestamp,
@@ -74,6 +74,7 @@ public class ReCaptchaResponse {
   }
 
   public void setErrorCodes(String[] errorCodes) {
-    this.errorCodes = ImmutableList.copyOf(errorCodes);
+    this.errorCodes = ((errorCodes != null) ? ImmutableList.copyOf(errorCodes) : Collections
+        .<String>emptyList());
   }
 }
