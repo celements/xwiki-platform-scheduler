@@ -1,15 +1,12 @@
 package com.celements.captcha;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -23,10 +20,6 @@ import com.google.common.collect.ImmutableMap;
 // }
 public class ReCaptchaResponse {
 
-  private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-
-  private static final String RECAPTCHA_RESPONSE_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZZ";
-
   public static final Map<String, String> ERROR_MESSAGES = new ImmutableMap.Builder<String, String>()
       .put("missing-input-secret", "The secret parameter is missing.")
       .put("invalid-input-secret", "The secret parameter is invalid or malformed.")
@@ -37,7 +30,8 @@ public class ReCaptchaResponse {
           + "been used previously.").build();
 
   private boolean success;
-  private Date timestamp; // ISO format yyyy-MM-dd'T'HH:mm:ssZZ
+  private DateTime timestamp; // ISO format yyyy-MM-dd'T'HH:mm:ssZZ
+                              // ==> ISODateTimeFormat.dateTimeNoMillis()
   private String hostname;
   private List<String> errorCodes = Collections.emptyList();
 
@@ -59,17 +53,12 @@ public class ReCaptchaResponse {
     this.success = success;
   }
 
-  public Date getTimestamp() {
+  public DateTime getTimestamp() {
     return timestamp;
   }
 
   public void setTimestamp(String timestamp) {
-    try {
-      this.timestamp = new SimpleDateFormat(RECAPTCHA_RESPONSE_TIMESTAMP_FORMAT).parse(timestamp);
-    } catch (ParseException pe) {
-      LOGGER.error("timestamp [{}] could not be parsed with format [{}]", timestamp,
-          RECAPTCHA_RESPONSE_TIMESTAMP_FORMAT);
-    }
+    this.timestamp = ISODateTimeFormat.dateTimeNoMillis().parseDateTime(timestamp);
   }
 
   public String getHostname() {
