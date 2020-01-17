@@ -16,7 +16,7 @@ public class CaptchaScriptService implements ScriptService {
     return reCaptcha.verify();
   }
 
-  public boolean reCaptchaVerifies() {
+  public boolean reCaptchaVerifySuccess() {
     Optional<ReCaptchaResponse> response = reCaptchaVerify();
     return response.isPresent() ? response.get().isSuccess() : false;
   }

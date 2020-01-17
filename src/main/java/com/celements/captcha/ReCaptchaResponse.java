@@ -1,9 +1,16 @@
 package com.celements.captcha;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 // {
@@ -14,6 +21,10 @@ import com.google.common.collect.ImmutableMap;
 // "error-codes": [...] // optional
 // }
 public class ReCaptchaResponse {
+
+  private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+
+  private static final String RECAPTCHA_RESPONSE_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZZ";
 
   public static final Map<String, String> ERROR_MESSAGES = new ImmutableMap.Builder<String, String>()
       .put("missing-input-secret", "The secret parameter is missing.")
@@ -27,7 +38,7 @@ public class ReCaptchaResponse {
   private boolean success;
   private Date timestamp; // ISO format yyyy-MM-dd'T'HH:mm:ssZZ
   private String hostname;
-  private List<String> errorCodes;
+  private List<String> errorCodes = Collections.emptyList();
 
   public boolean isSuccess() {
     return success;
@@ -41,8 +52,13 @@ public class ReCaptchaResponse {
     return timestamp;
   }
 
-  public void setTimestamp(Date timestamp) {
-    this.timestamp = timestamp;
+  public void setTimestamp(String timestamp) {
+    try {
+      this.timestamp = new SimpleDateFormat(RECAPTCHA_RESPONSE_TIMESTAMP_FORMAT).parse(timestamp);
+    } catch (ParseException pe) {
+      LOGGER.error("timestamp [{}] could not be parsed with format [{}]", timestamp,
+          RECAPTCHA_RESPONSE_TIMESTAMP_FORMAT);
+    }
   }
 
   public String getHostname() {
@@ -57,7 +73,7 @@ public class ReCaptchaResponse {
     return errorCodes;
   }
 
-  public void setErrorCodes(List<String> errorCodes) {
-    this.errorCodes = errorCodes;
+  public void setErrorCodes(String[] errorCodes) {
+    this.errorCodes = ImmutableList.copyOf(errorCodes);
   }
 }
