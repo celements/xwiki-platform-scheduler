@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +40,16 @@ public class ReCaptchaResponse {
   private Date timestamp; // ISO format yyyy-MM-dd'T'HH:mm:ssZZ
   private String hostname;
   private List<String> errorCodes = Collections.emptyList();
+
+  public ReCaptchaResponse(@JsonProperty("success") boolean success,
+      @JsonProperty("challenge_ts") String timestamp,
+      @JsonProperty("hostname") String hostname,
+      @JsonProperty("error-codes") String[] errors) {
+    setSuccess(success);
+    setTimestamp(timestamp);
+    setHostname(hostname);
+    setErrorCodes(errors);
+  }
 
   public boolean isSuccess() {
     return success;
