@@ -1,0 +1,2 @@
+com.celements.captcha.CaptchaScriptService
+com.celements.captcha.ReCaptchaService
