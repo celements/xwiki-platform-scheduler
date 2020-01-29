@@ -10,7 +10,12 @@ import com.google.common.base.Optional;
 public class CaptchaScriptService implements ScriptService {
 
   @Requirement("reCaptcha")
-  CaptchaServiceRole reCaptcha;
+  private CaptchaServiceRole reCaptcha;
+
+  /** @deprecated since 3.0 - delegate to old implementation */
+  @Requirement("captcha_old")
+  @Deprecated
+  private ScriptService captchaLegacy;
 
   public Optional<ReCaptchaResponse> reCaptchaVerify() {
     return reCaptcha.verify();
@@ -19,5 +24,23 @@ public class CaptchaScriptService implements ScriptService {
   public boolean reCaptchaVerifySuccess() {
     Optional<ReCaptchaResponse> response = reCaptchaVerify();
     return response.isPresent() ? response.get().isSuccess() : false;
+  }
+
+  /**
+   * @deprecated since 3.0 - delegate to old implementation
+   * @return
+   */
+  @Deprecated
+  public boolean checkCaptcha() {
+    return ((CaptchaScriptService) captchaLegacy).checkCaptcha();
+  }
+
+  /**
+   * @deprecated since 3.0 - delegate to old implementation
+   * @return
+   */
+  @Deprecated
+  public String getCaptchaId() {
+    return ((CaptchaScriptService) captchaLegacy).getCaptchaId();
   }
 }
