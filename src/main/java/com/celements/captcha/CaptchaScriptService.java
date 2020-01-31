@@ -4,6 +4,8 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
 import org.xwiki.script.service.ScriptService;
 
+import com.celements.model.context.ModelContext;
+import com.celements.web.plugin.cmd.CaptchaCommand;
 import com.google.common.base.Optional;
 
 @Component("captcha")
@@ -12,10 +14,8 @@ public class CaptchaScriptService implements ScriptService {
   @Requirement("reCaptcha")
   private CaptchaServiceRole reCaptcha;
 
-  /** @deprecated since 3.0 - delegate to old implementation */
-  @Requirement("captcha_old")
-  @Deprecated
-  private ScriptService captchaLegacy;
+  @Requirement
+  private ModelContext context;
 
   public Optional<ReCaptchaResponse> reCaptchaVerify() {
     return reCaptcha.verify();
@@ -32,7 +32,7 @@ public class CaptchaScriptService implements ScriptService {
    */
   @Deprecated
   public boolean checkCaptcha() {
-    return ((CaptchaScriptService) captchaLegacy).checkCaptcha();
+    return new CaptchaCommand().checkCaptcha(context.getXWikiContext());
   }
 
   /**
@@ -41,6 +41,6 @@ public class CaptchaScriptService implements ScriptService {
    */
   @Deprecated
   public String getCaptchaId() {
-    return ((CaptchaScriptService) captchaLegacy).getCaptchaId();
+    return new CaptchaCommand().getCaptchaId(context.getXWikiContext());
   }
 }
