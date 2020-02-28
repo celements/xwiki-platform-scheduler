@@ -19,13 +19,12 @@
  */
 package com.celements.captcha;
 
-import java.util.Collections;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -46,11 +45,11 @@ public class ReCaptchaResponse {
       .put("invalid-input-response", "The response parameter is invalid or malformed.")
       .put("bad-request", "The request is invalid or malformed.")
       .put("timeout-or-duplicate", "The response is no longer valid: either is too old or has "
-          + "been used previously.").build();
+          + "been used previously.")
+      .build();
 
   private boolean success;
-  private DateTime timestamp; // ISO format yyyy-MM-dd'T'HH:mm:ssZZ
-                              // ==> ISODateTimeFormat.dateTimeNoMillis()
+  private Instant timestamp;
   private String hostname;
   private List<String> errorCodes;
 
@@ -72,12 +71,13 @@ public class ReCaptchaResponse {
     this.success = success;
   }
 
-  public DateTime getTimestamp() {
+  public Instant getTimestamp() {
     return timestamp;
   }
 
+  // ISO format yyyy-MM-dd'T'HH:mm:ssZZ
   public void setTimestamp(String timestamp) {
-    this.timestamp = ISODateTimeFormat.dateTimeNoMillis().parseDateTime(timestamp);
+    this.timestamp = DateTimeFormatter.ISO_INSTANT.parse(timestamp, Instant::from);
   }
 
   public String getHostname() {
@@ -93,7 +93,8 @@ public class ReCaptchaResponse {
   }
 
   public void setErrorCodes(String[] errorCodes) {
-    this.errorCodes = ((errorCodes != null) ? ImmutableList.copyOf(errorCodes) : Collections
-        .<String>emptyList());
+    this.errorCodes = ((errorCodes != null)
+        ? ImmutableList.copyOf(errorCodes)
+        : ImmutableList.of());
   }
 }
