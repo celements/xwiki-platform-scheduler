@@ -1,7 +1,10 @@
 package com.celements.search.lucene;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -11,17 +14,19 @@ import org.xwiki.component.annotation.Requirement;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.SpaceReference;
+import org.xwiki.model.reference.WikiReference;
 import org.xwiki.script.service.ScriptService;
 
-import com.celements.model.access.exception.DocumentAccessException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
+import com.celements.rights.access.IRightsAccessFacadeRole;
+import com.celements.search.lucene.index.rebuild.LuceneIndexRebuildService;
+import com.celements.search.lucene.index.rebuild.LuceneIndexRebuildService.IndexRebuildFuture;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
-import com.celements.web.service.IWebUtilsService;
-import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 
 @Component(LuceneSearchScriptService.NAME)
 public class LuceneSearchScriptService implements ScriptService {
@@ -47,7 +52,10 @@ public class LuceneSearchScriptService implements ScriptService {
   private ILuceneIndexService indexService;
 
   @Requirement
-  private IWebUtilsService webUtilsService;
+  private LuceneIndexRebuildService indexRebuildService;
+
+  @Requirement
+  private IRightsAccessFacadeRole rightsAccess;
 
   @Requirement
   private ModelUtils modelUtils;
@@ -205,17 +213,60 @@ public class LuceneSearchScriptService implements ScriptService {
     return searchService.getResultLimit(skipChecks);
   }
 
-  public boolean queueIndexing(DocumentReference docRef) {
+  public long getIndexSize() {
+    if (rightsAccess.isAdmin()) {
+      return indexService.getIndexSize();
+    }
+    return 0;
+  }
+
+  public boolean queueIndexing(EntityReference ref) {
     boolean ret = false;
-    try {
-      if (webUtilsService.isSuperAdminUser()) {
-        indexService.queueForIndexing(docRef);
-        ret = true;
-      }
-    } catch (DocumentAccessException dae) {
-      LOGGER.error("Failed to access doc '{}'", docRef, dae);
+    if (rightsAccess.isAdmin()) {
+      indexService.queue(ref);
+      ret = true;
     }
     return ret;
+  }
+
+  public long getQueueSize() {
+    if (rightsAccess.isLoggedIn()) {
+      return indexService.getQueueSize();
+    }
+    return 0;
+  }
+
+  public IndexRebuildFuture getRunningIndexRebuild() {
+    if (rightsAccess.isAdmin()) {
+      return indexRebuildService.getRunningRebuild().orElse(null);
+    }
+    return null;
+  }
+
+  public List<IndexRebuildFuture> getIndexRebuilds() {
+    if (rightsAccess.isAdmin()) {
+      return indexRebuildService.getQueuedRebuilds();
+    }
+    return ImmutableList.of();
+  }
+
+  public void pauseIndexRebuilder(Duration duration) {
+    if (rightsAccess.isSuperAdmin()) {
+      indexRebuildService.pause(duration);
+    }
+  }
+
+  public Optional<Instant> isIndexRebuilderPaused() {
+    if (rightsAccess.isAdmin()) {
+      return indexRebuildService.isPaused();
+    }
+    return Optional.empty();
+  }
+
+  public void unpauseIndexRebuilder() {
+    if (rightsAccess.isSuperAdmin()) {
+      indexRebuildService.unpause();
+    }
   }
 
   public int rebuildIndex() {
@@ -223,35 +274,38 @@ public class LuceneSearchScriptService implements ScriptService {
   }
 
   public int rebuildIndex(EntityReference entityRef) {
-    int ret = REBUILD_NOT_ALLOWED;
-    if (webUtilsService.isAdminUser()) {
-      entityRef = MoreObjects.firstNonNull(entityRef, context.getWikiRef());
-      ret = indexService.rebuildIndex(entityRef) ? 0 : REBUILD_ALREADY_IN_PROGRESS;
-    }
-    return ret;
+    return guardIndex(() -> indexService.rebuildIndex(entityRef));
   }
 
   public int rebuildIndexForAllWikis() {
-    int ret = REBUILD_NOT_ALLOWED;
-    if (webUtilsService.isSuperAdminUser()) {
-      ret = indexService.rebuildIndexForAllWikis() ? 0 : REBUILD_ALREADY_IN_PROGRESS;
-    }
-    return ret;
+    return guardIndex(() -> indexService.rebuildIndexForAllWikis());
   }
 
   public int rebuildIndexWithWipe() {
-    int ret = REBUILD_NOT_ALLOWED;
-    if (webUtilsService.isSuperAdminUser()) {
-      ret = indexService.rebuildIndexWithWipe() ? 0 : REBUILD_ALREADY_IN_PROGRESS;
-    }
-    return ret;
+    return REBUILD_NOT_ALLOWED;
+  }
+
+  public int rebuildIndexForWikiBySpace(WikiReference wikiRef) {
+    return guardIndex(() -> indexService.rebuildIndexForWikiBySpace(wikiRef));
+  }
+
+  public int rebuildIndexForAllWikisBySpace() {
+    return guardIndex(() -> indexService.rebuildIndexForAllWikisBySpace());
   }
 
   public boolean optimizeIndex() {
-    boolean ret = false;
-    if (webUtilsService.isSuperAdminUser()) {
-      indexService.optimizeIndex();
-      ret = true;
+    return guardIndex(() -> indexService.optimizeIndex()) == 0;
+  }
+
+  private int guardIndex(Runnable runnable) {
+    int ret;
+    if (!rightsAccess.isSuperAdmin()) {
+      ret = REBUILD_NOT_ALLOWED;
+    } else if (indexRebuildService.getRunningRebuild().isPresent()) {
+      ret = REBUILD_ALREADY_IN_PROGRESS;
+    } else {
+      runnable.run();
+      ret = 0;
     }
     return ret;
   }

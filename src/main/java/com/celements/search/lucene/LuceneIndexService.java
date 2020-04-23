@@ -1,13 +1,14 @@
 package com.celements.search.lucene;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import static com.celements.logging.LogUtils.*;
+import static com.google.common.collect.ImmutableList.*;
+
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
-import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.WikiReference;
@@ -16,8 +17,13 @@ import org.xwiki.observation.ObservationManager;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
+import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
+import com.celements.model.util.References;
+import com.celements.search.lucene.index.rebuild.LuceneIndexRebuildService;
+import com.celements.search.lucene.index.rebuild.LuceneIndexRebuildService.IndexRebuildFuture;
 import com.celements.search.lucene.observation.LuceneQueueEvent;
+import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
@@ -35,19 +41,25 @@ public class LuceneIndexService implements ILuceneIndexService {
   private ModelUtils modelUtils;
 
   @Requirement
-  private Execution execution;
+  private ModelContext context;
 
-  private XWikiContext getContext() {
-    return (XWikiContext) execution.getContext().getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
+  @Requirement
+  private LuceneIndexRebuildService rebuildService;
+
+  @Override
+  public long getIndexSize() {
+    return getLucenePlugin().map(LucenePlugin::getLuceneDocCount).orElse(-1L);
   }
 
   @Override
+  @Deprecated
   public void queueForIndexing(DocumentReference docRef) throws DocumentLoadException,
       DocumentNotExistsException {
     queue(docRef);
   }
 
   @Override
+  @Deprecated
   public void queueForIndexing(XWikiDocument doc) {
     queue(doc.getDocumentReference());
   }
@@ -60,35 +72,51 @@ public class LuceneIndexService implements ILuceneIndexService {
   }
 
   @Override
-  public boolean rebuildIndexForAllWikis() {
-    LOGGER.info("rebuildIndexForAllWikis start '{}'");
-    return getLucenePlugin().rebuildIndex();
+  public long getQueueSize() {
+    return getLucenePlugin().map(LucenePlugin::getQueueSize).orElse(-1L);
   }
 
   @Override
-  public boolean rebuildIndex(Collection<WikiReference> wikiRefs) {
-    LOGGER.info("rebuildIndex start for wikiRefs '{}'", wikiRefs);
-    return getLucenePlugin().rebuildIndex(new ArrayList<>(wikiRefs), false);
+  public IndexRebuildFuture rebuildIndex(EntityReference ref) {
+    EntityReference filterRef = Optional.ofNullable(ref).map(References::cloneRef)
+        .orElseGet(context::getWikiRef);
+    LOGGER.info("rebuildIndex - start [{}]", defer(() -> modelUtils.serializeRef(filterRef)));
+    return rebuildService.startIndexRebuild(filterRef);
   }
 
   @Override
-  public boolean rebuildIndex(EntityReference entityRef) {
-    LOGGER.info("rebuildIndex start for entityRef '{}'", entityRef);
-    return getLucenePlugin().rebuildIndex(entityRef, false);
+  public ImmutableList<IndexRebuildFuture> rebuildIndexForWikiBySpace(WikiReference wikiRef) {
+    wikiRef = Optional.ofNullable(wikiRef).orElseGet(context::getWikiRef);
+    return modelUtils.getAllSpaces(wikiRef).map(this::rebuildIndex).collect(toImmutableList());
   }
 
   @Override
-  public boolean rebuildIndexWithWipe() {
-    return getLucenePlugin().rebuildIndexWithWipe(null, false);
+  public ImmutableList<IndexRebuildFuture> rebuildIndexForAllWikis() {
+    return modelUtils.getAllWikis().map(this::rebuildIndex).collect(toImmutableList());
+  }
+
+  @Override
+  public ImmutableList<IndexRebuildFuture> rebuildIndexForAllWikisBySpace() {
+    return modelUtils.getAllWikis().flatMap(modelUtils::getAllSpaces).map(this::rebuildIndex)
+        .collect(toImmutableList());
   }
 
   @Override
   public void optimizeIndex() {
-    getLucenePlugin().optimizeIndex();
+    getLucenePlugin().ifPresent(LucenePlugin::optimizeIndex);
   }
 
-  private LucenePlugin getLucenePlugin() {
-    return (LucenePlugin) getContext().getWiki().getPlugin("lucene", getContext());
+  private Optional<LucenePlugin> getLucenePlugin() {
+    try {
+      return Optional.of((LucenePlugin) getXContext().getWiki().getPlugin("lucene", getXContext()));
+    } catch (NullPointerException npe) {
+      LOGGER.warn("LucenePlugin not available, first request?");
+      return Optional.empty();
+    }
+  }
+
+  private XWikiContext getXContext() {
+    return context.getXWikiContext();
   }
 
   /**
