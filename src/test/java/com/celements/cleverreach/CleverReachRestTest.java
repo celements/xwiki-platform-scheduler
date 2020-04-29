@@ -4,6 +4,8 @@ import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
@@ -17,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 
+import com.celements.cleverreach.CleverReachService.ServerClass;
+import com.celements.cleverreach.exception.CleverReachRequestFailedException;
 import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.web.Utils;
 
@@ -33,7 +37,7 @@ public class CleverReachRestTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testSendRequest() {
+  public void testSendRequest() throws CleverReachRequestFailedException {
     String baseUrl = "http://www.test-base-url.test";
     String path = "/test/path";
     String token = "token123";
@@ -86,13 +90,62 @@ public class CleverReachRestTest extends AbstractComponentTest {
     expect(target.queryParam("b", new Object[] { "2" })).andReturn(target);
     expect(target.queryParam("c", new Object[] { "3" })).andReturn(target);
     replayDefault();
-    rest.addGetParameters(map, target, CleverReachRest.SubmitMethod.GET);
+    rest.addGetParameters(map, new AtomicReference<>(target),
+        CleverReachRest.SubmitMethod.GET);
     verifyDefault();
   }
 
   @Test
   public void testAddGetParameters_methodOther() {
     rest.addGetParameters(null, null, CleverReachRest.SubmitMethod.POST);
+  }
+
+  @Test
+  public void testIsReadyToSend_get_response() {
+    String responseContent = "[\n" +
+        "  {\n" +
+        "    \"name\": \"vorname\",\n" +
+        "    \"value\": \"Do Not Change\"\n" +
+        "  },\n" +
+        "  {\n" +
+        "    \"name\": \"name\",\n" +
+        "    \"value\": \"Really, don't!\"\n" +
+        "  },\n" +
+        "  {\n" +
+        "    \"name\": \"ready_to_send_dev\",\n" +
+        "    \"value\": \"\"\n" +
+        "  },\n" +
+        "  {\n" +
+        "    \"name\": \"ready_to_send_int\",\n" +
+        "    \"value\": \"1\"\n" +
+        "  },\n" +
+        "  {\n" +
+        "    \"name\": \"ready_to_send_prod\",\n" +
+        "    \"value\": \"3\"\n" +
+        "  }\n" +
+        "]";
+    Response response = createMockAndAddToDefault(Response.class);
+    expect(response.hasEntity()).andReturn(true).anyTimes();
+    expect(response.readEntity(eq(String.class))).andReturn(responseContent).times(3);
+    replayDefault();
+    assertTrue("Expected ready to send INT == true", rest.isReadyToSendGet(response,
+        ServerClass.INT));
+    assertFalse("Expected ready to send DEV == false", rest.isReadyToSendGet(response,
+        ServerClass.DEV));
+    assertFalse("Expected ready to send PROD == false", rest.isReadyToSendGet(response,
+        ServerClass.PROD));
+    verifyDefault();
+  }
+
+  @Test
+  public void testIsReadyToSend_put_response() {
+    String responseContent = "{\n    \"value\": \"1\"\n}";
+    Response response = createMockAndAddToDefault(Response.class);
+    expect(response.hasEntity()).andReturn(true).anyTimes();
+    expect(response.readEntity(eq(String.class))).andReturn(responseContent).once();
+    replayDefault();
+    assertTrue("Expected ready to send PROD == true", rest.isReadyToSendPut(response));
+    verifyDefault();
   }
 
   private Object getTestMailingEntity() {

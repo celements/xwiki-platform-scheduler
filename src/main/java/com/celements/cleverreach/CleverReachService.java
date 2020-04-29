@@ -10,8 +10,22 @@ import org.xwiki.model.reference.DocumentReference;
 @ComponentRole
 public interface CleverReachService {
 
+  public enum ServerClass {
+    DEV, INT, PROD
+  };
+
   /**
-   * Update a mailing
+   * Update a mailing. Does NOT set the "Ready to send" flag
+   *
+   * @param mailing
+   *          The mailing needing an update
+   * @return true if updated successfully
+   * @throws IOException
+   */
+  boolean updateMailingRehearsal(@NotNull MailingConfig mailing) throws IOException;
+
+  /**
+   * Update a mailing. After successfully updating set "Ready to send" flag for the indicated server
    *
    * @param mailing
    *          The mailing needing an update

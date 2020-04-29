@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.celements.cleverreach.exception.CssInlineException;
 import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.web.Utils;
 
@@ -24,7 +25,7 @@ public class CssInlinerTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testInline_null() {
+  public void testInline_null() throws CssInlineException {
     try {
       cssInliner.inline(null, "");
       fail("Expecting NPE");
@@ -34,7 +35,7 @@ public class CssInlinerTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testInline_noStyles() {
+  public void testInline_noStyles() throws CssInlineException {
     try {
       cssInliner.inline("<div></div>", (String) null);
       fail("Expecting NPE");
@@ -44,7 +45,7 @@ public class CssInlinerTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testInline_styleFile() {
+  public void testInline_styleFile() throws CssInlineException {
     String simpleStyle = "div {\n  display: none;\n  padding-top: 3px;\n}";
     String expect = "padding-top: 3px";
     String result = cssInliner.inline("<!DOCTYPE html><html><head></head><body><div></div></body>"
