@@ -56,7 +56,7 @@ public class CssInlineException extends Exception {
             "^[\\s\\S]*Error on line (\\d+) [\\s\\S]*", "$1"));
         snippet += scanLines(html, exceptionLine - 2, exceptionLine + 2, SNIPPET);
       } catch (NumberFormatException nfe) {
-        LOGGER.debug("Exception Message has no line number referenced. Message: [{}]",
+        LOGGER.warn("Exception Message has no line number referenced. Message: [{}]",
             super.getMessage());
       }
     }

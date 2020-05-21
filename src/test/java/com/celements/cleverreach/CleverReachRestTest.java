@@ -4,6 +4,8 @@ import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.ws.rs.client.Client;
@@ -15,10 +17,14 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 
+import com.celements.cleverreach.CleverReachRest.ResponseBodyObj;
 import com.celements.cleverreach.CleverReachService.ServerClass;
 import com.celements.cleverreach.exception.CleverReachRequestFailedException;
 import com.celements.common.test.AbstractComponentTest;
@@ -146,6 +152,14 @@ public class CleverReachRestTest extends AbstractComponentTest {
     replayDefault();
     assertTrue("Expected ready to send PROD == true", rest.isReadyToSendPut(response));
     verifyDefault();
+  }
+
+  @Test
+  public void testIgnoreUnknownUnmarshalling() throws Exception {
+    String content = "{\"id\":\"1142028\",\"name\":\"ready_to_send_prod\",\"value\":\"1\"}";
+    assertTrue("Expecting correct unmarshalling even with unknown fields in content",
+        Optional.ofNullable(new ObjectMapper().readValue(content, ResponseBodyObj.class)).isPresent());
+
   }
 
   private Object getTestMailingEntity() {
