@@ -155,11 +155,24 @@ public class CleverReachRestTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testIgnoreUnknownUnmarshalling() throws Exception {
+  public void testIgnoreUnknownUnmarshalling_PutRequest() throws Exception {
     String content = "{\"id\":\"1142028\",\"name\":\"ready_to_send_prod\",\"value\":\"1\"}";
     assertTrue("Expecting correct unmarshalling even with unknown fields in content",
-        Optional.ofNullable(new ObjectMapper().readValue(content, ResponseBodyObj.class)).isPresent());
+        Optional.ofNullable(new ObjectMapper().readValue(content, ResponseBodyObj.class))
+            .isPresent());
+  }
 
+  @Test
+  public void testIgnoreUnknownUnmarshalling_GetRequest() throws Exception {
+    String content = "[{\"id\":\"1070027\",\"name\":\"vorname\",\"value\":\"Do Not Change\"},{\"id"
+        + "\":\"1070029\",\"name\":\"name\",\"value\":\"Really, don't!\"},{\"id\":\"1142026\",\""
+        + "name\":\"ready_to_send_dev\",\"value\":\"1\"},{\"id\":\"1142027\",\"name\":\""
+        + "ready_to_send_int\",\"value\":\"\"},{\"id\":\"1142028\",\"name\":\"ready_to_send_prod\","
+        + "\"value\":\"\"},{\"id\":\"1142503\",\"name\":\"firstname\",\"value\":\"\"},{\"id\":\""
+        + "1142504\",\"name\":\"lastname\",\"value\":\"\"}]";
+    assertTrue("Expecting correct unmarshalling even with unknown fields in content",
+        Optional.ofNullable(new ObjectMapper().readValue(content, ResponseBodyObj[].class))
+            .isPresent());
   }
 
   private Object getTestMailingEntity() {
