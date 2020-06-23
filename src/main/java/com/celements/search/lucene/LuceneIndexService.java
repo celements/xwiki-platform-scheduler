@@ -9,10 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.annotation.Requirement;
+import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.WikiReference;
-import org.xwiki.observation.ObservationManager;
 
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentLoadException;
@@ -20,14 +20,16 @@ import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
 import com.celements.model.util.References;
+import com.celements.search.lucene.index.queue.IndexQueuePriority;
+import com.celements.search.lucene.index.queue.QueueTask;
 import com.celements.search.lucene.index.rebuild.LuceneIndexRebuildService;
 import com.celements.search.lucene.index.rebuild.LuceneIndexRebuildService.IndexRebuildFuture;
-import com.celements.search.lucene.observation.LuceneQueueEvent;
+import com.celements.search.lucene.observation.event.LuceneQueueDeleteEvent;
+import com.celements.search.lucene.observation.event.LuceneQueueIndexEvent;
 import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
-import com.xpn.xwiki.web.Utils;
 
 @Component
 public class LuceneIndexService implements ILuceneIndexService {
@@ -36,6 +38,9 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   @Requirement
   private IModelAccessFacade modelAccess;
+
+  @Requirement
+  private Execution execution;
 
   @Requirement
   private ModelUtils modelUtils;
@@ -66,20 +71,27 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   @Override
   public void queue(EntityReference ref) {
-    if (ref != null) {
-      getObservationManager().notify(new LuceneQueueEvent(), ref, false);
-    }
+    indexTask(ref).queue();
   }
 
-  public void queueWithoutNotifications(EntityReference ref) {
-    if (ref != null) {
-      getObservationManager().notify(new LuceneQueueEvent(), ref, true);
-    }
+  @Override
+  public QueueTask indexTask(EntityReference ref) {
+    return new QueueTask(ref, new LuceneQueueIndexEvent());
+  }
+
+  @Override
+  public QueueTask deleteTask(EntityReference ref) {
+    return new QueueTask(ref, new LuceneQueueDeleteEvent());
   }
 
   @Override
   public long getQueueSize() {
     return getLucenePlugin().map(LucenePlugin::getQueueSize).orElse(-1L);
+  }
+
+  @Override
+  public long getQueueSize(IndexQueuePriority priority) {
+    return getLucenePlugin().map(p -> p.getQueueSize(priority)).orElse(-1L);
   }
 
   @Override
@@ -123,13 +135,6 @@ public class LuceneIndexService implements ILuceneIndexService {
 
   private XWikiContext getXContext() {
     return context.getXWikiContext();
-  }
-
-  /**
-   * loaded lazily due to cyclic dependency
-   */
-  private ObservationManager getObservationManager() {
-    return Utils.getComponent(ObservationManager.class);
   }
 
 }

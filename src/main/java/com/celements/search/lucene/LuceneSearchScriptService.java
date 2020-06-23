@@ -1,10 +1,14 @@
 package com.celements.search.lucene;
 
+import static com.google.common.collect.ImmutableMap.*;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -19,14 +23,20 @@ import org.xwiki.script.service.ScriptService;
 
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
+import com.celements.rights.access.EAccessLevel;
 import com.celements.rights.access.IRightsAccessFacadeRole;
+import com.celements.search.lucene.index.queue.IndexQueuePriority;
+import com.celements.search.lucene.index.queue.QueueTask;
 import com.celements.search.lucene.index.rebuild.LuceneIndexRebuildService;
 import com.celements.search.lucene.index.rebuild.LuceneIndexRebuildService.IndexRebuildFuture;
 import com.celements.search.lucene.query.LuceneQuery;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
+import com.google.common.base.Enums;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Ordering;
 
 @Component(LuceneSearchScriptService.NAME)
 public class LuceneSearchScriptService implements ScriptService {
@@ -229,11 +239,39 @@ public class LuceneSearchScriptService implements ScriptService {
     return ret;
   }
 
+  public QueueTask indexTask(EntityReference ref) {
+    if (rightsAccess.isLoggedIn() && rightsAccess.hasAccessLevel(ref, EAccessLevel.VIEW)) {
+      return indexService.indexTask(ref);
+    }
+    return null;
+  }
+
+  public QueueTask deleteTask(EntityReference ref) {
+    if (rightsAccess.isLoggedIn() && rightsAccess.hasAccessLevel(ref, EAccessLevel.EDIT)) {
+      return indexService.deleteTask(ref);
+    }
+    return null;
+  }
+
   public long getQueueSize() {
     if (rightsAccess.isLoggedIn()) {
       return indexService.getQueueSize();
     }
     return 0;
+  }
+
+  public Map<IndexQueuePriority, Long> getQueueSizes() {
+    if (rightsAccess.isLoggedIn()) {
+      return Stream.of(IndexQueuePriority.values())
+          .sorted(Ordering.natural().reversed())
+          .collect(toImmutableMap(prio -> prio, prio -> indexService.getQueueSize(prio)));
+    }
+    return null;
+  }
+
+  public IndexQueuePriority getIndexQueuePriority(String prio) {
+    String name = Strings.nullToEmpty(prio).toUpperCase();
+    return Enums.getIfPresent(IndexQueuePriority.class, name).orNull();
   }
 
   public IndexRebuildFuture getRunningIndexRebuild() {

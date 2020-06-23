@@ -10,6 +10,8 @@ import org.xwiki.model.reference.WikiReference;
 
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
+import com.celements.search.lucene.index.queue.IndexQueuePriority;
+import com.celements.search.lucene.index.queue.QueueTask;
 import com.celements.search.lucene.index.rebuild.LuceneIndexRebuildService.IndexRebuildFuture;
 import com.google.common.collect.ImmutableList;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -34,7 +36,15 @@ public interface ILuceneIndexService {
 
   void queue(@NotNull EntityReference ref);
 
+  @NotNull
+  QueueTask indexTask(@NotNull EntityReference ref);
+
+  @NotNull
+  QueueTask deleteTask(@NotNull EntityReference ref);
+
   long getQueueSize();
+
+  long getQueueSize(@NotNull IndexQueuePriority priority);
 
   @NotNull
   IndexRebuildFuture rebuildIndex(@Nullable EntityReference ref);
