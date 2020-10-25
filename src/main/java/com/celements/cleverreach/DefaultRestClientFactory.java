@@ -1,6 +1,11 @@
 package com.celements.cleverreach;
 
+import static com.celements.common.MoreObjectsCel.*;
+import static com.celements.logging.LogUtils.*;
+import static com.google.common.collect.ImmutableMap.*;
+
 import java.io.IOException;
+import java.util.Map;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -14,7 +19,7 @@ import org.xwiki.component.annotation.Component;
 @Component
 public class DefaultRestClientFactory implements IRestClientFactoryRole {
 
-  Logger LOGGER = LoggerFactory.getLogger(DefaultRestClientFactory.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultRestClientFactory.class);
 
   @Override
   public Client newClient() {
@@ -27,8 +32,22 @@ public class DefaultRestClientFactory implements IRestClientFactoryRole {
 
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
-      LOGGER.info("URL: [{}], Prop 'group_id': [{}], Body: [{}]", requestContext.getUri(),
-          requestContext.getEntity(), requestContext.getProperty("group_id"));
+      LOGGER.info("URL: [{}], Method: [{}], Entity: [{}], Properties: [{}], Headers: [{}]",
+          requestContext.getUri(), requestContext.getMethod(),
+          defer(() -> getEntity(requestContext)),
+          defer(() -> getProperties(requestContext)),
+          defer(requestContext::getStringHeaders));
+    }
+
+    private Object getEntity(ClientRequestContext requestContext) {
+      return tryCast(requestContext.getEntity(), javax.ws.rs.core.Form.class)
+          .map(form -> (Object) form.asMap())
+          .orElse(requestContext.getEntity());
+    }
+
+    private Map<String, Object> getProperties(ClientRequestContext requestContext) {
+      return requestContext.getPropertyNames().stream()
+          .collect(toImmutableMap(name -> name, requestContext::getProperty));
     }
 
   }
