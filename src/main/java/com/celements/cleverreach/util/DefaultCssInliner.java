@@ -1,31 +1,24 @@
 package com.celements.cleverreach.util;
 
+import static com.celements.common.MoreObjectsCel.*;
+import static com.celements.common.lambda.LambdaExceptionUtil.*;
 import static com.google.common.base.Preconditions.*;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.List;
+import java.util.stream.Stream;
 
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.xml.sax.InputSource;
 import org.xwiki.component.annotation.Component;
 
 import com.celements.cleverreach.exception.CssInlineException;
+import com.celements.dom4j.Dom4JParser;
 
 import io.sf.carte.doc.dom4j.CSSStylableElement;
 import io.sf.carte.doc.dom4j.XHTMLDocument;
-import io.sf.carte.doc.dom4j.XHTMLDocumentFactory;
-import io.sf.carte.doc.xml.dtd.DefaultEntityResolver;
+import io.sf.carte.doc.style.css.om.ComputedCSSStyle;
 
 @Component
 public class DefaultCssInliner implements CssInliner {
@@ -47,47 +40,29 @@ public class DefaultCssInliner implements CssInliner {
     checkNotNull(css);
     LOGGER.trace("Applying the following CSS [{}] to HTML [{}]", css, html);
     try {
-      XHTMLDocument document = prepareInput(html);
-      document.addStyleSheet(new org.w3c.css.sac.InputSource(new StringReader(css)));
-      applyInlineStyle(document.getRootElement());
-      String result = prepareOutput(document);
+      String result = Dom4JParser.createXHtmlParser().allowDTDs()
+          .readAndExecute(html, rethrowFunction(document -> applyInlineStyle(document, css)))
+          .orElseThrow(() -> new CssInlineException(html, null));
       LOGGER.trace("HTML with CSS INLINED [{}]", result);
       return result;
-    } catch (DocumentException | IOException excp) {
+    } catch (IOException excp) {
       LOGGER.warn("Failed to apply CSS [{}] to HTML [{}]", css, html, excp);
       throw new CssInlineException(html, excp);
     }
   }
 
-  XHTMLDocument prepareInput(String html) throws DocumentException {
-    Reader re = new StringReader(html);
-    InputSource source = new InputSource(re);
-    SAXReader reader = new SAXReader(XHTMLDocumentFactory.getInstance());
-    reader.setEntityResolver(new DefaultEntityResolver());
-    return (XHTMLDocument) reader.read(source);
+  private Stream<XHTMLDocument> applyInlineStyle(XHTMLDocument document, String css)
+      throws IOException {
+    document.addStyleSheet(new org.w3c.css.sac.InputSource(new StringReader(css)));
+    document.selectNodes("//*").stream()
+        .flatMap(tryCast(CSSStylableElement.class))
+        .forEach(element -> {
+          ComputedCSSStyle style = element.getComputedStyle();
+          if (style.getLength() != 0) {
+            element.addAttribute(STYLE, style.getCssText());
+          }
+        });
+    return Stream.of(document);
   }
 
-  String prepareOutput(XHTMLDocument document) throws IOException {
-    OutputFormat outputFormat = new OutputFormat("", false, "UTF-8");
-    StringWriter out = new StringWriter();
-    XMLWriter writer = new XMLWriter(out, outputFormat);
-    writer.write(document);
-    return out.toString();
-  }
-
-  void applyInlineStyle(Element element) {
-    int nodeCount = element.nodeCount();
-    for (int i = 0; i < nodeCount; i++) {
-      Node node = element.node(i);
-      if (node.getNodeType() == Node.ELEMENT_NODE) {
-        // Element node are always also CSSStylableElement elements
-        CSSStylableElement styleElement = (CSSStylableElement) node;
-        CSSStyleDeclaration style = styleElement.getComputedStyle();
-        if (style.getLength() != 0) {
-          styleElement.addAttribute(STYLE, style.getCssText());
-        }
-        applyInlineStyle(styleElement);
-      }
-    }
-  }
 }
