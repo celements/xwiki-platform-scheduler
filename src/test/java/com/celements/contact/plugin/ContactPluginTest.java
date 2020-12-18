@@ -1,7 +1,6 @@
 package com.celements.contact.plugin;
 
 import static org.easymock.EasyMock.*;
-import static org.easymock.classextension.EasyMock.*;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
@@ -16,6 +15,7 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.XWikiRequest;
 
 public class ContactPluginTest extends AbstractBridgedComponentTestCase {
+
   ContactPlugin plugin;
   XWikiContext context;
   XWiki xwiki;
@@ -49,7 +49,7 @@ public class ContactPluginTest extends AbstractBridgedComponentTestCase {
 
   @Test
   public void testSaveAddress() throws XWikiException {
-//    String fullname = "Space.Document";
+    // String fullname = "Space.Document";
     BaseObject obj = new BaseObject();
     XWikiDocument doc = createMock(XWikiDocument.class);
     context.setDoc(doc);
