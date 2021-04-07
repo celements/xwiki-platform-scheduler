@@ -6,6 +6,8 @@ import static com.google.common.base.MoreObjects.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,25 +20,24 @@ import com.celements.model.util.ReferenceSerializationMode;
 import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
-import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.xpn.xwiki.web.Utils;
 
-public class LuceneUtils {
+public final class LuceneUtils {
+
+  private LuceneUtils() {}
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LuceneUtils.class);
 
   private static final String QUOTE = "\"";
   private static final Splitter SPLITTER = Splitter.on("[,;\\| ]+");
 
-  public static final Function<String, String> FUNC_EXACTIFY = new Function<String, String>() {
-
-    @Override
-    public String apply(String str) {
-      return exactify(str);
-    }
-  };
+  /**
+   * @deprecated since 4.10 instead simply use lambda method reference
+   */
+  @Deprecated
+  public static final UnaryOperator<String> FUNC_EXACTIFY = LuceneUtils::exactify;
 
   public static String exactify(String str) {
     str = Strings.nullToEmpty(str);
