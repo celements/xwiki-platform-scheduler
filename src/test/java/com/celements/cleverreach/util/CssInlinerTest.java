@@ -51,6 +51,8 @@ public class CssInlinerTest extends AbstractComponentTest {
     String result = cssInliner.inline("<!DOCTYPE html><html><head></head><body><div></div></body>"
         + "</html>", simpleStyle);
     assertTrue(getExpectationMessage(expect, result), result.contains(expect));
+    String expect2 = "<!DOCTYPE html><html";
+    assertTrue(getExpectationMessage(expect2, result), result.contains(expect2));
   }
 
   @Test
@@ -80,6 +82,14 @@ public class CssInlinerTest extends AbstractComponentTest {
     expect = "color: #abc;";
     assertTrue(getExpectationMessage(expect, result), checkInResult(result, "td", "class=\"column3",
         expect, 3));
+  }
+
+  @Test
+  public void testInline_nbsp() throws Exception {
+    String simpleStyle = "div {\n  display: none;\n  padding-top: 3px;\n}";
+    String expect = "padding-top: 3px";
+    String result = cssInliner.inline(fileToString("/test_nbsp.html"), simpleStyle);
+    assertTrue(getExpectationMessage(expect, result), result.contains(expect));
   }
 
   private boolean checkInResult(String result, String tag, String addition, String expect) {

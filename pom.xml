@@ -32,6 +32,19 @@
       <artifactId>jersey-hk2</artifactId>
       <version>2.28</version>
     </dependency>
+    <!-- JTidy Has been picked up at https://github.com/jtidy/jtidy and immediately was reabandoned.
+      However their release from Dec 2019 has at least some HTML5 support -->
+    <dependency>
+      <groupId>jtidy</groupId>
+      <artifactId>jtidy</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>dom3-xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <scm>
     <connection>scm:git:git@github.com:celements/celements-cleverreach.git</connection>
