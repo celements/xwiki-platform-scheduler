@@ -3,11 +3,11 @@
   <parent>
     <groupId>com.celements</groupId>
     <artifactId>celements</artifactId>
-    <version>5.0.1</version>
+    <version>5.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>celements-cleverreach</artifactId>
-  <version>5.1-SNAPSHOT</version>
+  <version>5.2-SNAPSHOT</version>
   <description>Celements connector to Clever Reach API</description>
   <dependencies>
     <dependency>
@@ -35,7 +35,7 @@
     <!-- JTidy Has been picked up at https://github.com/jtidy/jtidy and immediately was reabandoned.
       However their release from Dec 2019 has at least some HTML5 support -->
     <dependency>
-      <groupId>jtidy</groupId>
+      <groupId>com.github.jtidy</groupId>
       <artifactId>jtidy</artifactId>
       <exclusions>
         <exclusion>

@@ -59,7 +59,7 @@ public class MailingConfigTest extends AbstractComponentTest {
   @Test
   public void testGetContentHtmlCleanXml() {
     setUpMailingConf("<div>&nbsp;</div>\n");
-    assertEquals("<div>&#160;</div>\n", mailingConf.getContentHtmlCleanXml());
+    assertEquals("<div>&#160;</div>\n\n", mailingConf.getContentHtmlCleanXml());
   }
 
   @Test
