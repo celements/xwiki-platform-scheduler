@@ -30,7 +30,7 @@ import com.xpn.xwiki.web.Utils;
 @Immutable
 public class MailingConfig {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(MailingConfig.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MailingConfig.class);
 
   private static final Pattern HTML_HEADER_REGEX = Pattern.compile("^(.*<body>).*", Pattern.DOTALL);
   private static final Pattern HTML_FOOTER_REGEX = Pattern.compile(".*(</body>.*)$",
