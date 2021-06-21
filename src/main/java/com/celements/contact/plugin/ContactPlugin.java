@@ -19,8 +19,8 @@
  */
 package com.celements.contact.plugin;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.celements.contact.classes.ContactClasses;
 import com.celements.contact.classes.RotaryMembersCollsClass;
@@ -33,34 +33,38 @@ import com.xpn.xwiki.plugin.XWikiDefaultPlugin;
 import com.xpn.xwiki.plugin.XWikiPluginInterface;
 import com.xpn.xwiki.web.XWikiRequest;
 
-public class ContactPlugin extends XWikiDefaultPlugin{
-  
-  private static Log mLogger = LogFactory.getFactory().getInstance(ContactPlugin.class);
-  
+public class ContactPlugin extends XWikiDefaultPlugin {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ContactPlugin.class);
+
   public ContactPlugin(String name, String className, XWikiContext context) {
     super(name, className, context);
     init(context);
   }
-  
+
+  @Override
   public Api getPluginApi(XWikiPluginInterface plugin, XWikiContext context) {
     return new ContactPluginApi((ContactPlugin) plugin, context);
   }
 
+  @Override
   public String getName() {
-    mLogger.debug("Entered method getName");
+    LOGGER.debug("Entered method getName");
     return "celcontact";
   }
 
+  @Override
   public void init(XWikiContext context) {
     super.init(context);
   }
 
+  @Override
   public void virtualInit(XWikiContext context) {
     try {
       ContactClasses.getInstance().runUpdate(context);
       RotaryMembersCollsClass.getInstance().runUpdate(context);
-    } catch (Exception e) {
-      mLogger.fatal(e);
+    } catch (Exception xwe) {
+      LOGGER.error("virtualInit", xwe);
     }
     super.virtualInit(context);
   }
@@ -74,12 +78,12 @@ public class ContactPlugin extends XWikiDefaultPlugin{
     dirty |= setStringField("firstname", req.get("firstname"), obj);
     dirty |= setStringField("lastname", req.get("lastname"), obj);
     dirty |= setStringField("sex", req.get("sex"), obj);
-    if(dirty) {
+    if (dirty) {
       try {
         context.getWiki().saveDocument(doc, context);
         dirty = false;
       } catch (XWikiException e) {
-        mLogger.error("Could not save '" + doc.getFullName() + "'", e);
+        LOGGER.error("Could not save '" + doc.getFullName() + "'", e);
       }
     }
     return !dirty;
@@ -94,12 +98,12 @@ public class ContactPlugin extends XWikiDefaultPlugin{
     dirty |= setStringField("zip", req.get("zip"), obj);
     dirty |= setStringField("city", req.get("city"), obj);
     dirty |= setStringField("country", req.get("country"), obj);
-    if(dirty) {
+    if (dirty) {
       try {
         context.getWiki().saveDocument(doc, context);
         dirty = false;
       } catch (XWikiException e) {
-        mLogger.error("Could not save '" + doc.getFullName() + "'", e);
+        LOGGER.error("Could not save '" + doc.getFullName() + "'", e);
       }
     }
     return !dirty;
@@ -107,12 +111,12 @@ public class ContactPlugin extends XWikiDefaultPlugin{
 
   BaseObject getObject(String className, XWikiDocument doc, XWikiContext context) {
     BaseObject obj = doc.getObject(className);
-    if(obj == null) {
+    if (obj == null) {
       try {
         obj = doc.newObject(className, context);
         context.getWiki().saveDocument(doc, context);
       } catch (XWikiException e) {
-        mLogger.error("Could not add a new '" + className + "' object to document '" +
+        LOGGER.error("Could not add a new '" + className + "' object to document '" +
             doc.getFullName() + "'", e);
       }
     }
@@ -120,20 +124,20 @@ public class ContactPlugin extends XWikiDefaultPlugin{
   }
 
   boolean setStringField(String field, String value, BaseObject obj) {
-    if((value != null) && !"".equals(value.trim())) {
+    if ((value != null) && !"".equals(value.trim())) {
       obj.setStringValue(field, value);
       return true;
     }
     return false;
   }
-  
+
   XWikiDocument getDoc(String fullName, XWikiContext context) {
     XWikiDocument doc = context.getDoc();
-    if((fullName != null) && context.getWiki().exists(fullName, context)) {
+    if ((fullName != null) && context.getWiki().exists(fullName, context)) {
       try {
         doc = context.getWiki().getDocument(fullName, context);
       } catch (XWikiException e) {
-        mLogger.error("Could not get document '" + fullName + "'", e);
+        LOGGER.error("Could not get document '" + fullName + "'", e);
       }
     }
     return doc;
