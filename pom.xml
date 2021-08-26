@@ -46,12 +46,12 @@
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
-      <version>2.28</version>
+      <version>2.34</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.inject</groupId>
       <artifactId>jersey-hk2</artifactId>
-      <version>2.28</version>
+      <version>2.34</version>
     </dependency>
     <!-- JTidy Has been picked up at https://github.com/jtidy/jtidy and immediately was reabandoned.
       However their release from Dec 2019 has at least some HTML5 support -->
