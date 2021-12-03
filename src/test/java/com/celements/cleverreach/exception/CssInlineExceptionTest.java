@@ -19,7 +19,7 @@ public class CssInlineExceptionTest extends AbstractComponentTest {
   public void testScanLines_message_ampersand() throws Exception {
     String html = IOUtils.toString(this.getClass().getResourceAsStream(
         "/test_ampersand.html"), "UTF-8");
-    String result = new CssInlineException(html, null).scanLines(STACK_TRACE1, 1, 1,
+    String result = new CssInlineException(html, "").scanLines(STACK_TRACE1, 1, 1,
         CssInlineException.SHORT_MESSAGE);
     assertTrue("Result should start with line number [" + LINE_NR1 + "] but is [" + result + "]",
         result.startsWith(LINE_NR1));
@@ -31,7 +31,7 @@ public class CssInlineExceptionTest extends AbstractComponentTest {
   public void testScanLines_html_ampersand() throws Exception {
     String html = IOUtils.toString(this.getClass().getResourceAsStream(
         "/test_ampersand.html"), "UTF-8");
-    String result = new CssInlineException(html, null).scanLines(html, 245, 249,
+    String result = new CssInlineException(html, "").scanLines(html, 245, 249,
         CssInlineException.SNIPPET);
     assertTrue("Result should be around line [" + LINE_NR1 + "] but is [" + result + "]",
         result.startsWith("245: ") && result.contains("247: <b>Jazzmatizz"));
@@ -63,7 +63,7 @@ public class CssInlineExceptionTest extends AbstractComponentTest {
   public void testScanLines_html_nonClosingTag() throws IOException {
     String html = IOUtils.toString(this.getClass().getResourceAsStream(
         "/FailingCssInlnlineNonClosingDiv.html"), "UTF-8");
-    String result = new CssInlineException(html, null).scanLines(html, 690, 694,
+    String result = new CssInlineException(html, "").scanLines(html, 690, 694,
         CssInlineException.SNIPPET);
     assertTrue("Result should be around line [" + LINE_NR2 + "] but is [" + result + "]",
         result.startsWith("690: <b>ABGESAGT") && result.contains("691: Eintritt"));

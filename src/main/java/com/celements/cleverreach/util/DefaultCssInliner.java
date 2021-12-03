@@ -53,7 +53,7 @@ public class DefaultCssInliner implements CssInliner {
     try {
       String result = Dom4JParser.createXHtmlParser().allowDTDs()
           .readAndExecute(html, rethrowFunction(document -> applyInlineStyle(document, css)))
-          .orElseThrow(() -> new CssInlineException(html, null));
+          .orElseThrow(() -> new CssInlineException(html, "Exception while inlining"));
       LOGGER.trace("HTML with CSS INLINED [{}]", result);
       return result;
     } catch (IOException excp) {
