@@ -32,6 +32,11 @@ public class CssInlineException extends Exception {
     this.html = html;
   }
 
+  public CssInlineException(@NotNull String html, String message) {
+    super(message);
+    this.html = html;
+  }
+
   @Override
   public String getMessage() {
     return "CSS could not be inlined.";

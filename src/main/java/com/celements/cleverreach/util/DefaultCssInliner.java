@@ -7,6 +7,7 @@ import static com.google.common.base.Preconditions.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ import io.sf.carte.doc.dom4j.CSSStylableElement;
 import io.sf.carte.doc.dom4j.XHTMLDocument;
 import io.sf.carte.doc.style.css.om.ComputedCSSStyle;
 
-@Component
+@Component("default")
 public class DefaultCssInliner implements CssInliner {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCssInliner.class);
@@ -28,13 +29,23 @@ public class DefaultCssInliner implements CssInliner {
   private static final String STYLE = "style";
 
   @Override
-  public String inline(String html, List<String> cssList)
-      throws CssInlineException {
-    return inline(html, String.join("\n", cssList));
+  public String inline(String html, List<String> cssList) throws CssInlineException {
+    return inline(html, cssList, null);
   }
 
   @Override
-  public String inline(String html, String css)
+  public String inline(String html, List<String> cssList, Map<String, String> configs)
+      throws CssInlineException {
+    return inline(html, String.join("\n", cssList), configs);
+  }
+
+  @Override
+  public String inline(String html, String css) throws CssInlineException {
+    return inline(html, css, null);
+  }
+
+  @Override
+  public String inline(String html, String css, Map<String, String> configs)
       throws CssInlineException {
     checkNotNull(html);
     checkNotNull(css);

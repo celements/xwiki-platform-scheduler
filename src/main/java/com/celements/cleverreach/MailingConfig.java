@@ -3,13 +3,10 @@ package com.celements.cleverreach;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.base.Strings.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -18,12 +15,10 @@ import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.tidy.Tidy;
 
 import com.celements.cleverreach.CleverReachService.ServerClass;
 import com.celements.cleverreach.exception.CssInlineException;
 import com.celements.cleverreach.util.CssInliner;
-import com.celements.logging.LogUtils;
 import com.google.common.base.Strings;
 import com.xpn.xwiki.web.Utils;
 
@@ -31,10 +26,6 @@ import com.xpn.xwiki.web.Utils;
 public class MailingConfig {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MailingConfig.class);
-
-  private static final Pattern HTML_HEADER_REGEX = Pattern.compile("^(.*<body>).*", Pattern.DOTALL);
-  private static final Pattern HTML_FOOTER_REGEX = Pattern.compile(".*(</body>.*)$",
-      Pattern.DOTALL);
 
   public static class Builder {
 
@@ -47,6 +38,8 @@ public class MailingConfig {
     private String referenceGroupId;
     private String referenceAttributeId;
     private List<String> css = new ArrayList<>();
+    private String inlinerComponent = "synthon"; // default inliner is "synthon"
+    private Map<String, String> inlinerConfig = new HashMap<>();
 
     public Builder setId(@NotNull String id) {
       this.id = !isNullOrEmpty(id) ? id : null;
@@ -99,6 +92,19 @@ public class MailingConfig {
       return this;
     }
 
+    public Builder setInlinerComponent(@NotEmpty String inlinerComponentName) {
+      checkArgument(!Strings.isNullOrEmpty(inlinerComponentName));
+      inlinerComponent = inlinerComponentName;
+      return this;
+    }
+
+    public Builder addInlinerConfig(@Nullable Map<String, String> config) {
+      if (config != null) {
+        inlinerConfig.putAll(config);
+      }
+      return this;
+    }
+
     public MailingConfig build() {
       return new MailingConfig(this);
     }
@@ -114,6 +120,8 @@ public class MailingConfig {
   private final String referenceGroupId;
   private final String referenceAttributeId;
   private final List<String> css;
+  private final String inlinerComponent;
+  private final Map<String, String> inlinerConfig;
 
   private MailingConfig(Builder builder) {
     checkArgument(!isNullOrEmpty(builder.id));
@@ -126,6 +134,8 @@ public class MailingConfig {
     referenceUserId = builder.referenceUserId;
     referenceGroupId = builder.referenceGroupId;
     referenceAttributeId = builder.referenceAttributeId;
+    inlinerComponent = builder.inlinerComponent;
+    inlinerConfig = builder.inlinerConfig;
   }
 
   public @NotNull String getId() {
@@ -140,46 +150,8 @@ public class MailingConfig {
     return contentHtml;
   }
 
-  public String getContentHtmlCleanXml() {
-    final Tidy tidy = new Tidy();
-    tidy.setInputEncoding(StandardCharsets.UTF_8.name());
-    tidy.setOutputEncoding(StandardCharsets.UTF_8.name());
-    tidy.setWraplen(Integer.MAX_VALUE);
-    tidy.setPrintBodyOnly(true);
-    tidy.setXmlOut(true);
-    tidy.setQuoteNbsp(true);
-    tidy.setSmartIndent(false);
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    String xml = "";
-    try {
-      tidy.parseDOM(new ByteArrayInputStream(getContentHtml().getBytes(
-          StandardCharsets.UTF_8.name())), outputStream);
-      xml = outputStream.toString(StandardCharsets.UTF_8.name());
-      LOGGER.trace("tidy.parseDOM: in length [{}], out length [{}]", getContentHtml().length(),
-          xml.length());
-    } catch (UnsupportedEncodingException uee) {
-      LOGGER.warn("Encoding not available: {}", StandardCharsets.UTF_8.name(), uee);
-      throw new IllegalArgumentException(uee);
-    }
-    return xml;
-  }
-
   public @Nullable String getContentHtmlCssInlined() throws CssInlineException {
-    final String cleaned = getContentHtmlCleanXml();
-    LOGGER.debug("Original and cleaned HTML are identical [{}]", LogUtils.defer(
-        () -> cleaned.equals(getContentHtml())));
-    if (LOGGER.isTraceEnabled()) {
-      LOGGER.trace("Original HTML contains &nbsp; [{}]", getContentHtml().indexOf("&nbsp;") >= 0);
-      LOGGER.trace("Original HTML [{}]", getContentHtml());
-      LOGGER.trace("Cleaned HTML contains &nbsp; [{}]", cleaned.indexOf("&nbsp;") >= 0);
-      LOGGER.trace("Cleaned HTML [{}]", cleaned);
-    }
-    // TODO remove "replaceAll-workaround" used as quick fix (PROZHP-106)
-    String inlinedContent = getCssInliner().inline(cleaned.replaceAll("&nbsp;", "&#160;"), css);
-    String inlinedNoXmlHeader = inlinedContent.replaceAll("^<\\?xml.*?>", "");
-    String htmlHeader = HTML_HEADER_REGEX.matcher(getContentHtml()).replaceAll("$1");
-    String htmlFooter = HTML_FOOTER_REGEX.matcher(getContentHtml()).replaceAll("$1");
-    return htmlHeader + inlinedNoXmlHeader + htmlFooter;
+    return getCssInliner().inline(getContentHtml(), css, inlinerConfig);
   }
 
   public @Nullable String getContentPlain() {
@@ -207,6 +179,6 @@ public class MailingConfig {
   }
 
   private CssInliner getCssInliner() {
-    return Utils.getComponent(CssInliner.class);
+    return Utils.getComponent(CssInliner.class, inlinerComponent);
   }
 }

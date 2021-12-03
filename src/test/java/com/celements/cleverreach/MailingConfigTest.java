@@ -56,29 +56,15 @@ public class MailingConfigTest extends AbstractComponentTest {
     assertEquals(DEFAULT_PLAIN, mailingConf.getContentPlain());
   }
 
-  @Test
-  public void testGetContentHtmlCleanXml() {
-    setUpMailingConf("<div>&nbsp;</div>\n");
-    assertEquals("<div>&#160;</div>\n\n", mailingConf.getContentHtmlCleanXml());
-  }
-
-  @Test
-  public void testGetContentHtmlCssInlined() throws Exception {
-    setUpMailingConf(
-        "<!DOCTYPE html><html><head></head><body><div><div>&nbsp;</div>\n<p class=\"unsubscribe\">"
-            + "Um auf <span class=\"link\">{EMAIL}</span> die Tagesagenda in Zukunft nicht mehr zu "
-            + "erhalten können Sie sich <span class=\"link\"><a href=\"{UNSUBSCRIBE}\">hier "
-            + "abmelden</a></span>.<span>$hi</span></p></div></body></html>");
-    String expect = "<!DOCTYPE html><html";
-    String inlined = mailingConf.getContentHtmlCssInlined();
-    assertTrue(getExpectationMessage(expect, inlined), inlined.contains(expect));
-    assertFalse("Result contains [<?xml] and shouldn't ", inlined.contains("<?xml"));
-    assertTrue("Should contain 'style=', but is [" + inlined + "]", inlined.contains("style="));
-  }
-
   private void setUpMailingConf(String html) {
     mailingConf = new MailingConfig.Builder().setId(DEFAULT_ID).setSubject(
         DEFAULT_SUBJECT).setContentHtml(html).setContentPlain(DEFAULT_PLAIN).build();
+  }
+
+  private void setUpMailingConf(String html, String inlinerComponentName) {
+    mailingConf = new MailingConfig.Builder().setId(DEFAULT_ID).setSubject(
+        DEFAULT_SUBJECT).setContentHtml(html).setContentPlain(DEFAULT_PLAIN).setInlinerComponent(
+            inlinerComponentName).build();
   }
 
   private String getExpectationMessage(String expected, String result) {

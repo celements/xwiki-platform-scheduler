@@ -192,8 +192,8 @@ public class CleverReachRest implements CleverReachService {
         return response;
       } else {
         String errorMailMsg = "Request response status != 200. Status [" + response.getStatus()
-            + "], Path [" + completePath + "], Method [" + method + "], Data ["+response+"], "
-            + "Response ["+data+"]";
+            + "], Path [" + completePath + "], Method [" + method + "], Data [" + response + "], "
+            + "Response [" + data + "]";
         LOGGER.info(errorMailMsg);
         String responseBody = RESPONSE_NO_BODY_LOGGING_MESSAGE;
         if (response.hasEntity()) {
