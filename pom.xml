@@ -25,12 +25,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.xpn.xwiki.platform.plugins</groupId>
-    <artifactId>xwiki-plugins</artifactId>
-    <version>29</version>
+    <groupId>com.celements</groupId>
+    <artifactId>celements</artifactId>
+    <version>5.5-SNAPSHOT</version>
   </parent>
   <artifactId>xwiki-plugin-scheduler</artifactId>
-  <version>1.25</version>
+  <version>5.1-SNAPSHOT</version>
   <name>XWiki Platform - Plugins - Scheduler</name>
   <packaging>jar</packaging>
   <description>XWiki Platform - Plugins - Scheduler</description>
@@ -38,7 +38,6 @@
     <dependency>
       <groupId>com.xpn.xwiki.platform</groupId>
       <artifactId>xwiki-core</artifactId>
-      <version>2.3.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -52,11 +51,16 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.codehaus.groovy/groovy -->
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy</artifactId>
+      <version>3.0.9</version>
+    </dependency>
     <!-- Needed at run time. Some versions of Maven don't inherit provided dependencies. -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -68,15 +72,4 @@
       <url>http://repository.jboss.org/maven2/</url>
     </repository>
   </repositories>
-  <!-- We must configure SCM in each module. For more information see:
-       http://svn.xwiki.org/svnroot/xwiki/platform/pom/trunk/pom.xml -->
-  <scm>
-    <connection>scm:svn:http://svn.xwiki.org/svnroot/xwiki/platform/xwiki-plugins/tags/xwiki-plugin-scheduler-1.25</connection>
-    <developerConnection>scm:svn:https://svn.xwiki.org/svnroot/xwiki/platform/xwiki-plugins/tags/xwiki-plugin-scheduler-1.25</developerConnection>
-    <url>http://svn.xwiki.org/svnroot/xwiki/platform/xwiki-plugins/tags/xwiki-plugin-scheduler-1.25</url>
-  </scm>
-  <issueManagement>
-    <system>jira</system>
-    <url>http://jira.xwiki.org/jira/browse/XASCH</url>
-  </issueManagement>
 </project>
