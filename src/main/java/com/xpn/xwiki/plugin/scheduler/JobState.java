@@ -22,58 +22,55 @@ package com.xpn.xwiki.plugin.scheduler;
 import org.quartz.Trigger;
 
 /**
- * Wrapper around the Quartz trigger's inner state of a Scheduler Job. This class allows to query the actual status of a
+ * Wrapper around the Quartz trigger's inner state of a Scheduler Job. This class allows to query
+ * the actual status of a
  * Job as a String, typically to be displayed inside the Wiki
- * 
+ *
  * @version $Id$
  */
-public class JobState
-{
-    private int state;
+public class JobState {
 
-    public static final String STATE_NORMAL = "Normal";
+  private int state;
 
-    public static final String STATE_PAUSED = "Paused";
+  public static final String STATE_NORMAL = "Normal";
 
-    public static final String STATE_BLOCKED = "Blocked";
+  public static final String STATE_PAUSED = "Paused";
 
-    public static final String STATE_COMPLETE = "Complete";
+  public static final String STATE_BLOCKED = "Blocked";
 
-    public static final String STATE_ERROR = "Error";
+  public static final String STATE_COMPLETE = "Complete";
 
-    public static final String STATE_NONE = "None";
+  public static final String STATE_ERROR = "Error";
 
-    public JobState(int state)
-    {
-        setState(state);
+  public static final String STATE_NONE = "None";
+
+  public JobState(int state) {
+    setState(state);
+  }
+
+  public void setState(int state) {
+    this.state = state;
+  }
+
+  public int getState() {
+    return this.state;
+  }
+
+  public String getValue() {
+    switch (this.state) {
+      case Trigger.STATE_NORMAL:
+        return JobState.STATE_NORMAL;
+      case Trigger.STATE_BLOCKED:
+        return JobState.STATE_BLOCKED;
+      case Trigger.STATE_COMPLETE:
+        return JobState.STATE_COMPLETE;
+      case Trigger.STATE_ERROR:
+        return JobState.STATE_ERROR;
+      case Trigger.STATE_PAUSED:
+        return JobState.STATE_PAUSED;
+      case Trigger.STATE_NONE:
+      default:
+        return JobState.STATE_NONE;
     }
-
-    public void setState(int state)
-    {
-        this.state = state;
-    }
-
-    public int getState()
-    {
-        return this.state;
-    }
-
-    public String getValue()
-    {
-        switch (this.state) {
-            case Trigger.STATE_NORMAL:
-                return JobState.STATE_NORMAL;
-            case Trigger.STATE_BLOCKED:
-                return JobState.STATE_BLOCKED;
-            case Trigger.STATE_COMPLETE:
-                return JobState.STATE_COMPLETE;
-            case Trigger.STATE_ERROR:
-                return JobState.STATE_ERROR;
-            case Trigger.STATE_PAUSED:
-                return JobState.STATE_PAUSED;
-            case Trigger.STATE_NONE:
-            default:
-                return JobState.STATE_NONE;
-        }
-    }
+  }
 }

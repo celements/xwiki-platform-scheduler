@@ -32,53 +32,52 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.web.Utils;
 
 /**
- * Base class for any XWiki Quartz Job. This class take care of initializing ExecutionContext properly.
+ * Base class for any XWiki Quartz Job. This class take care of initializing ExecutionContext
+ * properly.
  * <p>
  * A class extending {@link AbstractJob} should implements {@link #executeJob(JobExecutionContext)}.
- * 
+ *
  * @since 1.8
  * @version $Id$
  */
-public abstract class AbstractJob implements Job
-{
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
-     */
-    public final void execute(JobExecutionContext jobContext) throws JobExecutionException
-    {
-        JobDataMap data = jobContext.getJobDetail().getJobDataMap();
+public abstract class AbstractJob implements Job {
 
-        // The XWiki context was saved in the Job execution data map. Get it as we'll retrieve
-        // the script to execute from it.
-        XWikiContext xwikiContext = (XWikiContext) data.get("context");
+  /**
+   * {@inheritDoc}
+   *
+   * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
+   */
+  @Override
+  public final void execute(JobExecutionContext jobContext) throws JobExecutionException {
+    JobDataMap data = jobContext.getJobDetail().getJobDataMap();
 
-        // Init execution context
-        Execution execution;
-        try {
-            ExecutionContextManager ecim = (ExecutionContextManager) Utils.getComponent(ExecutionContextManager.class);
-            execution = (Execution) Utils.getComponent(Execution.class);
+    // The XWiki context was saved in the Job execution data map. Get it as we'll retrieve
+    // the script to execute from it.
+    XWikiContext xwikiContext = (XWikiContext) data.get("context");
 
-            ExecutionContext ec = new ExecutionContext();
-            // Bridge with old XWiki Context, required for old code.
-            ec.setProperty("xwikicontext", xwikiContext);
-
-            ecim.initialize(ec);
-            execution.setContext(ec);
-        } catch (ExecutionContextException e) {
-            throw new JobExecutionException("Fail to initialize execution context", e);
-        }
-
-        try {
-            // Execute the job
-            executeJob(jobContext);
-        } finally {
-            // We must ensure we clean the ThreadLocal variables located in the Execution
-            // component as otherwise we will have a potential memory leak.
-            execution.removeContext();
-        }
+    // Init execution context
+    Execution execution;
+    try {
+      ExecutionContextManager ecim = Utils
+          .getComponent(ExecutionContextManager.class);
+      execution = Utils.getComponent(Execution.class);
+      ExecutionContext ec = new ExecutionContext();
+      // Bridge with old XWiki Context, required for old code.
+      ec.setProperty("xwikicontext", xwikiContext);
+      ecim.initialize(ec);
+      execution.setContext(ec);
+    } catch (ExecutionContextException e) {
+      throw new JobExecutionException("Fail to initialize execution context", e);
     }
+    try {
+      // Execute the job
+      executeJob(jobContext);
+    } finally {
+      // We must ensure we clean the ThreadLocal variables located in the Execution
+      // component as otherwise we will have a potential memory leak.
+      execution.removeContext();
+    }
+  }
 
-    protected abstract void executeJob(JobExecutionContext jobContext) throws JobExecutionException;
+  protected abstract void executeJob(JobExecutionContext jobContext) throws JobExecutionException;
 }

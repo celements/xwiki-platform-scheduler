@@ -20,241 +20,240 @@ import com.xpn.xwiki.web.XWikiResponse;
 
 /**
  * This stub is intended to emulate a servlet response in the daemon context of the scheduler.
- * 
+ *
  * @version $Id$
  */
-public class XWikiServletResponseStub implements XWikiResponse
-{
+public class XWikiServletResponseStub implements XWikiResponse {
 
-    public HttpServletResponse getHttpServletResponse()
-    {
-        return null;
-    }
+  @Override
+  public HttpServletResponse getHttpServletResponse() {
+    return null;
+  }
 
-    public void removeCookie(String arg0, XWikiRequest arg1)
-    {
-        
-    }
+  @Override
+  public void removeCookie(String arg0, XWikiRequest arg1) {
 
-    public void setCharacterEncoding(String arg0)
-    {
-        
-    }
+  }
 
-    public void addCookie(Cookie arg0)
-    {
-        
-    }
+  @Override
+  public void setCharacterEncoding(String arg0) {
 
-    public void addDateHeader(String arg0, long arg1)
-    {
-        
-    }
+  }
 
-    public void addHeader(String arg0, String arg1)
-    {
-        
-    }
+  @Override
+  public void addCookie(Cookie arg0) {
 
-    public void addIntHeader(String arg0, int arg1)
-    {
-        
-    }
+  }
 
-    public boolean containsHeader(String arg0)
-    {
-        return false;
-    }
+  @Override
+  public void addDateHeader(String arg0, long arg1) {
 
-    public String encodeRedirectURL(String arg0)
-    {
-        return null;
-    }
+  }
 
-    public String encodeRedirectUrl(String arg0)
-    {
-        return null;
-    }
+  @Override
+  public void addHeader(String arg0, String arg1) {
 
-    public String encodeURL(String arg0)
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  }
 
-    public String encodeUrl(String arg0)
-    {
-        return null;
-    }
+  @Override
+  public void addIntHeader(String arg0, int arg1) {
 
-    public void sendError(int arg0) throws IOException
-    {
-        
-    }
+  }
 
-    public void sendError(int arg0, String arg1) throws IOException
-    {
-        
-    }
+  @Override
+  public boolean containsHeader(String arg0) {
+    return false;
+  }
 
-    public void sendRedirect(String arg0) throws IOException
-    {
-        
-    }
+  @Override
+  public String encodeRedirectURL(String arg0) {
+    return null;
+  }
 
-    public void setDateHeader(String arg0, long arg1)
-    {
-        
-    }
+  @Override
+  public String encodeRedirectUrl(String arg0) {
+    return null;
+  }
 
-    public void setHeader(String arg0, String arg1)
-    {
-        
-    }
+  @Override
+  public String encodeURL(String arg0) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-    public void setIntHeader(String arg0, int arg1)
-    {
-        
-    }
+  @Override
+  public String encodeUrl(String arg0) {
+    return null;
+  }
 
-    public void setStatus(int arg0)
-    {
-        
-    }
+  @Override
+  public void sendError(int arg0) throws IOException {
 
-    public void setStatus(int arg0, String arg1)
-    {
-        
-    }
+  }
 
-    public void flushBuffer() throws IOException
-    {
-        
-    }
+  @Override
+  public void sendError(int arg0, String arg1) throws IOException {
 
-    public int getBufferSize()
-    {
-        return 0;
-    }
+  }
 
-    public String getCharacterEncoding()
-    {
-        return null;
-    }
+  @Override
+  public void sendRedirect(String arg0) throws IOException {
 
-    public String getContentType()
-    {
-        return null;
-    }
+  }
 
-    public Locale getLocale()
-    {
-        return null;
-    }
+  @Override
+  public void setDateHeader(String arg0, long arg1) {
 
-    public ServletOutputStream getOutputStream() throws IOException
-    {
-        return null;
-    }
+  }
 
-    public PrintWriter getWriter() throws IOException
-    {
-        return null;
-    }
+  @Override
+  public void setHeader(String arg0, String arg1) {
 
-    public boolean isCommitted()
-    {
-        return false;
-    }
+  }
 
-    public void reset()
-    {
-        
-    }
+  @Override
+  public void setIntHeader(String arg0, int arg1) {
 
-    public void resetBuffer()
-    {
-        
-    }
+  }
 
-    public void setBufferSize(int arg0)
-    {
-        
-    }
+  @Override
+  public void setStatus(int arg0) {
 
-    public void setContentLength(int arg0)
-    {
-        
-    }
+  }
 
-    public void setContentType(String arg0)
-    {
-        
-    }
+  @Override
+  public void setStatus(int arg0, String arg1) {
 
-    public void setLocale(Locale arg0)
-    {
-        
-    }
+  }
 
-    public PortletURL createActionURL()
-    {
-        return null;
-    }
+  @Override
+  public void flushBuffer() throws IOException {
 
-    public PortletURL createRenderURL()
-    {
-        return null;
-    }
+  }
 
-    public String getNamespace()
-    {
-        return null;
-    }
+  @Override
+  public int getBufferSize() {
+    return 0;
+  }
 
-    public OutputStream getPortletOutputStream() throws IOException
-    {
-        return null;
-    }
+  @Override
+  public String getCharacterEncoding() {
+    return null;
+  }
 
-    public void setTitle(String arg0)
-    {
-        
-    }
+  @Override
+  public String getContentType() {
+    return null;
+  }
 
-    public void addProperty(String arg0, String arg1)
-    {
-        
-    }
+  @Override
+  public Locale getLocale() {
+    return null;
+  }
 
-    public void setProperty(String arg0, String arg1)
-    {
-        
-    }
+  @Override
+  public ServletOutputStream getOutputStream() throws IOException {
+    return null;
+  }
 
-    public void setPortletMode(PortletMode arg0) throws PortletModeException
-    {
-        
-    }
+  @Override
+  public PrintWriter getWriter() throws IOException {
+    return null;
+  }
 
-    public void setRenderParameter(String arg0, String arg1)
-    {
-        
-    }
+  @Override
+  public boolean isCommitted() {
+    return false;
+  }
 
-    public void setRenderParameter(String arg0, String[] arg1)
-    {
-        
-    }
+  @Override
+  public void reset() {
 
-    public void setRenderParameters(Map arg0)
-    {
-        
-    }
+  }
 
-    public void setWindowState(WindowState arg0) throws WindowStateException
-    {
-        
-    }
+  @Override
+  public void resetBuffer() {
+
+  }
+
+  @Override
+  public void setBufferSize(int arg0) {
+
+  }
+
+  @Override
+  public void setContentLength(int arg0) {
+
+  }
+
+  @Override
+  public void setContentType(String arg0) {
+
+  }
+
+  @Override
+  public void setLocale(Locale arg0) {
+
+  }
+
+  @Override
+  public PortletURL createActionURL() {
+    return null;
+  }
+
+  @Override
+  public PortletURL createRenderURL() {
+    return null;
+  }
+
+  @Override
+  public String getNamespace() {
+    return null;
+  }
+
+  @Override
+  public OutputStream getPortletOutputStream() throws IOException {
+    return null;
+  }
+
+  @Override
+  public void setTitle(String arg0) {
+
+  }
+
+  @Override
+  public void addProperty(String arg0, String arg1) {
+
+  }
+
+  @Override
+  public void setProperty(String arg0, String arg1) {
+
+  }
+
+  @Override
+  public void setPortletMode(PortletMode arg0) throws PortletModeException {
+
+  }
+
+  @Override
+  public void setRenderParameter(String arg0, String arg1) {
+
+  }
+
+  @Override
+  public void setRenderParameter(String arg0, String[] arg1) {
+
+  }
+
+  @Override
+  public void setRenderParameters(Map arg0) {
+
+  }
+
+  @Override
+  public void setWindowState(WindowState arg0) throws WindowStateException {
+
+  }
 
 }

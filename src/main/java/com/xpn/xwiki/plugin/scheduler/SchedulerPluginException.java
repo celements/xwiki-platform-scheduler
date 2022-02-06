@@ -23,51 +23,50 @@ import com.xpn.xwiki.plugin.PluginException;
 
 /**
  * An exception that might be thrown when doing various tasks in the scheduler plugin.
- * 
+ *
  * @version $Id$
  */
-public class SchedulerPluginException extends PluginException
-{
-    protected static final int ERROR_SCHEDULERPLUGIN_SAVE_JOB_CLASS = 90000;
+public class SchedulerPluginException extends PluginException {
 
-    protected static final int ERROR_SCHEDULERPLUGIN_INITIALIZE_STATUS_LISTENER = 90001;
+  private static final long serialVersionUID = 1L;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_PAUSE_JOB = 90002;
+  protected static final int ERROR_SCHEDULERPLUGIN_SAVE_JOB_CLASS = 90000;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_RESUME_JOB = 90003;
+  protected static final int ERROR_SCHEDULERPLUGIN_INITIALIZE_STATUS_LISTENER = 90001;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_SCHEDULE_JOB = 90004;    
+  protected static final int ERROR_SCHEDULERPLUGIN_PAUSE_JOB = 90002;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_BAD_CRON_EXPRESSION = 90005;
+  protected static final int ERROR_SCHEDULERPLUGIN_RESUME_JOB = 90003;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_JOB_XCLASS_NOT_FOUND = 90006;
+  protected static final int ERROR_SCHEDULERPLUGIN_SCHEDULE_JOB = 90004;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_JOB_DOES_NOT_EXITS = 90007;
+  protected static final int ERROR_SCHEDULERPLUGIN_BAD_CRON_EXPRESSION = 90005;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_GET_SCHEDULER = 90007;
+  protected static final int ERROR_SCHEDULERPLUGIN_JOB_XCLASS_NOT_FOUND = 90006;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_RESTORE_JOB = 90008;
+  protected static final int ERROR_SCHEDULERPLUGIN_JOB_DOES_NOT_EXITS = 90007;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_RESTORE_EXISTING_JOBS = 90009;
+  protected static final int ERROR_SCHEDULERPLUGIN_GET_SCHEDULER = 90007;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_UNABLE_TO_RETRIEVE_JOB = 90010;
+  protected static final int ERROR_SCHEDULERPLUGIN_RESTORE_JOB = 90008;
 
-    protected static final int ERROR_SCHEDULERPLUGIN_UNABLE_TO_PREPARE_JOB_CONTEXT = 90011;
-    
-    protected static final int ERROR_SCHEDULERPLUGIN_TRIGGER_JOB = 90012;
+  protected static final int ERROR_SCHEDULERPLUGIN_RESTORE_EXISTING_JOBS = 90009;
 
-    public SchedulerPluginException(int code, String message)
-    {
-        super(SchedulerPlugin.class, code, message);
-    }
+  protected static final int ERROR_SCHEDULERPLUGIN_UNABLE_TO_RETRIEVE_JOB = 90010;
 
-    public SchedulerPluginException(int code, String message, Throwable e, Object[] args)
-    {
-        super(SchedulerPlugin.class, code, message, e, args);
-    }
+  protected static final int ERROR_SCHEDULERPLUGIN_UNABLE_TO_PREPARE_JOB_CONTEXT = 90011;
 
-    public SchedulerPluginException(int code, String message, Throwable e)
-    {
-        super(SchedulerPlugin.class, code, message, e);
-    }
+  protected static final int ERROR_SCHEDULERPLUGIN_TRIGGER_JOB = 90012;
+
+  public SchedulerPluginException(int code, String message) {
+    super(SchedulerPlugin.class, code, message);
+  }
+
+  public SchedulerPluginException(int code, String message, Throwable e, Object[] args) {
+    super(SchedulerPlugin.class, code, message, e, args);
+  }
+
+  public SchedulerPluginException(int code, String message, Throwable e) {
+    super(SchedulerPlugin.class, code, message, e);
+  }
 }
