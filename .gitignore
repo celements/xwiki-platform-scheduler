@@ -4,9 +4,10 @@
 *.jar
 *.war
 *.ear
-/target
-/.classpath
-/.project
-/.settings
-/xwiki.log
-/src/main/java/META-INF
+**/target
+**/.classpath
+**/.project
+**/.settings
+**/xwiki.log*
+**/src/main/java/META-INF
+**/.DS_Store
