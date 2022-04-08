@@ -36,12 +36,6 @@
   <description>XWiki Platform - Plugins - Scheduler</description>
   <dependencies>
     <dependency>
-      <groupId>com.celements</groupId>
-      <artifactId>celements-model</artifactId>
-      <version>5.4</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opensymphony.quartz</groupId>
       <artifactId>quartz</artifactId>
       <version>1.6.5</version>
