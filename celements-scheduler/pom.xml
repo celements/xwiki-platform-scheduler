@@ -67,4 +67,10 @@
       <url>http://repository.jboss.org/maven2/</url>
     </repository>
   </repositories>
+  <scm>
+    <connection>scm:git:git@github.com:celements/celements-xwiki-plugins.git</connection>
+    <developerConnection>scm:git:git@github.com:celements/celements-xwiki-plugins.git</developerConnection>
+    <url>https://github.com/celements/celements-xwiki-plugins</url>
+    <tag>HEAD</tag>
+  </scm>
 </project>
