@@ -30,7 +30,7 @@
     <version>5.6</version>
   </parent>
   <artifactId>celements-scheduler</artifactId>
-  <version>5.0</version>
+  <version>5.1-SNAPSHOT</version>
   <name>XWiki Platform - Plugins - Scheduler</name>
   <packaging>jar</packaging>
   <description>XWiki Platform - Plugins - Scheduler</description>
@@ -71,6 +71,6 @@
     <connection>scm:git:git@github.com:celements/celements-xwiki-plugins.git</connection>
     <developerConnection>scm:git:git@github.com:celements/celements-xwiki-plugins.git</developerConnection>
     <url>https://github.com/celements/celements-xwiki-plugins</url>
-    <tag>celements-scheduler-5.0</tag>
+    <tag>HEAD</tag>
   </scm>
 </project>
