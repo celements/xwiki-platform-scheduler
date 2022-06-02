@@ -56,9 +56,14 @@ public class SynthonCssInliner implements CssInliner {
   }
 
   /**
-   * Supported (optional) parameters:
-   * removeClasses [true|false] - remove the classes from the HTML after inlining
-   * inlineUrl - can be used to override the default URL used for inline service
+   * @param html    the html where the css should be inlined
+   * @param css     the css to inline
+   * @param config  mandatory in config:
+   *                inlineUrl - the URL where the inline service can be reached
+   *                serverSecret - the server secret used to authorize the inline request
+   *                optional:
+   *                removeClasses [true|false] - remove classes from the HTML after inlining (default: true)
+   * @return        the html with the css inlined
    */
   @Override
   public String inline(String html, String css, Map<String, String> configs)
