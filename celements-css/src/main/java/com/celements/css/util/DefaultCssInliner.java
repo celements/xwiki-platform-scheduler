@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.component.annotation.Component;
@@ -45,10 +48,9 @@ public class DefaultCssInliner implements CssInliner {
   }
 
   @Override
-  public String inline(String html, String css, Map<String, String> configs)
-      throws CssInlineException {
+  public String inline(@NotNull String html, @Nullable String css,
+      @Nullable Map<String, String> configs) throws CssInlineException {
     checkNotNull(html);
-    checkNotNull(css);
     LOGGER.trace("Applying the following CSS [{}] to HTML [{}]", css, html);
     try {
       String result = Dom4JParser.createXHtmlParser().allowDTDs()
@@ -57,7 +59,6 @@ public class DefaultCssInliner implements CssInliner {
       LOGGER.trace("HTML with CSS INLINED [{}]", result);
       return result;
     } catch (IOException excp) {
-      LOGGER.warn("Failed to apply CSS [{}] to HTML [{}]", css, html, excp);
       throw new CssInlineException(html, excp);
     }
   }
