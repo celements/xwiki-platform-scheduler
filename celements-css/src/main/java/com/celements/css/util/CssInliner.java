@@ -21,10 +21,10 @@ public interface CssInliner {
       @Nullable Map<String, String> configs) throws CssInlineException;
 
   @NotNull
-  String inline(@NotNull String html, @NotNull String css) throws CssInlineException;
+  String inline(@NotNull String html, @Nullable String css) throws CssInlineException;
 
   @NotNull
-  String inline(@NotNull String html, @NotNull String css, @Nullable Map<String, String> configs)
+  String inline(@NotNull String html, @Nullable String css, @Nullable Map<String, String> configs)
       throws CssInlineException;
 
 }
