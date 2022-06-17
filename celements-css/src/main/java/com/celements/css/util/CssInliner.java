@@ -27,4 +27,19 @@ public interface CssInliner {
   String inline(@NotNull String html, @Nullable String css, @Nullable Map<String, String> configs)
       throws CssInlineException;
 
+  @NotNull
+  String inlineAndMinify(@NotNull String html, @NotNull List<String> cssList)
+      throws CssInlineException;
+
+  @NotNull
+  String inlineAndMinify(@NotNull String html, @NotNull List<String> cssList,
+      @Nullable Map<String, String> configs) throws CssInlineException;
+
+  @NotNull
+  String inlineAndMinify(@NotNull String html, @Nullable String css) throws CssInlineException;
+
+  @NotNull
+  String inlineAndMinify(@NotNull String html, @Nullable String css,
+      @Nullable Map<String, String> configs) throws CssInlineException;
+
 }

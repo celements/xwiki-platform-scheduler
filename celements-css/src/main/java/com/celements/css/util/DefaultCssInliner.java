@@ -77,4 +77,32 @@ public class DefaultCssInliner implements CssInliner {
     return Stream.of(document);
   }
 
+  @Override
+  public @NotNull String inlineAndMinify(@NotNull String html, @NotNull List<String> cssList)
+      throws CssInlineException {
+    LOGGER.warn("DefaultCssInliner does not support minify. Only inlining CSS.");
+    return inline(html, cssList);
+  }
+
+  @Override
+  public @NotNull String inlineAndMinify(@NotNull String html, @NotNull List<String> cssList,
+      Map<String, String> configs) throws CssInlineException {
+    LOGGER.warn("DefaultCssInliner does not support minify. Only inlining CSS.");
+    return inline(html, cssList, configs);
+  }
+
+  @Override
+  public @NotNull String inlineAndMinify(@NotNull String html, String css)
+      throws CssInlineException {
+    LOGGER.warn("DefaultCssInliner does not support minify. Only inlining CSS.");
+    return inline(html, css);
+  }
+
+  @Override
+  public @NotNull String inlineAndMinify(@NotNull String html, String css,
+      Map<String, String> configs) throws CssInlineException {
+    LOGGER.warn("DefaultCssInliner does not support minify. Only inlining CSS.");
+    return inline(html, css, configs);
+  }
+
 }
