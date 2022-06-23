@@ -38,7 +38,7 @@ import org.xwiki.model.reference.SpaceReference;
 
 import com.celements.auth.classes.RemoteLoginClass;
 import com.celements.cleverreach.exception.CleverReachRequestFailedException;
-import com.celements.cleverreach.exception.CssInlineException;
+import com.celements.css.exception.CssInlineException;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.classes.ClassDefinition;
@@ -382,7 +382,8 @@ public class CleverReachRest implements CleverReachService {
     if ((method == SubmitMethod.GET) && (data instanceof MultivaluedMap)) {
       getMultivalueMapFromOjb(data).entrySet().stream().forEach(entry -> {
         target.set(target.get().queryParam(entry.getKey(), (entry.getValue().size() == 1)
-            ? entry.getValue().get(0) : entry.getValue().toArray()));
+            ? entry.getValue().get(0)
+            : entry.getValue().toArray()));
         LOGGER.trace("addGetParameter: [{}]=[{}]", entry.getKey(), entry.getValue());
       });
     }

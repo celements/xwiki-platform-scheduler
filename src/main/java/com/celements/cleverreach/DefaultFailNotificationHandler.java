@@ -16,9 +16,9 @@ import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.cleverreach.exception.CleverReachRequestFailedException;
-import com.celements.cleverreach.exception.CssInlineException;
 import com.celements.common.MoreObjectsCel;
 import com.celements.common.classes.IClassCollectionRole;
+import com.celements.css.exception.CssInlineException;
 import com.celements.mailsender.IMailSenderRole;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentNotExistsException;

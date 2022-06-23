@@ -2,5 +2,3 @@ com.celements.cleverreach.CleverReachRest
 com.celements.cleverreach.CleverReachScriptService
 com.celements.cleverreach.DefaultRestClientFactory
 com.celements.cleverreach.DefaultFailNotificationHandler
-com.celements.cleverreach.util.DefaultCssInliner
-com.celements.cleverreach.util.SynthonCssInliner

@@ -17,8 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.celements.cleverreach.CleverReachService.ServerClass;
-import com.celements.cleverreach.exception.CssInlineException;
-import com.celements.cleverreach.util.CssInliner;
+import com.celements.css.exception.CssInlineException;
+import com.celements.css.util.CssInliner;
 import com.google.common.base.Strings;
 import com.xpn.xwiki.web.Utils;
 
