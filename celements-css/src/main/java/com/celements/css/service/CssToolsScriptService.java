@@ -12,12 +12,12 @@ import com.celements.css.exception.CssInlineException;
 import com.celements.css.util.CssInliner;
 import com.google.common.collect.ImmutableMap;
 
-@Component(CssScriptService.CSS)
-public class CssScriptService implements ScriptService {
+@Component(CssToolsScriptService.CSS)
+public class CssToolsScriptService implements ScriptService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CssScriptService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CssToolsScriptService.class);
 
-  public static final String CSS = "css";
+  public static final String CSS = "cssTools";
 
   @Requirement
   private CssInliner cssInliner;
