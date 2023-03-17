@@ -1,25 +1,29 @@
 package com.celements.search.lucene.query;
 
+import static com.google.common.base.Strings.*;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.lucene.queryParser.QueryParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.celements.search.lucene.index.analysis.CelAnalyzer;
 import com.google.common.base.Optional;
 
 public class QueryRestriction implements IQueryRestriction {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(QueryRestriction.class);
+
+  private static final Pattern TOKEN_PATTERN = Pattern.compile("( ?\"[^\"]*\" ?)|[^ ]+");
 
   private boolean negate = false;
   private String specifier = null;
@@ -28,16 +32,16 @@ public class QueryRestriction implements IQueryRestriction {
   private Float fuzzy = null;
   private Integer proximity = null;
   private Float boost = null;
+  private CelAnalyzer analyzer = null;
 
   public QueryRestriction(String specifier, String query) {
-    this.specifier = specifier;
-    this.query = query;
+    setSpecifier(specifier);
+    setQuery(query);
   }
 
   public QueryRestriction(String specifier, String query, boolean tokenizeQuery) {
-    this.specifier = specifier;
-    this.query = query;
-    this.tokenizeQuery = tokenizeQuery;
+    this(specifier, query);
+    setTokenizeQuery(tokenizeQuery);
   }
 
   public String getSpecifier() {
@@ -60,12 +64,12 @@ public class QueryRestriction implements IQueryRestriction {
   }
 
   public QueryRestriction setSpecifier(String specifier) {
-    this.specifier = specifier;
+    this.specifier = nullToEmpty(specifier).trim();
     return this;
   }
 
   public QueryRestriction setQuery(String query) {
-    this.query = query;
+    this.query = nullToEmpty(query).trim();
     return this;
   }
 
@@ -158,6 +162,11 @@ public class QueryRestriction implements IQueryRestriction {
     return this;
   }
 
+  public QueryRestriction setAnalyzer(CelAnalyzer analyzer) {
+    this.analyzer = analyzer;
+    return this;
+  }
+
   /**
    * @deprecated instead use {@link #getQueryString()}
    * @return
@@ -170,50 +179,54 @@ public class QueryRestriction implements IQueryRestriction {
   @Override
   public String getQueryString() {
     String ret = "";
-    if (StringUtils.isNotBlank(specifier) && StringUtils.isNotBlank(query)) {
-      if (tokenizeQuery) {
-        StringBuilder tokenizedQuery = new StringBuilder();
-        Matcher m = getQueryTokenMatcher();
-        while (m.find()) {
-          String token = m.group(0).trim();
-          if (!token.matches("[\"+-]")) {
-            token = QueryParser.escape(token);
-            token = token.replaceAll("^(\\\\([+-]))?(\\\\(\"))?(.*?)(\\\\(\"))?$", "$2$4$5$7");
-            token = token.replaceAll("^(.+)\\\\([\\?\\*].*)$", "$1$2");
-            if (!token.matches("^[+-].*")) {
-              token = "+" + token;
-            }
-            if (!token.matches("^.*[\\*\\\"]$") && ((proximity == null) || (proximity <= 1))) {
-              token += "*";
-            }
-            tokenizedQuery.append(" " + token);
-          }
+    if (!specifier.isEmpty()) {
+      ret = tokenizeQuery ? getTokenizedQuery() : filterToken(query);
+      if (!ret.isEmpty()) {
+        DecimalFormat formater = getDecimalFormater();
+        ret = makeRestrictionFuzzy(ret, formater);
+        if ((proximity != null) && (proximity > 1)) {
+          ret = "\"" + ret + "\"~" + formater.format(proximity);
         }
-        ret = tokenizedQuery.toString().trim();
-      } else {
-        ret = query;
-      }
-      DecimalFormat formater = getDecimalFormater();
-      ret = makeRestrictionFuzzy(ret, formater);
-      if ((proximity != null) && (proximity > 1)) {
-        ret = "\"" + ret + "\"~" + formater.format(proximity);
-      }
-      ret = specifier + ":(" + ret + ")";
-      if ((boost != null) && (boost > 0)) {
-        ret += "^" + formater.format(boost);
-      }
-      if (negate) {
-        ret = "NOT " + ret;
+        ret = specifier + ":(" + ret + ")";
+        if ((boost != null) && (boost > 0)) {
+          ret += "^" + formater.format(boost);
+        }
+        if (negate) {
+          ret = "NOT " + ret;
+        }
       }
     }
     return ret;
   }
 
-  Matcher getQueryTokenMatcher() {
-    String regex = "( ?\"[^\"]*\" ?)|[^ ]+";
-    Pattern p = Pattern.compile(regex);
-    Matcher m = p.matcher(query);
-    return m;
+  private String getTokenizedQuery() {
+    Matcher m = TOKEN_PATTERN.matcher(query);
+    StringBuilder tokenizedQuery = new StringBuilder();
+    while (m.find()) {
+      String token = filterToken(m.group(0).trim());
+      if (!token.isEmpty() && !token.matches("[\"+-]")) {
+        tokenizedQuery.append(" ");
+        token = QueryParser.escape(token);
+        token = token.replaceAll("^(\\\\([+-]))?(\\\\(\"))?(.*?)(\\\\(\"))?$", "$2$4$5$7");
+        token = token.replaceAll("^(.+)\\\\([\\?\\*].*)$", "$1$2");
+        if (!token.matches("^[+-].*")) {
+          tokenizedQuery.append("+");
+        }
+        tokenizedQuery.append(token);
+        if (!token.matches("^.*[\\*\\\"]$") && ((proximity == null) || (proximity <= 1))) {
+          tokenizedQuery.append("*");
+        }
+      }
+    }
+    return tokenizedQuery.toString().trim();
+  }
+
+  String filterToken(String token) {
+    if (analyzer != null) {
+      return analyzer.filterToken(token);
+    } else {
+      return token;
+    }
   }
 
   DecimalFormat getDecimalFormater() {
@@ -223,24 +236,27 @@ public class QueryRestriction implements IQueryRestriction {
   }
 
   String makeRestrictionFuzzy(String queryString, DecimalFormat formater) {
-    String finalQuery = queryString;
     if (fuzzy != null) {
       String fuzzyStr = "~";
       if ((fuzzy >= 0) && (fuzzy <= 1)) {
         fuzzyStr += formater.format(fuzzy);
       }
-      finalQuery = "";
+      StringBuilder finalQuery = new StringBuilder();
       for (String term : queryString.split(" ")) {
-        String termString = term + fuzzyStr;
-        if (term.endsWith("*")) {
-          termString = "(" + term.replaceAll("\\+?(.*)", "$1") + " OR " + term.replaceAll(
-              "\\+?(.*)\\*$", "$1" + fuzzyStr) + ")";
+        if (finalQuery.length() > 0) {
+          finalQuery.append(" AND ");
         }
-        finalQuery += termString + " AND ";
+        if (term.endsWith("*")) {
+          finalQuery.append("(" + term.replaceAll("\\+?(.*)", "$1") + " OR " + term.replaceAll(
+              "\\+?(.*)\\*$", "$1" + fuzzyStr) + ")");
+        } else {
+          finalQuery.append(term).append(fuzzyStr);
+        }
       }
-      finalQuery = finalQuery.replaceAll("(.*) AND $", "$1");
+      return finalQuery.toString();
+    } else {
+      return queryString;
     }
-    return finalQuery;
   }
 
   @Override
@@ -250,6 +266,7 @@ public class QueryRestriction implements IQueryRestriction {
     copy.proximity = proximity;
     copy.boost = boost;
     copy.negate = negate;
+    copy.analyzer = analyzer;
     return copy;
   }
 
@@ -260,18 +277,21 @@ public class QueryRestriction implements IQueryRestriction {
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(boost).append(fuzzy).append(negate).append(
-        proximity).append(query).append(specifier).append(tokenizeQuery).toHashCode();
+    return Objects.hash(boost, fuzzy, negate, proximity, query, specifier, tokenizeQuery, analyzer);
   }
 
   @Override
   public boolean equals(Object obj) {
     if (obj instanceof QueryRestriction) {
       QueryRestriction other = (QueryRestriction) obj;
-      return new EqualsBuilder().append(boost, other.boost).append(fuzzy, other.fuzzy).append(
-          negate, other.negate).append(proximity, other.proximity).append(query,
-              other.query).append(specifier, other.specifier).append(tokenizeQuery,
-                  other.tokenizeQuery).isEquals();
+      return Objects.equals(specifier, other.specifier)
+          && Objects.equals(query, other.query)
+          && Objects.equals(boost, other.boost)
+          && Objects.equals(fuzzy, other.fuzzy)
+          && Objects.equals(negate, other.negate)
+          && Objects.equals(proximity, other.proximity)
+          && Objects.equals(tokenizeQuery, other.tokenizeQuery)
+          && Objects.equals(analyzer, other.analyzer);
     } else {
       return false;
     }
