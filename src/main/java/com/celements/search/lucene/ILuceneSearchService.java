@@ -6,6 +6,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.util.Version;
 import org.xwiki.component.annotation.ComponentRole;
@@ -132,6 +135,12 @@ public interface ILuceneSearchService {
   public QueryRestriction createToDateRestriction(String field, Date toDate, boolean inclusive);
 
   public QueryRestriction createFromToDateRestriction(String field, Date fromDate, Date toDate,
+      boolean inclusive);
+
+  @NotNull
+  public QueryRestrictionGroup createFromToDateRestriction(
+      @Nullable String startField, @Nullable String endField,
+      @Nullable Date fromDate,@Nullable Date toDate,
       boolean inclusive);
 
   public QueryRestriction createNumberRestriction(String field, Number number);
