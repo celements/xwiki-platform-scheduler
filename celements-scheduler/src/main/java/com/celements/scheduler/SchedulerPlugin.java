@@ -26,8 +26,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -35,6 +33,8 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xwiki.rendering.syntax.Syntax;
 import org.xwiki.script.service.ScriptServiceManager;
 
@@ -63,7 +63,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
   /**
    * Log object to log messages in this class.
    */
-  private static final Log LOG = LogFactory.getLog(SchedulerPlugin.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SchedulerPlugin.class);
 
   /**
    * Fullname of the XWiki Scheduler Job Class representing a job that can be scheduled by this
@@ -95,24 +95,23 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
     try {
       String initialDb = !context.getDatabase().equals("") ? context.getDatabase()
           : context.getMainXWiki();
-
       List<String> wikiServers;
       if (context.getWiki().isVirtualMode()) {
         try {
           wikiServers = context.getWiki().getVirtualWikisDatabaseNames(context);
         } catch (Exception e) {
           LOG.error("error getting list of wiki servers!", e);
-          wikiServers = new ArrayList<String>();
+          wikiServers = new ArrayList<>();
         }
       } else {
-        wikiServers = new ArrayList<String>();
+        wikiServers = new ArrayList<>();
       }
       if (!wikiServers.contains(context.getMainXWiki())) {
         wikiServers.add(context.getMainXWiki());
       }
       // Init class
       try {
-        for (String wikiName : new ArrayList<String>(wikiServers)) {
+        for (String wikiName : new ArrayList<>(wikiServers)) {
           context.setDatabase(wikiName);
           try {
             updateSchedulerJobClass(context);
@@ -659,7 +658,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
     // it
     TextAreaClass scriptField = (TextAreaClass) bclass.getField("script");
     // get editor returns lowercase but the values are actually camelcase
-    if (scriptField.getEditor() != "puretext") {
+    if (!"puretext".equalsIgnoreCase(scriptField.getEditor())) {
       scriptField.setStringValue("editor", "PureText");
       needsUpdate = true;
     }
