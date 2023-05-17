@@ -37,10 +37,10 @@ import org.xwiki.velocity.VelocityManager;
 
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentNotExistsException;
+import com.celements.scheduler.XWikiServletRequestStub;
+import com.celements.scheduler.XWikiServletResponseStub;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.plugin.scheduler.XWikiServletRequestStub;
-import com.xpn.xwiki.plugin.scheduler.XWikiServletResponseStub;
 import com.xpn.xwiki.web.Utils;
 import com.xpn.xwiki.web.XWikiResponse;
 import com.xpn.xwiki.web.XWikiServletRequest;
