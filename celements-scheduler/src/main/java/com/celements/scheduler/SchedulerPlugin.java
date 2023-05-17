@@ -38,6 +38,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.xwiki.rendering.syntax.Syntax;
 import org.xwiki.script.service.ScriptServiceManager;
 
+import com.celements.scheduler.job.JobState;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -312,7 +313,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
    * @param object
    *          the XObject to give the status of
    * @return the status of the Job inside the quartz scheduler, as
-   *         {@link com.celements.scheduler.JobState}
+   *         {@link com.celements.scheduler.job.JobState}
    *         instance
    */
   public JobState getJobStatus(BaseObject object, XWikiContext context) throws SchedulerException {
