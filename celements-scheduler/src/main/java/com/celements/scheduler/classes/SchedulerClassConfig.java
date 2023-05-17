@@ -1,22 +1,28 @@
 package com.celements.scheduler.classes;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
 import org.xwiki.model.reference.WikiReference;
 
-import com.celements.web.service.IWebUtilsService;
+import com.celements.model.context.ModelContext;
 
 @Component
 public class SchedulerClassConfig implements ISchedulerClassConfig {
 
-  @Requirement
-  private IWebUtilsService webUtilsService;
+  private final ModelContext modelContext;
+
+  @Inject
+  public SchedulerClassConfig(
+      ModelContext modelContext) {
+    this.modelContext = modelContext;
+  }
 
   @Override
   public DocumentReference getSchedulerJobClassRef() {
-    return getSchedulerJobClassRef(webUtilsService.getWikiRef());
+    return getSchedulerJobClassRef(modelContext.getWikiRef());
   }
 
   @Override

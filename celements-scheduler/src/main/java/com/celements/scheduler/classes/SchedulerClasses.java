@@ -1,7 +1,8 @@
 package com.celements.scheduler.classes;
 
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Component;
 import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.common.classes.AbstractClassCollection;
@@ -13,8 +14,13 @@ import com.xpn.xwiki.objects.classes.TextAreaClass;
 @Component("SchedulerClasses")
 public class SchedulerClasses extends AbstractClassCollection {
 
-  @Requirement
   private ISchedulerClassConfig classConf;
+
+  @Inject
+  public SchedulerClasses(
+      ISchedulerClassConfig classConf) {
+    this.classConf = classConf;
+  }
 
   @Override
   public String getConfigName() {
