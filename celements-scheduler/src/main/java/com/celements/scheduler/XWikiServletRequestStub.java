@@ -1,4 +1,4 @@
-package com.xpn.xwiki.plugin.scheduler;
+package com.celements.scheduler;
 
 import java.io.BufferedReader;
 import java.io.IOException;

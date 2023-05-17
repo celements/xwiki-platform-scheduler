@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xpn.xwiki.plugin.scheduler;
+package com.celements.scheduler;
 
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.quartz.Job;
@@ -54,7 +54,7 @@ public class GroovyJob extends AbstractJob {
 
   /**
    * Executes the Groovy script passed in the <code>script</code> property of the
-   * {@link com.xpn.xwiki.plugin.scheduler.SchedulerPlugin#XWIKI_JOB_CLASS} object extracted from
+   * {@link com.celements.scheduler.SchedulerPlugin#XWIKI_JOB_CLASS} object extracted from
    * the XWiki context
    * passed in the Quartz's Job execution context. The XWiki Task object is looked for in the
    * current document that

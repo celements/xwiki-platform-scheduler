@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xpn.xwiki.plugin.scheduler;
+package com.celements.scheduler;
 
 import java.net.URL;
 import java.text.ParseException;
@@ -53,7 +53,7 @@ import com.xpn.xwiki.web.XWikiResponse;
 import com.xpn.xwiki.web.XWikiServletRequest;
 
 /**
- * See {@link com.xpn.xwiki.plugin.scheduler.SchedulerPluginApi} for documentation.
+ * See {@link com.celements.scheduler.SchedulerPluginApi} for documentation.
  *
  * @version $Id$
  */
@@ -304,7 +304,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
 
   /**
    * Retrieve the job's status of a given
-   * {@link com.xpn.xwiki.plugin.scheduler.SchedulerPlugin#XWIKI_JOB_CLASS} job
+   * {@link com.celements.scheduler.SchedulerPlugin#XWIKI_JOB_CLASS} job
    * XObject, by asking the actual job status to the quartz scheduler instance. It's the actual
    * status, as the one
    * stored in the XObject may be changed manually by users.
@@ -312,7 +312,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
    * @param object
    *          the XObject to give the status of
    * @return the status of the Job inside the quartz scheduler, as
-   *         {@link com.xpn.xwiki.plugin.scheduler.JobState}
+   *         {@link com.celements.scheduler.JobState}
    *         instance
    */
   public JobState getJobStatus(BaseObject object, XWikiContext context) throws SchedulerException {
