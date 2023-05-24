@@ -40,7 +40,7 @@ public class SchedulerClasses extends AbstractClassCollection {
     try {
       doc = getContext().getWiki().getDocument(docRef, getContext());
     } catch (XWikiException xwe) {
-      LOGGER.error("Exception while getting doc for ClassRef '" + docRef + "'", xwe);
+      LOGGER.error("Exception while getting doc for ClassRef '{}'", docRef, xwe);
       doc = new XWikiDocument(docRef);
       needsUpdate = true;
     }
