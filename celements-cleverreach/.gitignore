@@ -1,0 +1,7 @@
+/target
+/.classpath
+/.project
+/.settings
+/xwiki.log
+/bin/
+.DS_Store
