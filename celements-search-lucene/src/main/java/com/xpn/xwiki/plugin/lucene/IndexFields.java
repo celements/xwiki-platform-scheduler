@@ -21,9 +21,14 @@ package com.xpn.xwiki.plugin.lucene;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.util.Date;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.time.FastDateFormat;
+
+import com.celements.common.date.DateFormat;
 
 /**
  * Contains constants naming the Lucene index fields used by this Plugin and some helper
@@ -148,6 +153,10 @@ public class IndexFields {
    * for date-queries.
    */
   public static final String DATE_FORMAT = "yyyyMMddHHmm";
+  public static final Function<String, ZonedDateTime> DATE_PARSER = DateFormat
+      .parser(IndexFields.DATE_FORMAT);
+  public static final Function<Temporal, String> DATE_FORMATTER = DateFormat
+      .formatter(IndexFields.DATE_FORMAT);
 
   private static final FastDateFormat DF = FastDateFormat.getInstance(DATE_FORMAT);
 
