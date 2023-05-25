@@ -64,12 +64,12 @@ public class AttachmentDataTest extends AbstractComponentTest {
     this.attachment = new XWikiAttachment(this.document, "filename");
     this.document.getAttachmentList().add(this.attachment);
 
-    XWikiRenderingEngine renderEngineMock = createMockAndAddToDefault(XWikiRenderingEngine.class);
+    XWikiRenderingEngine renderEngineMock = createDefaultMock(XWikiRenderingEngine.class);
     expect(getWikiMock().getRenderingEngine()).andReturn(renderEngineMock).once();
     expect(renderEngineMock.interpretText(eq(docRef.getName()), same(document), same(
         getContext()))).andReturn(docRef.getName()).once();
 
-    servletContext = createMockAndAddToDefault(ServletContext.class);
+    servletContext = createDefaultMock(ServletContext.class);
     getContext().setEngineContext(new XWikiServletContext(servletContext));
     expect(servletContext.getAttribute(eq("javax.servlet.context.tempdir"))).andReturn(new File(
         "./", "")).anyTimes();

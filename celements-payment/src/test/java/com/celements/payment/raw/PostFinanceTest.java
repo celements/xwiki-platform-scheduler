@@ -28,11 +28,11 @@ import static org.easymock.EasyMock.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.celements.common.test.AbstractBridgedComponentTestCase;
+import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 
-public class PostFinanceTest extends AbstractBridgedComponentTestCase {
+public class PostFinanceTest extends AbstractComponentTest {
 
   private XWikiContext context;
   private XWiki xwiki;

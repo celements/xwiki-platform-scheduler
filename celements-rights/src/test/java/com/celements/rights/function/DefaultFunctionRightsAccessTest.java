@@ -63,7 +63,7 @@ public class DefaultFunctionRightsAccessTest extends AbstractComponentTest {
     String functionName = "editSth";
     String group = "XWiki.SomeGroup";
     expectFunctionDoc(new DocumentReference(currentDb, SPACE_NAME, functionName), group);
-    User userMock = createMockAndAddToDefault(User.class);
+    User userMock = createDefaultMock(User.class);
     expect(getMock(IRightsAccessFacadeRole.class).isSuperAdmin(same(userMock))).andReturn(false);
     expect(getMock(IRightsAccessFacadeRole.class).isInGroup(getModelUtils().resolveRef(group,
         DocumentReference.class), userMock)).andReturn(true);
@@ -75,7 +75,7 @@ public class DefaultFunctionRightsAccessTest extends AbstractComponentTest {
 
   @Test
   public void test_hasUserAccess_isSuperAdmin() {
-    User userMock = createMockAndAddToDefault(User.class);
+    User userMock = createDefaultMock(User.class);
     expect(getMock(IRightsAccessFacadeRole.class).isSuperAdmin(same(userMock))).andReturn(true);
 
     replayDefault();
@@ -88,7 +88,7 @@ public class DefaultFunctionRightsAccessTest extends AbstractComponentTest {
     String functionName = "editSth";
     String group = "XWiki.SomeGroup";
     expectFunctionDoc(new DocumentReference(currentDb, SPACE_NAME, functionName), group);
-    User userMock = createMockAndAddToDefault(User.class);
+    User userMock = createDefaultMock(User.class);
     expect(getMock(IRightsAccessFacadeRole.class).isSuperAdmin(same(userMock))).andReturn(false);
     expect(getMock(IRightsAccessFacadeRole.class).isInGroup(getModelUtils().resolveRef(group,
         DocumentReference.class), userMock)).andReturn(false);
@@ -102,7 +102,7 @@ public class DefaultFunctionRightsAccessTest extends AbstractComponentTest {
   public void test_hasUserAccess_noFunctionRightSet() {
     String functionName = "editSth";
     expectFunctionDoc(new DocumentReference(currentDb, SPACE_NAME, functionName), "");
-    User userMock = createMockAndAddToDefault(User.class);
+    User userMock = createDefaultMock(User.class);
     expect(getMock(IRightsAccessFacadeRole.class).isSuperAdmin(same(userMock))).andReturn(false);
 
     replayDefault();

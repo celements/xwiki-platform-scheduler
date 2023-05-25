@@ -38,7 +38,7 @@ public class QueueEventListenerTest extends AbstractComponentTest {
     listener = (TestQueueEventListener) Utils.getComponent(EventListener.class,
         QueueEventListener.NAME);
     expect(getWikiMock().getPlugin(eq("lucene"), same(getContext())))
-        .andReturn(createMockAndAddToDefault(LucenePlugin.class)).anyTimes();
+        .andReturn(createDefaultMock(LucenePlugin.class)).anyTimes();
     doc = new XWikiDocument(new ImmutableDocumentReference("wiki", "space", "doc"));
     doc.setLanguage("en");
     expect(getWikiMock().getDocument(doc.getDocumentReference(), getContext()))
