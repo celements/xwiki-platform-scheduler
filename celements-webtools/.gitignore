@@ -1,0 +1,15 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+**/src/main/java/META-INF
+**/bin/
+target
+.classpath
+.project
+.settings
+xwiki.log
+**/.DS_Store
+**/.svn
