@@ -19,11 +19,11 @@
  */
 package com.celements.payment.raw;
 
-import java.util.Date;
-
+import static com.celements.common.test.CelementsTestUtils.*;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
-import static org.easymock.EasyMock.*;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -256,13 +256,12 @@ public class PostFinanceTest extends AbstractComponentTest {
     verifyAll();
   }
 
-
-  private void replayAll(Object ... mocks) {
+  private void replayAll(Object... mocks) {
     replay(xwiki);
     replay(mocks);
   }
 
-  private void verifyAll(Object ... mocks) {
+  private void verifyAll(Object... mocks) {
     verify(xwiki);
     verify(mocks);
   }
