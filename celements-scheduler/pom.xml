@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
  *
  * See the NOTICE file distributed with this work for additional
@@ -21,7 +20,6 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -31,9 +29,7 @@
   </parent>
   <artifactId>celements-scheduler</artifactId>
   <version>6.0-SNAPSHOT</version>
-  <name>XWiki Platform - Plugins - Scheduler</name>
-  <packaging>jar</packaging>
-  <description>XWiki Platform - Plugins - Scheduler</description>
+  <name>Celements Scheduler</name>
   <dependencies>
     <dependency>
       <groupId>org.opensymphony.quartz</groupId>
@@ -68,9 +64,9 @@
     </repository>
   </repositories>
   <scm>
-    <connection>scm:git:git@github.com:celements/celements-xwiki-plugins.git</connection>
-    <developerConnection>scm:git:git@github.com:celements/celements-xwiki-plugins.git</developerConnection>
-    <url>https://github.com/celements/celements-xwiki-plugins</url>
+    <connection>scm:git:git@github.com:celements/celements-features.git</connection>
+    <developerConnection>scm:git:git@github.com:celements/celements-features.git</developerConnection>
+    <url>https://github.com/celements/celements-features/celements-scheduler</url>
     <tag>HEAD</tag>
   </scm>
 </project>

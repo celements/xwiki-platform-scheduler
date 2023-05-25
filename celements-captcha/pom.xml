@@ -47,9 +47,9 @@
     </dependency>
   </dependencies>
   <scm>
-    <connection>scm:git:git@github.com:celements/celements-captcha.git</connection>
-    <developerConnection>scm:git:git@github.com:celements/celements-captcha.git</developerConnection>
-    <url>https://github.com/celements/celements-captcha</url>
+    <connection>scm:git:git@github.com:celements/celements-features.git</connection>
+    <developerConnection>scm:git:git@github.com:celements/celements-features.git</developerConnection>
+    <url>https://github.com/celements/celements-features/celements-captcha</url>
     <tag>HEAD</tag>
   </scm>
 </project>
