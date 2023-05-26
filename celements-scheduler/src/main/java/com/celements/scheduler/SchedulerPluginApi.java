@@ -17,7 +17,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.xpn.xwiki.plugin.scheduler;
+package com.celements.scheduler;
 
 import java.util.Date;
 import java.util.List;
@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
 
+import com.celements.scheduler.job.GroovyJob;
+import com.celements.scheduler.job.JobState;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.api.Document;
@@ -65,7 +67,7 @@ public class SchedulerPluginApi extends PluginApi<SchedulerPlugin> {
 
   /**
    * Return the trigger state of the given
-   * {@link com.xpn.xwiki.plugin.scheduler.SchedulerPlugin#XWIKI_JOB_CLASS}
+   * {@link com.celements.scheduler.SchedulerPlugin#XWIKI_JOB_CLASS}
    * XObject job. Possible values are : None (the trigger does not exists yet, or has been deleted),
    * Normal, Blocked,
    * Complete, Error and Paused
@@ -156,7 +158,7 @@ public class SchedulerPluginApi extends PluginApi<SchedulerPlugin> {
   }
 
   /**
-   * Schedule all {@link com.xpn.xwiki.plugin.scheduler.SchedulerPlugin#XWIKI_JOB_CLASS} XObjects
+   * Schedule all {@link com.celements.scheduler.SchedulerPlugin#XWIKI_JOB_CLASS} XObjects
    * stored inside the
    * given Wiki document, according to each XObject own parameters.
    *
