@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<class entity-name="Celements.ContactClass" table="cel_contactclass">
+  <id name="id" type="long" unsaved-value="undefined">
+    <column name="CON_ID" not-null="true" />
+    <generator class="assigned" />
+  </id>
+  <property name="title" type="string">
+    <column name="CON_TITLE" length="64"/>
+  </property>
+  <property name="firstname" type="string">
+    <column name="CON_FIRST_NAME" length="128" />
+  </property>
+  <property name="lastname" type="string">
+    <column name="CON_LAST_NAME" length="128"/>
+  </property>
+  <property name="sex" type="string">
+    <column name="CON_SEX" length="16"/>
+  </property>
+</class>
+
+<class entity-name="Celements.ContactAddressClass" table="cel_contactaddressclass">
+  <id name="id" type="long" unsaved-value="undefined">
+    <column name="COA_ID" not-null="true" />
+    <generator class="assigned" />
+  </id>
+  <property name="street_nr" type="string">
+    <column name="COA_STREET_NR" length="255"/>
+  </property>
+  <property name="zip" type="string">
+    <column name="COA_ZIP" length="32" />
+  </property>
+  <property name="city" type="string">
+    <column name="COA_CITY" length="128"/>
+  </property>
+  <property name="country" type="string">
+    <column name="COA_COUNTRY" length="64"/>
+  </property>
+</class>
+
+<class entity-name="Classes.MemberClass" table="cel_memberclass">
+  <id name="id" type="long" unsaved-value="undefined">
+    <column name="MCR_ID" not-null="true" />
+    <generator class="assigned" />
+  </id>
+  <property name="amt" type="string">
+    <column name="MCR_AMT" length="255"/>
+  </property>
+  <property name="titel" type="string">
+    <column name="MCR_TITEL" length="255"/>
+  </property>
+  <property name="status" type="string">
+    <column name="MCR_STATUS" length="255"/>
+  </property>
+  <property name="eintritt" type="string">
+    <column name="MCR_EINTRITT" length="255"/>
+  </property>
+  <property name="austritt" type="string">
+    <column name="MCR_AUSTRITT" length="255"/>
+  </property>
+  <property name="ehepartner" type="string">
+    <column name="MCR_EHEPARTNER" length="255"/>
+  </property>
+  <property name="email_geschaeft" type="string">
+    <column name="MCR_EMAIL_GESCHAEFT" length="255"/>
+  </property>
+  <property name="email_privat" type="string">
+    <column name="MCR_EMAIL_PRIVAT" length="255"/>
+  </property>
+  <property name="fax_geschaeft" type="string">
+    <column name="MCR_FAX_GESCHAEFT" length="255"/>
+  </property>
+  <property name="fax_privat" type="string">
+    <column name="MCR_FAX_PRIVAT" length="255"/>
+  </property>
+  <property name="firmenname_geschaeft" type="string">
+    <column name="MCR_FIRMENNAME_GESCHAEFT" length="255"/>
+  </property>
+  <property name="geburtsdatum" type="string">
+    <column name="MCR_GEBURTSDATUM" length="255"/>
+  </property>
+  <property name="klassifikation" type="string">
+    <column name="MCR_KLASSIFIKATION" length="255"/>
+  </property>
+  <property name="mobile_geschaeft" type="string">
+    <column name="MCR_MOBILE_GESCHAEFT" length="255"/>
+  </property>
+  <property name="mobile_privat" type="string">
+    <column name="MCR_MOBILE_PRIVAT" length="255"/>
+  </property>
+  <property name="ort_geschaeft" type="string">
+    <column name="MCR_ORT_GESCHAEFT" length="255"/>
+  </property>
+  <property name="ort_privat" type="string">
+    <column name="MCR_ORT_PRIVAT" length="255"/>
+  </property>
+  <property name="plz_geschaeft" type="string">
+    <column name="MCR_PLZ_GESCHAEFT" length="255"/>
+  </property>
+  <property name="plz_privat" type="string">
+    <column name="MCR_PLZ_PRIVAT" length="255"/>
+  </property>
+  <property name="position_geschaeft" type="string">
+    <column name="MCR_POSITION_GESCHAEFT" length="255"/>
+  </property>
+  <property name="strasse_geschaeft" type="string">
+    <column name="MCR_STRASSE_GESCHAEFT" length="255"/>
+  </property>
+  <property name="strasse_privat" type="string">
+    <column name="MCR_STRASSE_PRIVAT" length="255"/>
+  </property>
+  <property name="telefon_geschaeft" type="string">
+    <column name="MCR_TEL_GESCHAEFT" length="255"/>
+  </property>
+  <property name="telefon_privat" type="string">
+    <column name="MCR_TEL_PRIVAT" length="255"/>
+  </property>
+  <property name="todestag" type="string">
+    <column name="MCR_TODESTAG" length="255"/>
+  </property>
+</class>
+</hibernate-mapping>
