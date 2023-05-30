@@ -19,6 +19,8 @@ import com.celements.common.test.AbstractComponentTest;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.scheduler.XWikiServletRequestStub;
 import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.XWikiConfig;
+import com.xpn.xwiki.XWikiConfigSource;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.store.XWikiStoreInterface;
@@ -30,6 +32,7 @@ public class AbstractJobTest extends AbstractComponentTest {
   private XWikiStoreInterface mockStore;
   private DocumentReference testDocRef;
   private IModelAccessFacade modelAccess;
+  private XWikiConfig cfg;
 
   @Before
   public void setUp_AbstractJobTest() throws Exception {
@@ -45,6 +48,9 @@ public class AbstractJobTest extends AbstractComponentTest {
     expect(getWikiMock().getServerURL(eq(getContext().getDatabase()), isA(
         XWikiContext.class))).andReturn(new URL("http://www.myTestURL.ch/")).anyTimes();
     testJob = new TestJob();
+    cfg = new XWikiConfig();
+    expect(registerComponentMock(XWikiConfigSource.class).getXWikiConfig())
+        .andReturn(cfg);
   }
 
   @Test
@@ -52,8 +58,7 @@ public class AbstractJobTest extends AbstractComponentTest {
     assertNull(getContext().get("vcontext"));
     Capture<XWikiContext> scontextCapture = newCapture();
     expectStoreCleanup(scontextCapture);
-    expect(getWikiMock().Param(eq("xwiki.url.protocol"), (String) isNull())).andReturn(
-        "http").atLeastOnce();
+    cfg.setProperty("xwiki.url.protocol", "http");
     expect(modelAccess.getDocument(eq(testDocRef))).andReturn(new XWikiDocument(testDocRef));
     replayDefault();
     testJob.initExecutionContext(getContext());
@@ -65,8 +70,7 @@ public class AbstractJobTest extends AbstractComponentTest {
   public void testCreateJobContext_notSame() throws Exception {
     Capture<XWikiContext> scontextCapture = newCapture();
     expectStoreCleanup(scontextCapture);
-    expect(getWikiMock().Param(eq("xwiki.url.protocol"), (String) isNull())).andReturn(
-        "http").atLeastOnce();
+    cfg.setProperty("xwiki.url.protocol", "http");
     expect(modelAccess.getDocument(eq(testDocRef))).andReturn(new XWikiDocument(testDocRef));
     replayDefault();
     XWikiContext newContext = testJob.createJobContext(getContext());
@@ -80,8 +84,7 @@ public class AbstractJobTest extends AbstractComponentTest {
   @Test
   public void testCreateJobContext_port() throws Exception {
     expectStoreCleanup(newCapture());
-    expect(getWikiMock().Param(eq("xwiki.url.protocol"), (String) isNull())).andReturn(
-        "http").atLeastOnce();
+    cfg.setProperty("xwiki.url.protocol", "http");
     expect(modelAccess.getDocument(eq(testDocRef))).andReturn(new XWikiDocument(testDocRef));
     expect(getWikiMock().getServletPath(eq(getContext().getDatabase()), isA(
         XWikiContext.class))).andReturn("").atLeastOnce();

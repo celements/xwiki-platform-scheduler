@@ -19,6 +19,7 @@
  */
 package com.celements.scheduler;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -223,8 +224,13 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
     // We are sure the context request is a real servlet request
     // So we force the dummy request with the current host
     XWikiServletRequestStub dummy = new XWikiServletRequestStub();
-    dummy.setHost(context.getRequest().getHeader("x-forwarded-host"));
-    dummy.setScheme(context.getRequest().getScheme());
+    if (scontext.getRequest() != null) {
+      dummy.setHost(context.getRequest().getHeader("x-forwarded-host"));
+      dummy.setScheme(context.getRequest().getScheme());
+    } else if (context.getURL() != null) {
+      dummy.setHost(context.getURL().getHost());
+      dummy.setScheme(context.getURL().getProtocol());
+    }
     XWikiServletRequest request = new XWikiServletRequest(dummy);
     scontext.setRequest(request);
     // Force forged context response to a stub response, since the current context response
@@ -240,7 +246,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
     if (scontext.getURL() == null) {
       try {
         scontext.setURL(new URL("http://www.mystuburl.com/"));
-      } catch (Exception e) {
+      } catch (MalformedURLException e) {
         // the URL is well formed, I promise
       }
     }
