@@ -176,6 +176,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
    *          request
    * @return the stub context prepared with job datas.
    */
+  // TODO CELDEV-534 use {@link XWikiStubContextProvider#createStubContext()}
   private XWikiContext prepareJobStubContext(BaseObject job, XWikiContext context)
       throws SchedulerPluginException {
     boolean jobNeedsUpdate = true;
@@ -221,8 +222,6 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
     XWikiContext scontext = (XWikiContext) context.clone();
     scontext.setWiki(context.getWiki());
     context.getWiki().getStore().cleanUp(context);
-    // We are sure the context request is a real servlet request
-    // So we force the dummy request with the current host
     XWikiServletRequestStub dummy = new XWikiServletRequestStub();
     if (scontext.getRequest() != null) {
       dummy.setHost(context.getRequest().getHeader("x-forwarded-host"));

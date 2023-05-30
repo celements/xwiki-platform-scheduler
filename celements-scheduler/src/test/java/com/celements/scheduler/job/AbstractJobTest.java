@@ -5,6 +5,7 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 import java.net.URL;
+import java.util.Optional;
 
 import org.easymock.Capture;
 import org.junit.Before;
@@ -18,13 +19,12 @@ import org.xwiki.model.reference.DocumentReference;
 import com.celements.common.test.AbstractComponentTest;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.scheduler.XWikiServletRequestStub;
-import com.xpn.xwiki.XWiki;
+import com.xpn.xwiki.ServerUrlUtilsRole;
 import com.xpn.xwiki.XWikiConfig;
 import com.xpn.xwiki.XWikiConfigSource;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.store.XWikiStoreInterface;
-import com.xpn.xwiki.web.XWikiURLFactoryServiceImpl;
 
 public class AbstractJobTest extends AbstractComponentTest {
 
@@ -43,14 +43,12 @@ public class AbstractJobTest extends AbstractComponentTest {
     getContext().setRequest(new XWikiServletRequestStub());
     getContext().setURL(new URL("http", "testhost", 8015, "testfile"));
     expect(getWikiMock().getStore()).andReturn(mockStore).anyTimes();
-    expect(getWikiMock().getURLFactoryService()).andReturn(createUrlFactoryService());
-    expect(getWikiMock().getWebAppPath(isA(XWikiContext.class))).andReturn("/").anyTimes();
-    expect(getWikiMock().getServerURL(eq(getContext().getDatabase()), isA(
-        XWikiContext.class))).andReturn(new URL("http://www.myTestURL.ch/")).anyTimes();
-    testJob = new TestJob();
-    cfg = new XWikiConfig();
+    expect(registerComponentMock(ServerUrlUtilsRole.class)
+        .getServerURL(testDocRef.getWikiReference()))
+            .andReturn(Optional.of(new URL("http://www.myTestURL.ch/"))).anyTimes();
     expect(registerComponentMock(XWikiConfigSource.class).getXWikiConfig())
-        .andReturn(cfg);
+        .andReturn(cfg = new XWikiConfig());
+    testJob = new TestJob();
   }
 
   @Test
@@ -109,14 +107,6 @@ public class AbstractJobTest extends AbstractComponentTest {
   // ***************
   // * HELPER
   // ***************
-
-  private XWikiURLFactoryServiceImpl createUrlFactoryService() {
-    XWiki urlWikiMock = createMock(XWiki.class);
-    expect(urlWikiMock.Param(isA(String.class))).andReturn(null).anyTimes();
-    replay(urlWikiMock);
-    XWikiURLFactoryServiceImpl factoryService = new XWikiURLFactoryServiceImpl(urlWikiMock);
-    return factoryService;
-  }
 
   private void expectStoreCleanup(Capture<XWikiContext> scontextCapture) {
     mockStore.cleanUp(capture(scontextCapture));
