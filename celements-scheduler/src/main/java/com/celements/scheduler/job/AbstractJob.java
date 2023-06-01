@@ -93,14 +93,12 @@ public abstract class AbstractJob implements Job {
   }
 
   /**
-   * Create and feed a stub context for the job execution thread. Stub context data are retrieved
-   * from job object fields "contextUser", "contextLang", "contextDatabase".
+   * Feed the stub context created by the ExecutionContextManager for the job execution thread.
    *
    * @param job
-   *          the job for which the context will be prepared
-   * @return the stub context prepared with job datas.
+   *          the job data which the context will be fed with
    */
-  private XWikiContext prepareJobXWikiContext(JobDataMap data) {
+  void prepareJobXWikiContext(JobDataMap data) {
     XWikiContext context = getXWikiContext();
     context.setDoc(((XWikiDocument) data.get("jobDoc")).clone());
     context.setAction("view");
@@ -117,7 +115,6 @@ public abstract class AbstractJob implements Job {
     if (!Strings.isNullOrEmpty(cDb)) {
       context.setDatabase(cDb);
     }
-    return context;
   }
 
   protected XWikiContext getXWikiContext() {
