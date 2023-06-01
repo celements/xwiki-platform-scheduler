@@ -24,12 +24,10 @@ import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.xwiki.script.service.ScriptServiceManager;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.web.Utils;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -49,8 +47,6 @@ import groovy.lang.GroovyShell;
  * @version $Id$
  */
 public class GroovyJob extends AbstractJob {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(GroovyJob.class);
 
   /**
    * Executes the Groovy script passed in the <code>script</code> property of the
@@ -73,22 +69,18 @@ public class GroovyJob extends AbstractJob {
   protected void executeJob(JobExecutionContext jobContext) throws JobExecutionException {
     try {
       JobDataMap data = jobContext.getJobDetail().getJobDataMap();
-
-      // The XWiki context was saved in the Job execution data map. Get it as we'll retrieve
-      // the script to execute from it.
-      XWikiContext context = (XWikiContext) data.get("context");
-      // Get the job XObject to be executed
-      BaseObject object = (BaseObject) data.get("xjob");
-      // Force context document
-      XWikiDocument jobDocument = context.getWiki().getDocument(object.getName(), context);
-      context.setDoc(jobDocument);
-      context.put("sdoc", jobDocument);
+      XWikiContext context = getXWikiContext();
+      context.put("sdoc", context.getDoc());
       if (context.getWiki().getRightService().hasProgrammingRights(context)) {
         // Make the Job execution data available to the Groovy script
+        data.put("context", context);
+        data.put("xcontext", context);
+        data.put("xwiki", new com.xpn.xwiki.api.XWiki(context.getWiki(), context));
+        data.put("services", Utils.getComponent(ScriptServiceManager.class));
         Binding binding = new Binding(data.getWrappedMap());
         // Execute the Groovy script
         GroovyShell shell = new GroovyShell(binding);
-        shell.evaluate(object.getLargeStringValue("script"));
+        shell.evaluate(data.getString("jobScript"));
       } else {
         throw new JobExecutionException("The user [" + context.getUser() + "] didn't have "
             + "programming rights when the job [" + jobContext.getJobDetail().getName()
@@ -99,7 +91,7 @@ public class GroovyJob extends AbstractJob {
           "Failed to execute script for job [" + jobContext.getJobDetail().getName() + "]", e,
           true);
     } catch (Exception exp) {
-      LOGGER.info("Failed to execute script for job [{}]", jobContext.getJobDetail().getName(),
+      logger.info("Failed to execute script for job [{}]", jobContext.getJobDetail().getName(),
           exp);
     }
   }

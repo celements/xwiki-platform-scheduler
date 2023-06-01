@@ -19,12 +19,11 @@
  */
 package com.celements.scheduler;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.CronTrigger;
@@ -37,8 +36,9 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.rendering.syntax.Syntax;
-import org.xwiki.script.service.ScriptServiceManager;
 
+import com.celements.model.access.IModelAccessFacade;
+import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.scheduler.job.JobState;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -51,8 +51,6 @@ import com.xpn.xwiki.objects.classes.TextAreaClass;
 import com.xpn.xwiki.plugin.XWikiDefaultPlugin;
 import com.xpn.xwiki.plugin.XWikiPluginInterface;
 import com.xpn.xwiki.web.Utils;
-import com.xpn.xwiki.web.XWikiResponse;
-import com.xpn.xwiki.web.XWikiServletRequest;
 
 /**
  * See {@link com.celements.scheduler.SchedulerPluginApi} for documentation.
@@ -72,6 +70,9 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
    */
   public static final String XWIKI_JOB_CLASS = "XWiki.SchedulerJobClass";
 
+  private final Supplier<IModelAccessFacade> modelAccess = () -> Utils
+      .getComponent(IModelAccessFacade.class);
+
   /**
    * Default Quartz scheduler instance.
    */
@@ -86,11 +87,6 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
     super(name, className, context);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see com.xpn.xwiki.plugin.XWikiPluginInterface#init(com.xpn.xwiki.XWikiContext)
-   */
   @Override
   public void init(XWikiContext context) {
     try {
@@ -150,119 +146,9 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
     super.init(context);
   }
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see com.xpn.xwiki.plugin.XWikiPluginInterface#virtualInit(com.xpn.xwiki.XWikiContext)
-   */
   @Override
   public void virtualInit(XWikiContext context) {
     super.virtualInit(context);
-  }
-
-  /**
-   * Create and feed a stub context for the job execution thread. Stub context data are retrieved
-   * from job object
-   * fields "contextUser", "contextLang", "contextDatabase". If one of this field is empty (this
-   * would typically
-   * happen on the first schedule operation), it is instead retrieved from the passed context, and
-   * the job object is
-   * updated with this value. This mean that this method may modify the passed object.
-   *
-   * @param job
-   *          the job for which the context will be prepared
-   * @param context
-   *          the XWikiContext at preparation time. This is a real context associated with a servlet
-   *          request
-   * @return the stub context prepared with job datas.
-   */
-  // TODO CELDEV-534 use {@link XWikiStubContextProvider#createStubContext()}
-  private XWikiContext prepareJobStubContext(BaseObject job, XWikiContext context)
-      throws SchedulerPluginException {
-    boolean jobNeedsUpdate = true;
-    String cUser = job.getStringValue("contextUser");
-    if (cUser.equals("")) {
-      // The context user has not been filled yet.
-      // We can suppose it's the first scheduling. Let's assume it's the context user
-      cUser = context.getUser();
-      job.setStringValue("contextUser", cUser);
-      jobNeedsUpdate = true;
-    }
-    String cLang = job.getStringValue("contextLang");
-    if (cLang.equals("")) {
-      cLang = context.getLanguage();
-      job.setStringValue("contextLang", cLang);
-      jobNeedsUpdate = true;
-    }
-    String iDb = context.getDatabase();
-    String cDb = job.getStringValue("contextDatabase");
-    if (cDb.equals("") || !cDb.equals(iDb)) {
-      cDb = context.getDatabase();
-      job.setStringValue("contextDatabase", cDb);
-      jobNeedsUpdate = true;
-    }
-
-    if (jobNeedsUpdate) {
-      try {
-        context.setDatabase(cDb);
-        XWikiDocument jobHolder = context.getWiki().getDocument(job.getName(), context);
-        // TODO: Something is missing here. Review needed.
-        BaseObject jObj = jobHolder.getObject(SchedulerPlugin.XWIKI_JOB_CLASS, job.getNumber());
-        jobHolder.setMinorEdit(true);
-        context.getWiki().saveDocument(jobHolder, context);
-      } catch (XWikiException e) {
-        throw new SchedulerPluginException(
-            SchedulerPluginException.ERROR_SCHEDULERPLUGIN_UNABLE_TO_PREPARE_JOB_CONTEXT,
-            "Failed to prepare context for job with job name " + job.getStringValue("jobName"), e);
-      } finally {
-        context.setDatabase(iDb);
-      }
-    }
-    // lets now build the stub context
-    XWikiContext scontext = (XWikiContext) context.clone();
-    scontext.setWiki(context.getWiki());
-    context.getWiki().getStore().cleanUp(context);
-    XWikiServletRequestStub dummy = new XWikiServletRequestStub();
-    if (scontext.getRequest() != null) {
-      dummy.setHost(context.getRequest().getHeader("x-forwarded-host"));
-      dummy.setScheme(context.getRequest().getScheme());
-    } else if (context.getURL() != null) {
-      dummy.setHost(context.getURL().getHost());
-      dummy.setScheme(context.getURL().getProtocol());
-    }
-    XWikiServletRequest request = new XWikiServletRequest(dummy);
-    scontext.setRequest(request);
-    // Force forged context response to a stub response, since the current context response
-    // will not mean anything anymore when running in the scheduler's thread, and can cause
-    // errors.
-    XWikiResponse stub = new XWikiServletResponseStub();
-    scontext.setResponse(stub);
-    // feed the dummy context
-    scontext.setUser(cUser);
-    scontext.setLanguage(cLang);
-    scontext.setDatabase(cDb);
-    scontext.setMainXWiki(context.getMainXWiki());
-    if (scontext.getURL() == null) {
-      try {
-        scontext.setURL(new URL("http://www.mystuburl.com/"));
-      } catch (MalformedURLException e) {
-        // the URL is well formed, I promise
-      }
-    }
-    com.xpn.xwiki.web.XWikiURLFactory xurf = context.getURLFactory();
-    if (xurf == null) {
-      xurf = context.getWiki().getURLFactoryService().createURLFactory(context.getMode(), context);
-    }
-    scontext.setURLFactory(xurf);
-    try {
-      XWikiDocument cDoc = context.getWiki().getDocument(job.getName(), context);
-      scontext.setDoc(cDoc);
-    } catch (Exception e) {
-      throw new SchedulerPluginException(
-          SchedulerPluginException.ERROR_SCHEDULERPLUGIN_UNABLE_TO_PREPARE_JOB_CONTEXT,
-          "Failed to prepare context for job with job name " + job.getStringValue("jobName"), e);
-    }
-    return scontext;
   }
 
   /**
@@ -336,15 +222,12 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
       JobDetail job = new JobDetail(xjob, Scheduler.DEFAULT_GROUP,
           Class.forName(object.getStringValue("jobClass")));
       Trigger trigger = new CronTrigger(xjob, Scheduler.DEFAULT_GROUP, xjob,
-          Scheduler.DEFAULT_GROUP,
-          object.getStringValue("cron"));
-      // Let's prepare an execution context...
-      XWikiContext stubContext = prepareJobStubContext(object, context);
-      data.put("context", stubContext);
-      data.put("xcontext", stubContext);
-      data.put("xwiki", new com.xpn.xwiki.api.XWiki(context.getWiki(), stubContext));
-      data.put("xjob", object);
-      data.put("services", Utils.getComponent(ScriptServiceManager.class));
+          Scheduler.DEFAULT_GROUP, object.getStringValue("cron"));
+      data.put("jobDoc", modelAccess.get().getDocument(object.getDocumentReference()));
+      data.put("jobUser", object.getStringValue("contextUser"));
+      data.put("jobLang", object.getStringValue("contextLang"));
+      data.put("jobDatabase", object.getStringValue("contextDatabase"));
+      data.put("jobScript", object.getLargeStringValue("script"));
       job.setJobDataMap(data);
       getScheduler().addJob(job, true);
       JobState status = getJobStatus(object, context);
@@ -375,7 +258,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
           saveStatus("Normal", object, context);
           break;
       }
-    } catch (SchedulerException e) {
+    } catch (SchedulerException | DocumentNotExistsException e) {
       throw new SchedulerPluginException(
           SchedulerPluginException.ERROR_SCHEDULERPLUGIN_SCHEDULE_JOB,
           "Error while scheduling job " + object.getStringValue("jobName"), e);
