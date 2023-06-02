@@ -547,7 +547,7 @@ public class LucenePlugin extends XWikiDefaultPlugin {
     try {
       indexDirs = getIndexDirectories("");
       IndexWriter writer = openWriter(getWriteDirectory(), OpenMode.CREATE_OR_APPEND);
-      this.indexUpdater = new IndexUpdater(writer, this, context);
+      this.indexUpdater = new IndexUpdater(writer, this);
       indexUpdaterExecutor.submit(indexUpdater);
       getIndexRebuildService().initialize(indexUpdater);
       LOGGER.info("Lucene plugin initialized.");
