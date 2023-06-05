@@ -1,6 +1,5 @@
 package com.celements.search.lucene;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.junit.Assert.*;
 
 import org.junit.Test;

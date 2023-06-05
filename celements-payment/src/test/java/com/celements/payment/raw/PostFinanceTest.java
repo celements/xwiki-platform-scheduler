@@ -19,20 +19,20 @@
  */
 package com.celements.payment.raw;
 
-import java.util.Date;
-
+import static com.celements.common.test.CelementsTestUtils.*;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
-import static org.easymock.EasyMock.*;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.celements.common.test.AbstractBridgedComponentTestCase;
+import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 
-public class PostFinanceTest extends AbstractBridgedComponentTestCase {
+public class PostFinanceTest extends AbstractComponentTest {
 
   private XWikiContext context;
   private XWiki xwiki;
@@ -256,13 +256,12 @@ public class PostFinanceTest extends AbstractBridgedComponentTestCase {
     verifyAll();
   }
 
-
-  private void replayAll(Object ... mocks) {
+  private void replayAll(Object... mocks) {
     replay(xwiki);
     replay(mocks);
   }
 
-  private void verifyAll(Object ... mocks) {
+  private void verifyAll(Object... mocks) {
     verify(xwiki);
     verify(mocks);
   }

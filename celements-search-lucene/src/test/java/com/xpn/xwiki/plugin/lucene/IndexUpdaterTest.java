@@ -19,6 +19,7 @@
  */
 package com.xpn.xwiki.plugin.lucene;
 
+import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ import org.junit.Test;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rendering.syntax.Syntax;
 
-import com.celements.common.test.AbstractBridgedComponentTestCase;
+import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -43,7 +44,7 @@ import com.xpn.xwiki.store.XWikiStoreInterface;
  *
  * @version $Id: 5f372b2802536fc296cc8ceb6eba31bdf3528d0a $
  */
-public class IndexUpdaterTest extends AbstractBridgedComponentTestCase {
+public class IndexUpdaterTest extends AbstractComponentTest {
 
   private final static String INDEXDIR = "target/lucenetest";
 
@@ -117,7 +118,7 @@ public class IndexUpdaterTest extends AbstractBridgedComponentTestCase {
         + " cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est"
         + " laborum.");
 
-    mockXWikiStoreInterface = createMockAndAddToDefault(XWikiStoreInterface.class);
+    mockXWikiStoreInterface = createDefaultMock(XWikiStoreInterface.class);
     mockXWikiStoreInterface.cleanUp(anyObject(XWikiContext.class));
     expectLastCall().anyTimes();
 

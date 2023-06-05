@@ -43,7 +43,7 @@ public class LuceneSearchServiceTest extends AbstractComponentTest {
   public void prepare() throws Exception {
     xwiki = getWikiMock();
     context = getContext();
-    plugin = createMockAndAddToDefault(LucenePlugin.class);
+    plugin = createDefaultMock(LucenePlugin.class);
     expect(xwiki.getPlugin(eq("lucene"), same(getContext()))).andReturn(plugin).anyTimes();
     searchService = Utils.getComponent(ILuceneSearchService.class);
   }

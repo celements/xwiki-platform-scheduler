@@ -19,6 +19,7 @@
  */
 package com.celements.payment.service;
 
+import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
@@ -34,7 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.context.Execution;
 
-import com.celements.common.test.AbstractBridgedComponentTestCase;
+import com.celements.common.test.AbstractComponentTest;
 import com.celements.payment.IPaymentService;
 import com.celements.payment.raw.EProcessStatus;
 import com.celements.payment.raw.PayPal;
@@ -42,7 +43,7 @@ import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.web.XWikiRequest;
 
-public class PayPalScriptServiceTest extends AbstractBridgedComponentTestCase {
+public class PayPalScriptServiceTest extends AbstractComponentTest {
 
   private PayPalScriptService paypalScriptService;
   private XWiki xwiki;

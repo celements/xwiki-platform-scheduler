@@ -1,10 +1,8 @@
 package com.celements.cleverreach;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -17,8 +15,6 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,14 +43,14 @@ public class CleverReachRestTest extends AbstractComponentTest {
     String baseUrl = "http://www.test-base-url.test";
     String path = "/test/path";
     String token = "token123";
-    Client client = createMockAndAddToDefault(Client.class);
-    WebTarget target = createMockAndAddToDefault(WebTarget.class);
+    Client client = createDefaultMock(Client.class);
+    WebTarget target = createDefaultMock(WebTarget.class);
     expect(clientBuilder.newClient()).andReturn(client);
     expect(client.target(baseUrl)).andReturn(target);
     expect(target.path(path)).andReturn(target);
-    Builder builder = createMockAndAddToDefault(Builder.class);
+    Builder builder = createDefaultMock(Builder.class);
     expect(target.request()).andReturn(builder);
-    Response response = createMockAndAddToDefault(Response.class);
+    Response response = createDefaultMock(Response.class);
     expect(builder.header("Authorization", token)).andReturn(builder);
     expect(builder.post((Entity<?>) anyObject())).andReturn(response);
     replayDefault();
@@ -91,7 +87,7 @@ public class CleverReachRestTest extends AbstractComponentTest {
   @Test
   public void testAddGetParameters_methodGet() {
     MultivaluedMap<String, String> map = getTestMultivaluedMap();
-    WebTarget target = createMockAndAddToDefault(WebTarget.class);
+    WebTarget target = createDefaultMock(WebTarget.class);
     expect(target.queryParam("a", new Object[] { "1" })).andReturn(target);
     expect(target.queryParam("b", new Object[] { "2" })).andReturn(target);
     expect(target.queryParam("c", new Object[] { "3" })).andReturn(target);
@@ -130,7 +126,7 @@ public class CleverReachRestTest extends AbstractComponentTest {
         "    \"value\": \"3\"\n" +
         "  }\n" +
         "]";
-    Response response = createMockAndAddToDefault(Response.class);
+    Response response = createDefaultMock(Response.class);
     expect(response.hasEntity()).andReturn(true).anyTimes();
     expect(response.readEntity(eq(String.class))).andReturn(responseContent).times(3);
     replayDefault();
@@ -146,7 +142,7 @@ public class CleverReachRestTest extends AbstractComponentTest {
   @Test
   public void testIsReadyToSend_put_response() {
     String responseContent = "{\n    \"value\": \"1\"\n}";
-    Response response = createMockAndAddToDefault(Response.class);
+    Response response = createDefaultMock(Response.class);
     expect(response.hasEntity()).andReturn(true).anyTimes();
     expect(response.readEntity(eq(String.class))).andReturn(responseContent).once();
     replayDefault();

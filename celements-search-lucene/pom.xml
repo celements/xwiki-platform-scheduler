@@ -27,23 +27,10 @@
     <artifactId>celements</artifactId>
     <version>6.0-SNAPSHOT</version>
   </parent>
-  <artifactId>xwiki-platform-search-lucene</artifactId>
-  <name>XWiki Platform - Search - Lucene</name>
+  <artifactId>celements-search-lucene</artifactId>
   <version>6.0-SNAPSHOT</version>
-  <description>XWiki Platform - Search - Lucene</description>
-  <scm>
-    <connection>scm:git:git://github.com/celements/xwiki-platform-search-lucene.git</connection>
-    <developerConnection>scm:git:git@github.com:celements/xwiki-platform-search-lucene.git</developerConnection>
-    <url>https://github.com/celements/xwiki-platform-search-lucene</url>
-    <tag>HEAD</tag>
-  </scm>
+  <name>Celements Search Lucene</name>
   <dependencies>
-    <dependency>
-      <groupId>com.celements</groupId>
-      <artifactId>celements-shared-tests-deprecated</artifactId>
-      <version>6.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>com.celements</groupId>
       <artifactId>celements-model</artifactId>
@@ -109,30 +96,10 @@
     </dependency>
 
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <!-- Apply the Checkstyle configurations defined in the top level pom.xml file -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <excludes>
-            com/xpn/xwiki/plugin/lucene/AbstractDocumentData.java,
-            com/xpn/xwiki/plugin/lucene/AbstractIndexData.java,
-            com/xpn/xwiki/plugin/lucene/AttachmentData.java,
-            com/xpn/xwiki/plugin/lucene/DocumentData.java,
-            com/xpn/xwiki/plugin/lucene/IndexFields.java,
-            com/xpn/xwiki/plugin/lucene/IndexRebuilder.java,
-            com/xpn/xwiki/plugin/lucene/IndexUpdater.java,
-            com/xpn/xwiki/plugin/lucene/LucenePlugin.java,
-            com/xpn/xwiki/plugin/lucene/LucenePluginApi.java,
-            com/xpn/xwiki/plugin/lucene/SearchResult.java,
-            com/xpn/xwiki/plugin/lucene/SearchResults.java,
-            com/xpn/xwiki/plugin/lucene/WikiData.java,
-            com/xpn/xwiki/plugin/lucene/XWikiDocumentQueue.java
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <scm>
+    <connection>scm:git:git@github.com:celements/celements-features.git</connection>
+    <developerConnection>scm:git:git@github.com:celements/celements-features.git</developerConnection>
+    <url>https://github.com/celements/celements-features/celements-search-lucene</url>
+    <tag>HEAD</tag>
+  </scm>
 </project>

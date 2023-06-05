@@ -37,7 +37,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
   @Before
   public void prepare() throws Exception {
     context = getContext();
-    lucenePluginMock = createMockAndAddToDefault(LucenePlugin.class);
+    lucenePluginMock = createDefaultMock(LucenePlugin.class);
   }
 
   @Test
@@ -57,7 +57,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
   public void test_getSetOffset() {
     LuceneSearchResult result = newResult(new LuceneQuery(), null, null, false);
     assertEquals(0, result.getOffset());
-    result.searchResultsCache = createMockAndAddToDefault(SearchResults.class);
+    result.searchResultsCache = createDefaultMock(SearchResults.class);
     result.setOffset(6);
     assertEquals(6, result.getOffset());
     assertNull("setOffset should reset the cache", result.searchResultsCache);
@@ -67,7 +67,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
   public void test_getSetLimit() {
     LuceneSearchResult result = newResult(new LuceneQuery(), null, null, false);
     assertEquals(0, result.getLimit());
-    result.searchResultsCache = createMockAndAddToDefault(SearchResults.class);
+    result.searchResultsCache = createDefaultMock(SearchResults.class);
     result.setLimit(6);
     assertEquals(6, result.getLimit());
     assertNull("setLimit should reset the cache", result.searchResultsCache);
@@ -80,12 +80,12 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     LuceneSearchResult result = newResult(query, null, null, skipChecks);
     result.setOffset(6);
     result.setLimit(10);
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
     result.searchResultsCache = sResultsMock;
 
     List<SearchResult> list = new ArrayList<>();
-    list.add(createMockAndAddToDefault(SearchResult.class));
-    list.add(createMockAndAddToDefault(SearchResult.class));
+    list.add(createDefaultMock(SearchResult.class));
+    list.add(createDefaultMock(SearchResult.class));
     expect(sResultsMock.getResults(eq(7), eq(10))).andReturn(list).once();
     DocumentReference docRef = new DocumentReference("db", "space", "doc");
     expect(list.get(0).getReference()).andReturn(docRef).once();
@@ -104,7 +104,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     LuceneQuery query = new LuceneQuery();
     boolean skipChecks = true;
     LuceneSearchResult result = newResult(query, null, null, skipChecks);
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
     result.searchResultsCache = sResultsMock;
     int totalCount = 10;
 
@@ -125,14 +125,14 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     LuceneQuery query = new LuceneQuery();
     boolean skipChecks = false;
     LuceneSearchResult result = newResult(query, null, null, skipChecks);
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
     result.setOffset(-10);
     result.setLimit(-10);
     result.searchResultsCache = sResultsMock;
 
     expect(sResultsMock.getHitcount()).andReturn(1234);
     List<SearchResult> list = new ArrayList<>();
-    list.add(createMockAndAddToDefault(SearchResult.class));
+    list.add(createDefaultMock(SearchResult.class));
     expect(sResultsMock.getResults(eq(1), eq(1234))).andReturn(list).once();
     DocumentReference docRef = new DocumentReference("db", "space", "doc");
     expect(list.get(0).getReference()).andReturn(docRef).once();
@@ -149,14 +149,14 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     LuceneQuery query = new LuceneQuery();
     boolean skipChecks = true;
     LuceneSearchResult result = newResult(query, null, null, skipChecks);
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
     result.setOffset(6);
     result.setLimit(10);
     result.searchResultsCache = sResultsMock;
 
     List<SearchResult> list = new ArrayList<>();
-    list.add(createMockAndAddToDefault(SearchResult.class));
-    list.add(createMockAndAddToDefault(SearchResult.class));
+    list.add(createDefaultMock(SearchResult.class));
+    list.add(createDefaultMock(SearchResult.class));
     expect(sResultsMock.getResults(eq(7), eq(10))).andReturn(list).once();
     DocumentReference docRef = new DocumentReference("db", "space", "doc");
     expect(list.get(0).getReference()).andReturn(docRef).once();
@@ -183,7 +183,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     LuceneQuery query = new LuceneQuery();
     boolean skipChecks = true;
     LuceneSearchResult result = newResult(query, null, null, skipChecks);
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
     result.searchResultsCache = sResultsMock;
     int totalCount = 10;
 
@@ -204,7 +204,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     LuceneQuery query = new LuceneQuery();
     boolean skipChecks = false;
     LuceneSearchResult result = newResult(query, null, null, skipChecks);
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
     result.searchResultsCache = sResultsMock;
 
     expect(sResultsMock.getHitcount()).andReturn(1234);
@@ -221,7 +221,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     LuceneQuery query = new LuceneQuery();
     boolean skipChecks = true;
     LuceneSearchResult result = newResult(query, null, null, skipChecks);
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
     result.searchResultsCache = sResultsMock;
 
     expect(sResultsMock.getTotalHitcount()).andReturn(1234);
@@ -238,7 +238,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     LuceneQuery query = new LuceneQuery();
     boolean skipChecks = true;
     LuceneSearchResult result = newResult(query, null, null, skipChecks);
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
     result.searchResultsCache = sResultsMock;
 
     replayDefault();
@@ -256,7 +256,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     boolean skipChecks = false;
     LuceneSearchResult result = newResult(query, sortFields, languages, skipChecks);
     Capture<String[]> sortFieldsCapture = newCapture();
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
 
     expect(lucenePluginMock.getSearchResults(eq(query.getQueryString()), capture(sortFieldsCapture),
         isNull(String.class), eq("lang1,lang2"), same(context))).andReturn(sResultsMock).once();
@@ -275,7 +275,7 @@ public class LuceneSearchResultTest extends AbstractComponentTest {
     boolean skipChecks = true;
     LuceneSearchResult result = newResult(query, null, null, skipChecks);
     Capture<String[]> sortFieldsCapture = newCapture();
-    SearchResults sResultsMock = createMockAndAddToDefault(SearchResults.class);
+    SearchResults sResultsMock = createDefaultMock(SearchResults.class);
 
     expect(lucenePluginMock.getSearchResultsWithoutChecks(eq(query.getQueryString()), capture(
         sortFieldsCapture), isNull(String.class), eq(""), same(context))).andReturn(
