@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
+import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.velocity.VelocityManager;
@@ -69,9 +70,7 @@ public abstract class AbstractJob implements Job {
   public final void execute(JobExecutionContext jobContext) throws JobExecutionException {
     JobDataMap data = checkNotNull(jobContext.getJobDetail().getJobDataMap());
     try {
-      ExecutionContext execContext = createEContextForJob(data);
-      executionContextManager.get().initialize(execContext);
-      prepareXContextForJob(data);
+      initExecutionContext(data);
       executeJob(jobContext);
     } catch (Throwable exp) {
       getLogger().error("Exception thrown during job '{}' execution",
@@ -90,6 +89,13 @@ public abstract class AbstractJob implements Job {
         }
       });
     }
+  }
+
+  ExecutionContext initExecutionContext(JobDataMap data) throws ExecutionContextException {
+    ExecutionContext context = createEContextForJob(data);
+    executionContextManager.get().initialize(context);
+    prepareXContextForJob(data);
+    return context;
   }
 
   /**
@@ -112,7 +118,7 @@ public abstract class AbstractJob implements Job {
    * Feed the stub xwiki context created by the ExecutionContextManager with additional job data for
    * the job execution thread.
    */
-  void prepareXContextForJob(JobDataMap data) {
+  private void prepareXContextForJob(JobDataMap data) {
     XWikiContext context = getXWikiContext();
     context.setUser("XWiki.Scheduler");
     String cUser = data.getString("jobUser");
