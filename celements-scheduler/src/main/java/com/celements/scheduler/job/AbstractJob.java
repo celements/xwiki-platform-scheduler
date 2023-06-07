@@ -20,7 +20,11 @@
 package com.celements.scheduler.job;
 
 import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Strings.*;
+import static com.xpn.xwiki.XWikiExecutionProp.*;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.quartz.Job;
@@ -31,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
-import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
+import org.xwiki.model.reference.WikiReference;
 import org.xwiki.velocity.VelocityManager;
 
 import com.google.common.base.Strings;
@@ -56,12 +60,18 @@ public abstract class AbstractJob implements Job {
   protected final Supplier<Execution> execution = () -> Utils.getComponent(Execution.class);
   protected final Supplier<ExecutionContextManager> executionContextManager = () -> Utils
       .getComponent(ExecutionContextManager.class);
+  protected final Supplier<VelocityManager> velocityManager = () -> Utils
+      .getComponent(VelocityManager.class);
+  protected final Supplier<List<PostJobAction>> postJobActions = () -> Utils
+      .getComponentList(PostJobAction.class);
 
   @Override
   public final void execute(JobExecutionContext jobContext) throws JobExecutionException {
-    JobDataMap data = jobContext.getJobDetail().getJobDataMap();
+    JobDataMap data = checkNotNull(jobContext.getJobDetail().getJobDataMap());
     try {
-      initExecutionContext(data);
+      ExecutionContext execContext = createEContextForJob(data);
+      executionContextManager.get().initialize(execContext);
+      prepareXContextForJob(data);
       executeJob(jobContext);
     } catch (Throwable exp) {
       getLogger().error("Exception thrown during job '{}' execution",
@@ -72,7 +82,7 @@ public abstract class AbstractJob implements Job {
       // We must ensure we clean the ThreadLocal variables located in the Execution
       // component as otherwise we will have a potential memory leak.
       execution.get().removeContext();
-      Utils.getComponentList(PostJobAction.class).forEach(runnable -> {
+      postJobActions.get().forEach(runnable -> {
         try {
           runnable.accept(jobContext);
         } catch (Exception exc) {
@@ -82,26 +92,28 @@ public abstract class AbstractJob implements Job {
     }
   }
 
-  void initExecutionContext(JobDataMap data) throws ExecutionContextException {
-    checkNotNull(data);
-    ExecutionContext execContext = new ExecutionContext();
-    execution.get().setContext(execContext);
-    executionContextManager.get().initialize(execContext);
-    prepareJobXWikiContext(data);
-    VelocityManager velocityManager = Utils.getComponent(VelocityManager.class);
-    velocityManager.getVelocityContext();
+  /**
+   * create the execution context with job defaults to allow proper initialization by the
+   * ExecutionContextManager.
+   */
+  private ExecutionContext createEContextForJob(JobDataMap data) {
+    ExecutionContext context = new ExecutionContext();
+    execution.get().setContext(context);
+    XWikiDocument jobDoc = ((XWikiDocument) data.get("jobDoc")).clone();
+    context.set(DOC, jobDoc);
+    context.set(WIKI, Optional.ofNullable(nullToEmpty(data.getString("jobDatabase").trim()))
+        .map(WikiReference::new)
+        .orElseGet(() -> jobDoc.getDocumentReference().getWikiReference()));
+    context.set(XWIKI_REQUEST_ACTION, "view");
+    return context;
   }
 
   /**
-   * Feed the stub context created by the ExecutionContextManager for the job execution thread.
-   *
-   * @param job
-   *          the job data which the context will be fed with
+   * Feed the stub xwiki context created by the ExecutionContextManager with additional job data for
+   * the job execution thread.
    */
-  void prepareJobXWikiContext(JobDataMap data) {
+  void prepareXContextForJob(JobDataMap data) {
     XWikiContext context = getXWikiContext();
-    context.setDoc(((XWikiDocument) data.get("jobDoc")).clone());
-    context.setAction("view");
     context.setUser("XWiki.Scheduler");
     String cUser = data.getString("jobUser");
     if (!Strings.isNullOrEmpty(cUser)) {
@@ -111,15 +123,11 @@ public abstract class AbstractJob implements Job {
     if (!Strings.isNullOrEmpty(cLang)) {
       context.setLanguage(cLang);
     }
-    String cDb = data.getString("jobDatabase");
-    if (!Strings.isNullOrEmpty(cDb)) {
-      context.setDatabase(cDb);
-    }
+    velocityManager.get().getVelocityContext();
   }
 
   protected XWikiContext getXWikiContext() {
-    return (XWikiContext) execution.get().getContext()
-        .getProperty(XWikiContext.EXECUTIONCONTEXT_KEY);
+    return execution.get().getContext().get(XWIKI_CONTEXT).orElseThrow(IllegalStateException::new);
   }
 
   protected Logger getLogger() {

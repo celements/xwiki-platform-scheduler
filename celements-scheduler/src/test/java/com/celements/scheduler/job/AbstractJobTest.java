@@ -43,7 +43,7 @@ public class AbstractJobTest extends AbstractComponentTest {
     JobDataMap data = new JobDataMap();
     data.put("jobDoc", new XWikiDocument(testDocRef));
     replayDefault();
-    testJob.initExecutionContext(data);
+    testJob.initContext(data);
     verifyDefault();
     assertNotNull(getXContext().get("vcontext"));
     assertEquals("XWiki.Scheduler", getXContext().getUser());
@@ -57,7 +57,7 @@ public class AbstractJobTest extends AbstractComponentTest {
     data.put("jobUser", "XWiki.MyJobUser");
     data.put("jobDatabase", "thedb");
     replayDefault();
-    testJob.prepareJobXWikiContext(data);
+    testJob.prepareXWikiContext(data);
     verifyDefault();
     assertNotSame(jobDoc, getXContext().getDoc());
     assertEquals(jobDoc.getDocumentReference(), getXContext().getDoc().getDocumentReference());
