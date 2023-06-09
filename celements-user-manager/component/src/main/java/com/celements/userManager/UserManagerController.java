@@ -26,6 +26,7 @@ public class UserManagerController {
     this.context = context;
   }
 
+  // TODO celSkinHeader is missing and Groupcell doesn't render
   @GetMapping("/celAdmin")
   @ResponseBody
   public String celAdmin() {
