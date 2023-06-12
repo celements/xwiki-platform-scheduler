@@ -19,6 +19,9 @@
  */
 package com.celements.scheduler.job;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -73,13 +76,12 @@ public class GroovyJob extends AbstractJob {
       context.put("sdoc", context.getDoc());
       if (context.getWiki().getRightService().hasProgrammingRights(context)) {
         // Make the Job execution data available to the Groovy script
-        data.put("context", context);
-        data.put("xcontext", context);
-        data.put("xwiki", new com.xpn.xwiki.api.XWiki(context.getWiki(), context));
-        data.put("services", Utils.getComponent(ScriptServiceManager.class));
-        Binding binding = new Binding(data.getWrappedMap());
-        // Execute the Groovy script
-        GroovyShell shell = new GroovyShell(binding);
+        Map<String, Object> groovyContext = new HashMap<>(data.getWrappedMap());
+        groovyContext.put("context", context);
+        groovyContext.put("xcontext", context);
+        groovyContext.put("xwiki", new com.xpn.xwiki.api.XWiki(context.getWiki(), context));
+        groovyContext.put("services", Utils.getComponent(ScriptServiceManager.class));
+        GroovyShell shell = new GroovyShell(new Binding(groovyContext));
         shell.evaluate(data.getString("jobScript"));
       } else {
         throw new JobExecutionException("The user [" + context.getUser() + "] didn't have "
