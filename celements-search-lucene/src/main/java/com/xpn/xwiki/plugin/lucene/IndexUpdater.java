@@ -102,7 +102,7 @@ public class IndexUpdater extends AbstractXWikiRunnable {
 
   IndexUpdater(IndexWriter writer, LucenePlugin plugin) {
     this.plugin = plugin;
-    this.indexingInterval = 1000 * Optional.ofNullable(Longs.tryParse(getXWikiCfg()
+    this.indexingInterval = 1000L * Optional.ofNullable(Longs.tryParse(getXWikiCfg()
         .getProperty(PROP_INDEXING_INTERVAL))).orElse(30L);
     this.commitInterval = Optional.ofNullable(Longs.tryParse(getXWikiCfg()
         .getProperty(PROP_COMMIT_INTERVAL))).orElse(5000L);
