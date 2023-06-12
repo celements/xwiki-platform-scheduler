@@ -37,12 +37,12 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.velocity.VelocityManager;
 
-import com.google.common.base.Strings;
+import com.celements.model.access.IModelAccessFacade;
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.web.Utils;
 
 /**
@@ -65,6 +65,8 @@ public abstract class AbstractJob implements Job {
       .getComponent(VelocityManager.class);
   protected final Supplier<List<PostJobAction>> postJobActions = () -> Utils
       .getComponentList(PostJobAction.class);
+  protected final Supplier<IModelAccessFacade> modelAccess = () -> Utils
+      .getComponent(IModelAccessFacade.class);
 
   @Override
   public final void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -105,11 +107,11 @@ public abstract class AbstractJob implements Job {
   private ExecutionContext createEContextForJob(JobDataMap data) {
     ExecutionContext context = new ExecutionContext();
     execution.get().setContext(context);
-    XWikiDocument jobDoc = ((XWikiDocument) data.get("jobDoc")).clone();
-    context.set(DOC, jobDoc);
-    context.set(WIKI, Optional.ofNullable(nullToEmpty(data.getString("jobDatabase").trim()))
+    DocumentReference jobDocRef = (DocumentReference) data.get("jobDocRef");
+    context.set(DOC, modelAccess.get().getOrCreateDocument(jobDocRef));
+    context.set(WIKI, Optional.ofNullable(emptyToNull(data.getString("jobDatabase")))
         .map(WikiReference::new)
-        .orElseGet(() -> jobDoc.getDocumentReference().getWikiReference()));
+        .orElseGet(jobDocRef::getWikiReference));
     context.set(XWIKI_REQUEST_ACTION, "view");
     return context;
   }
@@ -119,15 +121,12 @@ public abstract class AbstractJob implements Job {
    * the job execution thread.
    */
   private void prepareXContextForJob(JobDataMap data) {
-    XWikiContext context = getXWikiContext();
-    context.setUser("XWiki.Scheduler");
-    String cUser = data.getString("jobUser");
-    if (!Strings.isNullOrEmpty(cUser)) {
-      context.setUser(cUser);
-    }
-    String cLang = data.getString("jobLang");
-    if (!Strings.isNullOrEmpty(cLang)) {
-      context.setLanguage(cLang);
+    XWikiContext xcontext = getXWikiContext();
+    String jobUser = data.getString("jobUser");
+    xcontext.setUser(jobUser.isEmpty() ? "XWiki.Scheduler" : jobUser);
+    String jobLang = data.getString("jobLang");
+    if (!jobLang.isEmpty()) {
+      xcontext.setLanguage(jobLang);
     }
     velocityManager.get().getVelocityContext();
   }
@@ -141,4 +140,5 @@ public abstract class AbstractJob implements Job {
   }
 
   protected abstract void executeJob(JobExecutionContext jobContext) throws JobExecutionException;
+
 }

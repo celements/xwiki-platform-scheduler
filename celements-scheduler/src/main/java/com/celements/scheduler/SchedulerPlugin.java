@@ -23,7 +23,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.apache.commons.lang.StringUtils;
 import org.quartz.CronTrigger;
@@ -37,8 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xwiki.rendering.syntax.Syntax;
 
-import com.celements.model.access.IModelAccessFacade;
-import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.scheduler.job.JobState;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
@@ -50,7 +47,6 @@ import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.objects.classes.TextAreaClass;
 import com.xpn.xwiki.plugin.XWikiDefaultPlugin;
 import com.xpn.xwiki.plugin.XWikiPluginInterface;
-import com.xpn.xwiki.web.Utils;
 
 /**
  * See {@link com.celements.scheduler.SchedulerPluginApi} for documentation.
@@ -69,9 +65,6 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
    * plugin.
    */
   public static final String XWIKI_JOB_CLASS = "XWiki.SchedulerJobClass";
-
-  private final Supplier<IModelAccessFacade> modelAccess = () -> Utils
-      .getComponent(IModelAccessFacade.class);
 
   /**
    * Default Quartz scheduler instance.
@@ -223,7 +216,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
           Class.forName(object.getStringValue("jobClass")));
       Trigger trigger = new CronTrigger(xjob, Scheduler.DEFAULT_GROUP, xjob,
           Scheduler.DEFAULT_GROUP, object.getStringValue("cron"));
-      data.put("jobDoc", modelAccess.get().getDocument(object.getDocumentReference()));
+      data.put("jobDocRef", object.getDocumentReference());
       data.put("jobUser", object.getStringValue("contextUser"));
       data.put("jobLang", object.getStringValue("contextLang"));
       data.put("jobDatabase", object.getStringValue("contextDatabase"));
@@ -258,7 +251,7 @@ public class SchedulerPlugin extends XWikiDefaultPlugin {
           saveStatus("Normal", object, context);
           break;
       }
-    } catch (SchedulerException | DocumentNotExistsException e) {
+    } catch (SchedulerException e) {
       throw new SchedulerPluginException(
           SchedulerPluginException.ERROR_SCHEDULERPLUGIN_SCHEDULE_JOB,
           "Error while scheduling job " + object.getStringValue("jobName"), e);
