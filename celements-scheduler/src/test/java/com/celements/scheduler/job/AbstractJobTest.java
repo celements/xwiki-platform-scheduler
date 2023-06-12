@@ -19,6 +19,7 @@ import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.common.test.AbstractComponentTest;
 import com.celements.init.XWikiProvider;
+import com.celements.model.access.IModelAccessFacade;
 import com.celements.scheduler.XWikiServletRequestStub;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -26,35 +27,38 @@ import com.xpn.xwiki.doc.XWikiDocument;
 public class AbstractJobTest extends AbstractComponentTest {
 
   private TestJob testJob;
-  private DocumentReference testDocRef;
+  private DocumentReference jobDocRef;
 
   @Before
-  public void setUp_AbstractJobTest() throws Exception {
-    testDocRef = new DocumentReference(getXContext().getDatabase(), "TestSpace", "testDoc");
-    getXContext().setDoc(new XWikiDocument(testDocRef));
+  public void setUp() throws Exception {
+    jobDocRef = new DocumentReference(getXContext().getDatabase(), "TestSpace", "theJob");
+    getXContext().setDoc(new XWikiDocument(jobDocRef));
     getXContext().setRequest(new XWikiServletRequestStub());
     getXContext().setUri(URI.create("http://testhost:8015/testfile"));
     testJob = new TestJob();
     expect(registerComponentMock(XWikiProvider.class).get())
         .andReturn(Optional.of(getMock(XWiki.class))).anyTimes();
+    expect(registerComponentMock(IModelAccessFacade.class).getOrCreateDocument(jobDocRef))
+        .andReturn(getXContext().getDoc()).anyTimes();
   }
 
   @Test
   public void test_initExecutionContext() throws Exception {
     assertNull(getXContext().get("vcontext"));
     JobDataMap data = new JobDataMap();
-    XWikiDocument jobDoc = new XWikiDocument(testDocRef);
-    data.put("jobDoc", jobDoc);
+    XWikiDocument jobDoc = getXContext().getDoc();
+    data.put("jobDocRef", jobDocRef);
     data.put("jobUser", "XWiki.MyJobUser");
+    data.put("jobLang", "de");
     data.put("jobDatabase", "thedb");
     replayDefault();
     ExecutionContext eContext = testJob.initExecutionContext(data);
     verifyDefault();
     assertNotNull(getXContext().get("vcontext"));
-    assertNotSame(jobDoc, eContext.get(DOC).get());
+    assertSame(jobDoc, eContext.get(DOC).get());
     assertEquals("thedb", eContext.get(WIKI).get().getName());
-    assertEquals(jobDoc.getDocumentReference(), eContext.get(DOC).get().getDocumentReference());
     assertEquals("XWiki.MyJobUser", getXContext().getUser());
+    assertEquals("de", getXContext().getLanguage());
   }
 
   private class TestJob extends AbstractJob {
