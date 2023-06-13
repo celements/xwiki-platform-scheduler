@@ -19,9 +19,9 @@
  */
 package com.celements.scheduler.job;
 
+import static com.celements.execution.XWikiExecutionProp.*;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.base.Strings.*;
-import static com.xpn.xwiki.XWikiExecutionProp.*;
 
 import java.util.List;
 import java.util.Optional;

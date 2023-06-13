@@ -1,6 +1,6 @@
 package com.celements.scheduler.job;
 
-import static com.xpn.xwiki.XWikiExecutionProp.*;
+import static com.celements.execution.XWikiExecutionProp.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
