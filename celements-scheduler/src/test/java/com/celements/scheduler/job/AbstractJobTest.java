@@ -38,7 +38,7 @@ public class AbstractJobTest extends AbstractComponentTest {
     testJob = new TestJob();
     expect(registerComponentMock(XWikiProvider.class).get())
         .andReturn(Optional.of(getMock(XWiki.class))).anyTimes();
-    expect(registerComponentMock(IModelAccessFacade.class).getOrCreateDocument(jobDocRef))
+    expect(registerComponentMock(IModelAccessFacade.class).getDocument(jobDocRef))
         .andReturn(getXContext().getDoc()).anyTimes();
   }
 
