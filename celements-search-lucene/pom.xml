@@ -63,8 +63,6 @@
       <artifactId>commons-collections</artifactId>
     </dependency>
     <dependency>
-      <!-- IMPORTANT: includes transitive dependency 'asm' and 'poi-ooxml'
-        on tika upgrade match other existing versions accordingly -->
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers</artifactId>
     </dependency>
