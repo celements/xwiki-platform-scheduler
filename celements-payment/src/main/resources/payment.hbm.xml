@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<!--
+ *
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+-->
+
+<hibernate-mapping>
+  <class entity-name="PaymentClasses.HistoryClass" table="cel_payment_history">
+  <id name="id" type="long" unsaved-value="undefined">
+    <column name="CPH_ID" not-null="true" />
+    <generator class="assigned" />
+  </id>
+  <property name="raw_ref" type="string">
+    <column name="CPH_RAW_REF" />
+  </property>
+  <property name="timestamp" type="timestamp">
+    <column name="CPH_TIMESTAMP" />
+  </property>
+  <property name="amount" type="integer">
+    <column name="CPH_AMOUNT" />
+  </property>
+  <property name="tax_rate" type="float">
+    <column name="CPH_TAX_RATE" />
+  </property>
+  <property name="currency" type="string">
+    <column name="CPH_CURRENCY" />
+  </property>
+  <property name="cart_ref" type="string">
+    <column name="CPH_CART_REF" />
+  </property>
+  <property name="paymentStatus" type="string">
+    <column name="CPH_PAYMENT_STATUS" />
+  </property>
+  <property name="payment_method" type="string">
+    <column name="CPH_PAYMENT_METHOD" />
+  </property>
+  <property name="title" type="string">
+    <column name="CPH_TITLE" />
+  </property>
+  <property name="first_name" type="string">
+    <column name="CPH_FIRST_NAME" />
+  </property>
+  <property name="last_name" type="string">
+    <column name="CPH_LAST_NAME" />
+  </property>
+  <property name="address" type="string">
+    <column name="CPH_ADDRESS" />
+  </property>
+  <property name="zip" type="string">
+    <column name="CPH_ZIP" />
+  </property>
+  <property name="city" type="string">
+    <column name="CPH_CITY" />
+  </property>
+  <property name="country" type="string">
+    <column name="CPH_COUNTRY" />
+  </property>
+  <property name="email" type="string">
+    <column name="CPH_EMAIL" />
+  </property>
+  </class>
+
+  <class name="com.celements.payment.raw.PayPal" table="cel_payment_paypall">
+    <id name="txn_id" type="string" unsaved-value="undefined">
+      <column name="CPPP_TXN_ID" not-null="true" />
+      <generator class="assigned" />
+    </id>
+    <property name="txn_type" type="string">
+      <column name="CPPP_TXN_TYPE" />
+    </property>
+    <property name="payment_date" type="timestamp">
+      <column name="CPPP_PAYMENT_DATE" />
+    </property>
+    <property name="origHeader" type="text">
+      <column name="CPPP_ORIG_HEADER" />
+    </property>
+    <property name="origMessage" type="text">
+      <column name="CPPP_ORIG_MESSAGE" />
+    </property>
+    <property name="payerId" type="string">
+      <column name="CPPP_PAYER_ID" />
+    </property>
+    <property name="receiverId" type="string">
+      <column name="CPPP_RECEIVER_ID" />
+    </property>
+    <property name="paymentStatus" type="string">
+      <column name="CPPP_PAYMENT_STATUS" />
+    </property>
+    <property name="pending_reason" type="string">
+      <column name="CPPP_PENDING_REASON" />
+    </property>
+    <property name="reason_code" type="string">
+      <column name="CPPP_REASON_CODE" />
+    </property>
+    <property name="verify_sign" type="string">
+      <column name="CPPP_VERIFY_SIGN" />
+    </property>
+    <property name="invoice" type="string">
+      <column name="CPPP_INVOICE" />
+    </property>
+    <property name="processStatus" length="30">
+      <column name="CPPP_PROCESS_STATUS" />
+      <type name="org.hibernate.type.EnumType">
+        <param name="enumClass">com.celements.payment.raw.EProcessStatus</param>
+        <param name="type">12</param>
+      </type>
+    </property>
+  </class>
+
+  <class name="com.celements.payment.raw.PostFinance" table="cel_payment_postfinance">
+    <id name="txn_id" type="string" unsaved-value="undefined">
+      <column name="CPPF_TXN_ID" not-null="true" />
+      <generator class="assigned" />
+    </id>
+    <property name="paymentMethod" type="string">
+      <column name="CPPF_PAYMENT_METHOD" />
+    </property>
+    <property name="trxDate" type="timestamp">
+      <column name="CPPF_TRX_DATE" />
+    </property>
+    <property name="origHeader" type="text">
+      <column name="CPPF_ORIG_HEADER" />
+    </property>
+    <property name="origMessage" type="text">
+      <column name="CPPF_ORIG_MESSAGE" />
+    </property>
+    <property name="payId" type="string">
+      <column name="CPPF_PAY_ID" />
+    </property>
+    <property name="cardNumber" type="string">
+      <column name="CPPF_CARD_NUMBER" />
+    </property>
+    <property name="expDate" type="string">
+      <column name="CPPF_EXP_DATE" />
+    </property>
+    <property name="clientIP" type="string">
+      <column name="CPPF_CLIENT_IP" />
+    </property>
+    <property name="cardholder" type="string">
+      <column name="CPPF_CARDHOLDER" />
+    </property>
+    <property name="cardbrand" type="string">
+      <column name="CPPF_CARDBRAND" />
+    </property>
+    <property name="acceptance" type="string">
+      <column name="CPPF_ACCEPTANCE" />
+    </property>
+    <property name="paymentStatus" type="string">
+      <column name="CPPF_PAYMENT_STATUS" />
+    </property>
+    <property name="ncError" type="string">
+      <column name="CPPF_NC_ERROR" />
+    </property>
+    <property name="currency" type="string">
+      <column name="CPPF_CURRENCY" />
+    </property>
+    <property name="amount" type="string">
+      <column name="CPPF_AMOUNT" />
+    </property>
+    <property name="shasign" type="string">
+      <column name="CPPF_SHA_SIGN" />
+    </property>
+    <property name="orderId" type="string">
+      <column name="CPPF_ORDERID" />
+    </property>
+    <property name="processStatus" length="30">
+      <column name="CPPF_PROCESS_STATUS" />
+      <type name="org.hibernate.type.EnumType">
+        <param name="enumClass">com.celements.payment.raw.EProcessStatus</param>
+        <param name="type">12</param>
+      </type>
+    </property>
+  </class>
+
+  <class name="com.celements.payment.raw.Computop" table="cel_payment_raw_computop">
+    <id name="id" type="integer" unsaved-value="undefined">
+      <column name="CPRCT_ID" not-null="true" />
+      <generator class="increment" />
+    </id>
+    <property name="origHeader" type="text">
+      <column name="CPRCT_ORIG_HEADER" />
+    </property>
+    <property name="origMessage" type="text">
+      <column name="CPRCT_ORIG_MESSAGE" />
+    </property>
+    <property name="txnId" type="string">
+      <column name="CPRCT_TXN_ID" />
+    </property>
+    <property name="merchantId" type="string">
+      <column name="CPRCT_MERCHANT_ID" />
+    </property>
+    <property name="length" type="integer">
+      <column name="CPRCT_LENGTH" />
+    </property>
+    <property name="data" type="text">
+      <column name="CPRCT_DATA" />
+    </property>
+    <property name="processStatus" length="30">
+      <column name="CPRCT_PROCESS_STATUS" />
+      <type name="org.hibernate.type.EnumType">
+        <param name="enumClass">com.celements.payment.raw.EProcessStatus</param>
+        <param name="type">12</param>
+      </type>
+    </property>
+  </class>
+  
+  <class entity-name="PaymentClasses.ComputopPaymentClass" table="cel_payment_computop">
+    <id name="id" type="long" unsaved-value="undefined">
+      <column name="CPCT_ID" not-null="true" />
+      <generator class="assigned" />
+    </id>
+    <property name="merchantId" type="string">
+      <column name="CPCT_MERCHANT_ID" />
+    </property>
+    <property name="payId" type="string">
+      <column name="CPCT_PAY_ID" />
+    </property>
+    <property name="xId" type="string">
+      <column name="CPCT_X_ID" />
+    </property>
+    <property name="transId" type="string">
+      <column name="CPCT_TRANS_ID" />
+    </property>
+    <property name="description" type="text">
+      <column name="CPCT_DESCRIPTION" />
+    </property>
+    <property name="status" type="string">
+      <column name="CPCT_STATUS" />
+    </property>
+    <property name="statusCode" type="integer">
+      <column name="CPCT_STATUS_CODE" />
+    </property>
+    <property name="verified" type="integer">
+      <column name="CPCT_VERIFIED" />
+    </property>
+    <property name="data" type="text">
+      <column name="CPCT_DATA" />
+    </property>
+    <property name="callbackDate" type="timestamp">
+      <column name="CPCT_CALLBACK_DATE" />
+    </property>
+  </class>
+
+</hibernate-mapping>
