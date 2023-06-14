@@ -72,7 +72,7 @@ public class GroovyJob extends AbstractJob {
   protected void executeJob(JobExecutionContext jobContext) throws JobExecutionException {
     try {
       JobDataMap data = jobContext.getJobDetail().getJobDataMap();
-      XWikiContext context = getXWikiContext();
+      XWikiContext context = getXContext();
       context.put("sdoc", context.getDoc());
       if (context.getWiki().getRightService().hasProgrammingRights(context)) {
         // Make the Job execution data available to the Groovy script
@@ -82,7 +82,8 @@ public class GroovyJob extends AbstractJob {
         groovyContext.put("xwiki", new com.xpn.xwiki.api.XWiki(context.getWiki(), context));
         groovyContext.put("services", Utils.getComponent(ScriptServiceManager.class));
         GroovyShell shell = new GroovyShell(new Binding(groovyContext));
-        shell.evaluate(data.getString("jobScript"));
+        Object ret = shell.evaluate(data.getString("jobScript"));
+        logger.debug("executeJob - done with result [{}]", ret);
       } else {
         throw new JobExecutionException("The user [" + context.getUser() + "] didn't have "
             + "programming rights when the job [" + jobContext.getJobDetail().getName()

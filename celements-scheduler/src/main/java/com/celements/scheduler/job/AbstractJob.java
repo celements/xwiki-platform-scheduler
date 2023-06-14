@@ -42,7 +42,9 @@ import org.xwiki.model.reference.WikiReference;
 import org.xwiki.velocity.VelocityManager;
 
 import com.celements.model.access.IModelAccessFacade;
+import com.celements.model.access.exception.DocumentNotExistsException;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.web.Utils;
 
 /**
@@ -93,10 +95,12 @@ public abstract class AbstractJob implements Job {
     }
   }
 
-  ExecutionContext initExecutionContext(JobDataMap data) throws ExecutionContextException {
+  ExecutionContext initExecutionContext(JobDataMap data)
+      throws ExecutionContextException, DocumentNotExistsException {
     ExecutionContext context = createEContextForJob(data);
     executionContextManager.get().initialize(context);
     prepareXContextForJob(data);
+    setJobDoc(data); // modelAccess only usable after initialize and setting user
     return context;
   }
 
@@ -107,11 +111,9 @@ public abstract class AbstractJob implements Job {
   private ExecutionContext createEContextForJob(JobDataMap data) {
     ExecutionContext context = new ExecutionContext();
     execution.get().setContext(context);
-    DocumentReference jobDocRef = (DocumentReference) data.get("jobDocRef");
-    context.set(DOC, modelAccess.get().getOrCreateDocument(jobDocRef));
     context.set(WIKI, Optional.ofNullable(emptyToNull(data.getString("jobDatabase")))
         .map(WikiReference::new)
-        .orElseGet(jobDocRef::getWikiReference));
+        .orElseGet(((DocumentReference) data.get("jobDocRef"))::getWikiReference));
     context.set(XWIKI_REQUEST_ACTION, "view");
     return context;
   }
@@ -121,7 +123,7 @@ public abstract class AbstractJob implements Job {
    * the job execution thread.
    */
   private void prepareXContextForJob(JobDataMap data) {
-    XWikiContext xcontext = getXWikiContext();
+    XWikiContext xcontext = getXContext();
     String jobUser = data.getString("jobUser");
     xcontext.setUser(jobUser.isEmpty() ? "XWiki.Scheduler" : jobUser);
     String jobLang = data.getString("jobLang");
@@ -131,8 +133,18 @@ public abstract class AbstractJob implements Job {
     velocityManager.get().getVelocityContext();
   }
 
-  protected XWikiContext getXWikiContext() {
-    return execution.get().getContext().get(XWIKI_CONTEXT).orElseThrow(IllegalStateException::new);
+  private void setJobDoc(JobDataMap data) throws DocumentNotExistsException {
+    XWikiDocument jobDoc = modelAccess.get().getDocument((DocumentReference) data.get("jobDocRef"));
+    getEContext().set(DOC, jobDoc);
+    getXContext().setDoc(jobDoc);
+  }
+
+  protected ExecutionContext getEContext() {
+    return execution.get().getContext();
+  }
+
+  protected XWikiContext getXContext() {
+    return getEContext().get(XWIKI_CONTEXT).orElseThrow(IllegalStateException::new);
   }
 
   protected Logger getLogger() {
