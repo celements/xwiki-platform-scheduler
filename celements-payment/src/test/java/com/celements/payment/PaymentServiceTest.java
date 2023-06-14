@@ -19,6 +19,7 @@
  */
 package com.celements.payment;
 
+import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 
 import java.util.HashMap;
@@ -28,11 +29,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.model.reference.DocumentReference;
 
-import com.celements.common.test.AbstractBridgedComponentTestCase;
+import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 
-public class PaymentServiceTest extends AbstractBridgedComponentTestCase {
+public class PaymentServiceTest extends AbstractComponentTest {
 
   private XWikiContext context;
   private XWiki xwiki;

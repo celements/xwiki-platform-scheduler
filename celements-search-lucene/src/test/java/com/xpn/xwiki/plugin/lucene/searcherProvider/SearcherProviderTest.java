@@ -1,6 +1,5 @@
 package com.xpn.xwiki.plugin.lucene.searcherProvider;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
@@ -34,8 +33,8 @@ public class SearcherProviderTest extends AbstractComponentTest {
 
   @Before
   public void setUp_SearcherProviderTest() throws Exception {
-    theMockSearcher = createMockAndAddToDefault(IndexSearcher.class);
-    tokenMock = createMockAndAddToDefault(DisconnectToken.class);
+    theMockSearcher = createDefaultMock(IndexSearcher.class);
+    tokenMock = createDefaultMock(DisconnectToken.class);
     List<IndexSearcher> searchers = Arrays.asList(theMockSearcher);
     searcherProvider = new SearcherProvider(searchers, tokenMock);
     expect(tokenMock.isUsed()).andReturn(false).anyTimes();
@@ -226,7 +225,7 @@ public class SearcherProviderTest extends AbstractComponentTest {
 
   @Test
   public void test_IsIdle_connectedResultSet() throws Exception {
-    SearchResults searchResults = createMockAndAddToDefault(SearchResults.class);
+    SearchResults searchResults = createDefaultMock(SearchResults.class);
     replayDefault();
     searcherProvider.connect();
     searcherProvider.connectSearchResults(searchResults);
@@ -255,7 +254,7 @@ public class SearcherProviderTest extends AbstractComponentTest {
 
   @Test
   public void test_ConnectSearchResults_withoutClose() throws Exception {
-    SearchResults searchResults = createMockAndAddToDefault(SearchResults.class);
+    SearchResults searchResults = createDefaultMock(SearchResults.class);
     replayDefault();
     assertTrue(searcherProvider.connectedThreads.isEmpty());
     searcherProvider.connect();
@@ -275,7 +274,7 @@ public class SearcherProviderTest extends AbstractComponentTest {
     theMockSearcher.close();
     expectLastCall().once();
     expect(tokenMock.use(same(searcherProvider))).andReturn(true).once();
-    SearchResults searchResults = createMockAndAddToDefault(SearchResults.class);
+    SearchResults searchResults = createDefaultMock(SearchResults.class);
     replayDefault();
     assertTrue(searcherProvider.connectedThreads.isEmpty());
     searcherProvider.connect();
@@ -297,8 +296,8 @@ public class SearcherProviderTest extends AbstractComponentTest {
     theMockSearcher.close();
     expectLastCall().once();
     expect(tokenMock.use(same(searcherProvider))).andReturn(true).once();
-    SearchResults searchResults = createMockAndAddToDefault(SearchResults.class);
-    SearchResults searchResults2 = createMockAndAddToDefault(SearchResults.class);
+    SearchResults searchResults = createDefaultMock(SearchResults.class);
+    SearchResults searchResults2 = createDefaultMock(SearchResults.class);
     replayDefault();
     assertTrue(searcherProvider.connectedThreads.isEmpty());
     searcherProvider.connect();
@@ -318,7 +317,7 @@ public class SearcherProviderTest extends AbstractComponentTest {
 
   @Test
   public void test_ConnectSearchResult_illegalState() throws Exception {
-    SearchResults searchResults = createMockAndAddToDefault(SearchResults.class);
+    SearchResults searchResults = createDefaultMock(SearchResults.class);
     replayDefault();
     try {
       searcherProvider.connectSearchResults(searchResults);
@@ -377,7 +376,7 @@ public class SearcherProviderTest extends AbstractComponentTest {
     assertTrue(searcherProvider.connectedThreads.isEmpty());
     assertTrue(searcherProvider.connectedSearchResults.isEmpty());
     Thread testThread = getWaitingThreadFromPool();
-    SearchResults searchResults = createMockAndAddToDefault(SearchResults.class);
+    SearchResults searchResults = createDefaultMock(SearchResults.class);
     searcherProvider.connectedThreads.add(testThread);
     searcherProvider.connectedSearchResults.putIfAbsent(testThread, new HashSet<SearchResults>());
     searcherProvider.connectedSearchResults.get(testThread).add(searchResults);
@@ -396,7 +395,7 @@ public class SearcherProviderTest extends AbstractComponentTest {
     assertTrue(searcherProvider.connectedThreads.isEmpty());
     assertTrue(searcherProvider.connectedSearchResults.isEmpty());
     Thread testThread = getWaitingThreadFromPool();
-    SearchResults searchResults = createMockAndAddToDefault(SearchResults.class);
+    SearchResults searchResults = createDefaultMock(SearchResults.class);
     searcherProvider.connectedSearchResults.putIfAbsent(testThread, new HashSet<SearchResults>());
     searcherProvider.connectedSearchResults.get(testThread).add(searchResults);
     assertTrue(searcherProvider.connectedThreads.isEmpty());

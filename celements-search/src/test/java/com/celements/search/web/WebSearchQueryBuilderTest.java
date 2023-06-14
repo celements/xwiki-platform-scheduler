@@ -49,7 +49,7 @@ public class WebSearchQueryBuilderTest extends AbstractComponentTest {
   public void prepareTest() throws Exception {
     docRef = new DocumentReference("wiki", "space", "doc");
     getContext().setDatabase(docRef.getWikiReference().getName());
-    LucenePlugin lucenePlugin = createMockAndAddToDefault(LucenePlugin.class);
+    LucenePlugin lucenePlugin = createDefaultMock(LucenePlugin.class);
     expect(getWikiMock().getPlugin(eq("lucene"), same(getContext())))
         .andReturn(lucenePlugin).anyTimes();
     expect(lucenePlugin.getAnalyzer()).andReturn(null).anyTimes();

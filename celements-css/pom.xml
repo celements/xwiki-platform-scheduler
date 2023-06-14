@@ -3,30 +3,30 @@
   <parent>
     <groupId>com.celements</groupId>
     <artifactId>celements</artifactId>
-    <version>5.6</version>
+    <version>6.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>celements-css</artifactId>
-  <version>5.1-SNAPSHOT</version>
+  <version>6.0-SNAPSHOT</version>
   <description>Webtools for css handling like inliner, minifier</description>
   <dependencies>
     <dependency>
       <groupId>com.celements</groupId>
       <artifactId>celements-model</artifactId>
-      <version>5.4</version>
+      <version>6.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.celements</groupId>
       <artifactId>celements-core</artifactId>
-      <version>5.6</version>
+      <version>6.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
   <scm>
-    <connection>scm:git:git@github.com:celements/celements-webtools.git</connection>
-    <developerConnection>scm:git:git@github.com:celements/celements-webtools.git</developerConnection>
-    <url>https://github.com/celements/celements-webtools</url>
+    <connection>scm:git:git@github.com:celements/celements-features.git</connection>
+    <developerConnection>scm:git:git@github.com:celements/celements-features.git</developerConnection>
+    <url>https://github.com/celements/celements-features/celements-webtools/celements-css</url>
     <tag>HEAD</tag>
   </scm>
 </project>

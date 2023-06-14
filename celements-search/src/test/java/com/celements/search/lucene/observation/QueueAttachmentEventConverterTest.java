@@ -1,6 +1,5 @@
 package com.celements.search.lucene.observation;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
@@ -83,7 +82,7 @@ public class QueueAttachmentEventConverterTest extends AbstractComponentTest {
   }
 
   private QueueTask createQueueTaskMock() {
-    QueueTask mock = createMockAndAddToDefault(QueueTask.class);
+    QueueTask mock = createDefaultMock(QueueTask.class);
     expect(mock.getReference()).andReturn(null).anyTimes();
     expect(mock.priority(IndexQueuePriority.LOW)).andReturn(mock);
     mock.queue();

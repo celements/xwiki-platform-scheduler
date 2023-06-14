@@ -1,6 +1,5 @@
 package com.celements.css.exception;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
@@ -41,7 +40,7 @@ public class CssInlineExceptionTest extends AbstractComponentTest {
   public void testScanLines_message_nonClosingTag() throws IOException {
     String html = IOUtils.toString(this.getClass().getResourceAsStream(
         "/FailingCssInlnlineNonClosingDiv.html"), "UTF-8");
-    Exception excp = createMockAndAddToDefault(Exception.class);
+    Exception excp = createDefaultMock(Exception.class);
     expect(excp.getCause()).andReturn(excp).anyTimes();
     expect(excp.getMessage()).andReturn(MESSAGE2).anyTimes();
     excp.printStackTrace(anyObject(PrintWriter.class));

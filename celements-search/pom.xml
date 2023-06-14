@@ -31,13 +31,6 @@
   <version>6.0-SNAPSHOT</version>
   <description>Celements Search</description>
   <dependencies>
-    <!-- Add here all your dependencies -->
-    <dependency>
-      <groupId>com.celements</groupId>
-      <artifactId>celements-shared-tests-deprecated</artifactId>
-      <version>6.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>com.celements</groupId>
       <artifactId>celements-model</artifactId>
@@ -57,7 +50,7 @@
     </dependency>
     <dependency>
       <groupId>com.celements</groupId>
-      <artifactId>xwiki-platform-search-lucene</artifactId>
+      <artifactId>celements-search-lucene</artifactId>
       <version>6.0-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -67,9 +60,9 @@
     </dependency>
   </dependencies>
   <scm>
-    <connection>scm:git:git@github.com:celements/celements-search.git</connection>
-    <developerConnection>scm:git:git@github.com:celements/celements-search.git</developerConnection>
-    <url>https://github.com/celements/celements-search</url>
+    <connection>scm:git:git@github.com:celements/celements-features.git</connection>
+    <developerConnection>scm:git:git@github.com:celements/celements-features.git</developerConnection>
+    <url>https://github.com/celements/celements-features/celements-search</url>
     <tag>HEAD</tag>
   </scm>
 </project>

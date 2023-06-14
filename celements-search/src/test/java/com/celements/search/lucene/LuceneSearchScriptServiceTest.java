@@ -6,11 +6,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.script.service.ScriptService;
 
-import com.celements.common.test.AbstractBridgedComponentTestCase;
+import com.celements.common.test.AbstractComponentTest;
 import com.celements.search.lucene.query.QueryRestriction;
 import com.xpn.xwiki.web.Utils;
 
-public class LuceneSearchScriptServiceTest extends AbstractBridgedComponentTestCase {
+public class LuceneSearchScriptServiceTest extends AbstractComponentTest {
 
   private LuceneSearchScriptService scriptService;
 

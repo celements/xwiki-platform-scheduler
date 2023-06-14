@@ -4,6 +4,7 @@ import static com.celements.model.util.References.*;
 import static com.google.common.base.Preconditions.*;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,7 +46,6 @@ import com.celements.model.classes.ClassDefinition;
 import com.celements.model.context.ModelContext;
 import com.celements.model.object.xwiki.XWikiObjectFetcher;
 import com.google.common.collect.ImmutableList;
-import com.sun.syndication.io.impl.Base64;
 import com.xpn.xwiki.objects.BaseObject;
 
 @Component(CleverReachRest.COMPONENT_NAME)
@@ -75,7 +75,7 @@ public class CleverReachRest implements CleverReachService {
 
   enum SubmitMethod {
     GET, POST, PUT, DELETE
-  };
+  }
 
   @Requirement
   private IModelAccessFacade modelAccess;
@@ -268,7 +268,8 @@ public class CleverReachRest implements CleverReachService {
       throws CleverReachRequestFailedException {
     MultivaluedMap<String, String> formData = new MultivaluedHashMap<>();
     formData.putSingle("grant_type", "client_credentials");
-    String authHeader = "Basic " + Base64.encode(clientId + ":" + clientSecret);
+    String authHeader = "Basic " + Base64.getEncoder().encodeToString(
+        (clientId + ":" + clientSecret).getBytes());
     Response response = sendRequest(PATH_LOGIN, formData, authHeader, SubmitMethod.POST,
         restBaseUrl);
     boolean hasContent = response.hasEntity();

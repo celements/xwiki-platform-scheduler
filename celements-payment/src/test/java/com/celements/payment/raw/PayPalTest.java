@@ -19,20 +19,20 @@
  */
 package com.celements.payment.raw;
 
-import java.util.Date;
-
+import static com.celements.common.test.CelementsTestUtils.*;
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
-import static org.easymock.EasyMock.*;
+import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.celements.common.test.AbstractBridgedComponentTestCase;
+import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 
-public class PayPalTest extends AbstractBridgedComponentTestCase {
+public class PayPalTest extends AbstractComponentTest {
 
   private XWikiContext context;
   private XWiki xwiki;

@@ -2,11 +2,8 @@ package com.celements.search.lucene;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.List;
 

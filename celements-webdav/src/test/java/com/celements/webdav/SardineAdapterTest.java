@@ -43,7 +43,7 @@ public class SardineAdapterTest extends AbstractComponentTest {
   public void test_buildCompleteUrl() throws Exception {
     URL baseUrl = new URL("http://celements.com/");
     try (SardineConnection conn = sardineAdapter.new SardineConnection(
-        createMockAndAddToDefault(Sardine.class), baseUrl)) {
+        createDefaultMock(Sardine.class), baseUrl)) {
       assertEquals("http://celements.com/dir",
           conn.buildCompleteUrl(Paths.get("dir")).toExternalForm());
       assertEquals("http://celements.com/dir/sub",
@@ -55,7 +55,7 @@ public class SardineAdapterTest extends AbstractComponentTest {
   public void test_buildCompleteUrl_withBasePath() throws Exception {
     URL baseUrl = new URL("http://celements.com/main");
     try (SardineConnection conn = sardineAdapter.new SardineConnection(
-        createMockAndAddToDefault(Sardine.class), baseUrl)) {
+        createDefaultMock(Sardine.class), baseUrl)) {
       assertEquals("http://celements.com/main/dir/sub",
           conn.buildCompleteUrl(Paths.get("dir", "sub")).toExternalForm());
       assertEquals("http://celements.com/main/dir/sub",
@@ -66,7 +66,7 @@ public class SardineAdapterTest extends AbstractComponentTest {
   @Test
   public void test_connect() throws Exception {
     RemoteLogin remoteLogin = getNextcloudRemoteLogin();
-    Sardine sardineMock = createMockAndAddToDefault(Sardine.class);
+    Sardine sardineMock = createDefaultMock(Sardine.class);
     Utils.getComponent(Execution.class).getContext()
         .setProperty(sardineAdapter.getSardineExecutionContextKey(remoteLogin), sardineMock);
     expect(sardineMock.exists(remoteLogin.getUrl())).andReturn(true);

@@ -1,6 +1,5 @@
 package com.xpn.xwiki.plugin.lucene.searcherProvider;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static junit.framework.Assert.*;
 import static org.easymock.EasyMock.*;
 
@@ -41,7 +40,7 @@ public class SearcherProviderManagerTest extends AbstractComponentTest {
 
   @Test
   public void testCreateSearchProvider() {
-    IndexSearcher theMockSearcher = createMockAndAddToDefault(IndexSearcher.class);
+    IndexSearcher theMockSearcher = createDefaultMock(IndexSearcher.class);
     replayDefault();
     assertTrue(theSearchProvManager.getAllSearcherProviders().isEmpty());
     SearcherProvider searcherProv = theSearchProvManager.createSearchProvider(Arrays.asList(
@@ -61,8 +60,8 @@ public class SearcherProviderManagerTest extends AbstractComponentTest {
 
   @Test
   public void testOnEvent_notEmpty_notMarkedClosed() {
-    IndexSearcher theMockSearcher = createMockAndAddToDefault(IndexSearcher.class);
-    SearchResults mockSearchResults = createMockAndAddToDefault(SearchResults.class);
+    IndexSearcher theMockSearcher = createDefaultMock(IndexSearcher.class);
+    SearchResults mockSearchResults = createDefaultMock(SearchResults.class);
     replayDefault();
     SearcherProvider searcherProv = theSearchProvManager.createSearchProvider(Arrays.asList(
         theMockSearcher));
@@ -79,8 +78,8 @@ public class SearcherProviderManagerTest extends AbstractComponentTest {
 
   @Test
   public void testOnEvent_markedClosed_forgotenDisconnect() throws Exception {
-    IndexSearcher theMockSearcher = createMockAndAddToDefault(IndexSearcher.class);
-    SearchResults mockSearchResults = createMockAndAddToDefault(SearchResults.class);
+    IndexSearcher theMockSearcher = createDefaultMock(IndexSearcher.class);
+    SearchResults mockSearchResults = createDefaultMock(SearchResults.class);
     theMockSearcher.close();
     expectLastCall().once();
     replayDefault();
@@ -98,8 +97,8 @@ public class SearcherProviderManagerTest extends AbstractComponentTest {
 
   @Test
   public void testOnEvent_empty_markedClosed() throws Exception {
-    IndexSearcher theMockSearcher = createMockAndAddToDefault(IndexSearcher.class);
-    SearchResults mockSearchResults = createMockAndAddToDefault(SearchResults.class);
+    IndexSearcher theMockSearcher = createDefaultMock(IndexSearcher.class);
+    SearchResults mockSearchResults = createDefaultMock(SearchResults.class);
     theMockSearcher.close();
     expectLastCall().once();
     replayDefault();
