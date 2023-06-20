@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.stereotype.Component;
 
 import com.celements.model.classes.AbstractClassPackage;
@@ -17,8 +18,8 @@ public class CelTagClassPackage extends AbstractClassPackage {
   private final List<CelTagClassRole> classDefs;
 
   @Inject
-  public CelTagClassPackage(List<CelTagClassRole> classDefs) {
-    this.classDefs = List.copyOf(classDefs);
+  public CelTagClassPackage(ListableBeanFactory beanFactory) {
+    this.classDefs = List.copyOf(beanFactory.getBeansOfType(CelTagClassRole.class).values());
   }
 
   @Override

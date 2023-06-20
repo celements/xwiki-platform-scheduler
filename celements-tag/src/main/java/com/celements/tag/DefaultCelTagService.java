@@ -13,6 +13,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.stereotype.Service;
 import org.xwiki.model.reference.DocumentReference;
 
@@ -29,15 +30,15 @@ public class DefaultCelTagService implements CelTagService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCelTagService.class);
 
+  private final ListableBeanFactory beanFactory;
   private final IModelAccessFacade modelAccess;
-  private final List<CelTagsProvider> tagsProviders;
   private final AtomicReference<Try<Map<String, CelTag>, CelTagsProvisionException>> cache;
 
   @Inject
   public DefaultCelTagService(
-      IModelAccessFacade modelAccess,
-      List<CelTagsProvider> tagsProviders) {
-    this.tagsProviders = List.copyOf(tagsProviders);
+      ListableBeanFactory beanFactory,
+      IModelAccessFacade modelAccess) {
+    this.beanFactory = beanFactory;
     this.modelAccess = modelAccess;
     this.cache = new AtomicReference<>();
   }
@@ -80,7 +81,7 @@ public class DefaultCelTagService implements CelTagService {
 
   private Map<String, CelTag> collectAllTags() throws CelTagsProvisionException {
     List<CelTag.Builder> tagBuilders = new ArrayList<>();
-    for (CelTagsProvider provider : tagsProviders) {
+    for (CelTagsProvider provider : beanFactory.getBeansOfType(CelTagsProvider.class).values()) {
       // TODO log list for each provider
       provider.get().forEach(tagBuilders::add);
     }
