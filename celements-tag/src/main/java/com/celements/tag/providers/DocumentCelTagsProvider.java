@@ -28,7 +28,7 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
   private static final String XWQL_TAGS = "from doc.object("
       + PageTypeClass.CLASS_REF.serialize() + ") pt "
       + "where doc.translation = 0 "
-      + "and pt." + PageTypeClass.PAGE_LAYOUT.getName() + " = " + CelTagPageType.NAME;
+      + "and pt." + PageTypeClass.PAGE_LAYOUT.getName() + " = '" + CelTagPageType.NAME + "'";
 
   private final QueryManager queryManager;
   private final IModelAccessFacade modelAccess;
