@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class entity-name="Celements.CelTagClass" table="cel_tagclass">
+    <id name="id" type="long" unsaved-value="undefined">
+      <column name="ID" not-null="true" />
+      <generator class="assigned" />
+    </id>
+    <property name="tags" type="string">
+      <column name="TAGS" length="1024"/>
+    </property>
+  </class>
+  <class entity-name="Celements.CelTagDependencyClass" table="cel_tagdepclass">
+    <id name="id" type="long" unsaved-value="undefined">
+      <column name="ID" not-null="true" />
+      <generator class="assigned" />
+    </id>
+    <property name="reference" type="string">
+      <column name="REFERENCE" length="255"/>
+    </property>
+  </class>
+</hibernate-mapping>
