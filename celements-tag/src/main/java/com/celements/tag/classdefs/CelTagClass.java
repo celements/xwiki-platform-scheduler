@@ -16,8 +16,7 @@ import com.google.errorprone.annotations.Immutable;
 @Singleton
 @Immutable
 @Component(CelTagClass.CLASS_DEF_HINT)
-public class CelTagClass extends AbstractClassDefinition implements CelementsClassDefinition {
-  // TODO define own class package
+public class CelTagClass extends AbstractClassDefinition implements CelTagClassRole {
 
   public static final String DOC_NAME = "CelTagClass";
   public static final String CLASS_DEF_HINT = CelementsClassDefinition.SPACE_NAME + "." + DOC_NAME;
