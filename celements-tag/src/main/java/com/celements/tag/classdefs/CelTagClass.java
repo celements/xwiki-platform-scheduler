@@ -2,19 +2,14 @@ package com.celements.tag.classdefs;
 
 import java.util.List;
 
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
+import org.springframework.stereotype.Component;
 import org.xwiki.model.reference.ClassReference;
 
 import com.celements.model.classes.AbstractClassDefinition;
 import com.celements.model.classes.fields.ClassField;
 import com.celements.model.classes.fields.list.StringListField;
 import com.celements.web.classes.CelementsClassDefinition;
-import com.google.errorprone.annotations.Immutable;
 
-@Singleton
-@Immutable
 @Component(CelTagClass.CLASS_DEF_HINT)
 public class CelTagClass extends AbstractClassDefinition implements CelTagClassRole {
 

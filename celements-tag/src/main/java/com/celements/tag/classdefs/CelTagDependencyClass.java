@@ -1,8 +1,6 @@
 package com.celements.tag.classdefs;
 
-import javax.inject.Singleton;
-
-import org.xwiki.component.annotation.Component;
+import org.springframework.stereotype.Component;
 import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
 
@@ -10,10 +8,7 @@ import com.celements.model.classes.AbstractClassDefinition;
 import com.celements.model.classes.fields.ClassField;
 import com.celements.model.classes.fields.ref.DocumentReferenceField;
 import com.celements.web.classes.CelementsClassDefinition;
-import com.google.errorprone.annotations.Immutable;
 
-@Singleton
-@Immutable
 @Component(CelTagDependencyClass.CLASS_DEF_HINT)
 public class CelTagDependencyClass extends AbstractClassDefinition implements CelTagClassRole {
 
