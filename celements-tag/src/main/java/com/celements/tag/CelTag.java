@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.annotation.concurrent.Immutable;
@@ -24,21 +25,24 @@ import one.util.streamex.StreamEx;
 @Immutable
 public final class CelTag {
 
+  private static final Supplier<CelTagService> tagService = () -> Utils
+      .getComponent(CelTagService.class);
+
   public static Builder builder() {
     return new Builder();
   }
 
-  private final @NotEmpty String name;
   private final @NotEmpty String type;
+  private final @NotEmpty String name;
   private final @NotNull Optional<CelTag> parent;
   private final @NotNull List<CelTag> dependencies;
 
   private CelTag(Builder builder) {
     checkArgument(builder.hasAllDependencies());
-    this.name = builder.name;
-    checkArgument(!name.isEmpty(), "name cannot be empty");
     this.type = builder.type;
     checkArgument(!type.isEmpty(), "type cannot be empty");
+    this.name = builder.name;
+    checkArgument(!name.isEmpty(), "name cannot be empty");
     this.parent = Optional.ofNullable(builder.dependencies.get(builder.parent));
     this.dependencies = builder.dependencies.values().stream()
         .filter(Objects::nonNull)
@@ -46,12 +50,12 @@ public final class CelTag {
         .collect(toUnmodifiableList());
   }
 
-  public @NotEmpty String getName() {
-    return name;
-  }
-
   public @NotEmpty String getType() {
     return type;
+  }
+
+  public @NotEmpty String getName() {
+    return name;
   }
 
   public @NotNull Stream<CelTag> getParents() {
@@ -60,8 +64,14 @@ public final class CelTag {
   }
 
   public @NotNull Stream<CelTag> getChildren() {
-    return Utils.getComponent(CelTagService.class)
-        .getTags(tag -> tag.getParents().anyMatch(this::equals));
+    return tagService.get().getTagsByType()
+        .get(getType()).stream()
+        .filter(tag -> tag.parent.filter(this::equals).isPresent());
+  }
+
+  public @NotNull Stream<CelTag> getAllChildren() {
+    return getChildren().flatMap(child -> StreamEx.of(child)
+        .append(child.getAllChildren()));
   }
 
   public @NotNull Stream<CelTag> getDependencies() {
@@ -70,7 +80,7 @@ public final class CelTag {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name);
+    return Objects.hash(type, name);
   }
 
   @Override
@@ -79,7 +89,8 @@ public final class CelTag {
       return true;
     } else if (obj instanceof CelTag) {
       CelTag other = (CelTag) obj;
-      return Objects.equals(name, other.name);
+      return Objects.equals(type, other.type)
+          && Objects.equals(name, other.name);
     }
     return false;
   }
@@ -87,8 +98,8 @@ public final class CelTag {
   @Override
   public String toString() {
     return "CelTag"
-        + " [name=" + name
-        + ", type=" + type
+        + " [type=" + type
+        + ", name=" + name
         + ", parent=" + parent
         + ", dependencies=" + dependencies
         + "]";
@@ -96,20 +107,20 @@ public final class CelTag {
 
   public static class Builder {
 
-    private String name = "";
     private String type = "";
+    private String name = "";
     private String parent = "";
     private final Set<String> dependencyNames = new LinkedHashSet<>();
     private final Map<String, CelTag> dependencies = new LinkedHashMap<>();
     private Object source; // only for logging in case of error
 
-    public Builder name(String name) {
-      this.name = Strings.nullToEmpty(name).trim().toLowerCase();
+    public Builder type(String type) {
+      this.type = Strings.nullToEmpty(type).trim().toLowerCase();
       return this;
     }
 
-    public Builder type(String type) {
-      this.type = Strings.nullToEmpty(type).trim().toLowerCase();
+    public Builder name(String name) {
+      this.name = Strings.nullToEmpty(name).trim().toLowerCase();
       return this;
     }
 
@@ -147,8 +158,8 @@ public final class CelTag {
     @Override
     public String toString() {
       return "CelTag.Builder"
-          + " [name=" + name
-          + ", type=" + type
+          + " [type=" + type
+          + ", name=" + name
           + ", parent=" + parent
           + ", dependencies=" + dependencyNames
           + ", source=" + source

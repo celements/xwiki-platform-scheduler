@@ -60,9 +60,10 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
 
   private CelTag.Builder asCelTagBuilder(XWikiDocument tagDefDoc) {
     CelTag.Builder builder = new CelTag.Builder();
-    builder.source(tagDefDoc);
-    builder.name(tagDefDoc.getDocumentReference().getName());
-    builder.type(tagDefDoc.getDocumentReference().getLastSpaceReference().getName());
+    DocumentReference tagDefDocRef = tagDefDoc.getDocumentReference();
+    builder.source(tagDefDocRef);
+    builder.type(tagDefDocRef.getLastSpaceReference().getName());
+    builder.name(tagDefDocRef.getName());
     Optional.ofNullable(tagDefDoc.getParentReference())
         .map(DocumentReference::getName)
         .ifPresent(builder::parent);
