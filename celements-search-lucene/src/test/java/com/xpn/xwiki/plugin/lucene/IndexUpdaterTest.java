@@ -77,7 +77,7 @@ public class IndexUpdaterTest extends AbstractComponentTest {
 
     TestIndexUpdater(IndexWriter writer, LucenePlugin plugin, XWikiContext context)
         throws IOException {
-      super(writer, plugin, context);
+      super(writer, plugin);
     }
 
     @Override
