@@ -19,8 +19,13 @@
  */
 package com.celements.scheduler.job;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import static com.celements.execution.XWikiExecutionProp.*;
+import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Strings.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -28,22 +33,19 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.context.ExecutionContextException;
 import org.xwiki.context.ExecutionContextManager;
+import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.WikiReference;
 import org.xwiki.velocity.VelocityManager;
 
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentNotExistsException;
-import com.celements.scheduler.XWikiServletRequestStub;
-import com.celements.scheduler.XWikiServletResponseStub;
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.web.Utils;
-import com.xpn.xwiki.web.XWikiResponse;
-import com.xpn.xwiki.web.XWikiServletRequest;
 
 /**
  * Base class for any XWiki Quartz Job. This class take care of initializing ExecutionContext
@@ -58,28 +60,21 @@ public abstract class AbstractJob implements Job {
 
   protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  /**
-   * {@inheritDoc}
-   *
-   * @see org.quartz.Job#execute(org.quartz.JobExecutionContext)
-   */
+  protected final Supplier<Execution> execution = () -> Utils.getComponent(Execution.class);
+  protected final Supplier<ExecutionContextManager> executionContextManager = () -> Utils
+      .getComponent(ExecutionContextManager.class);
+  protected final Supplier<VelocityManager> velocityManager = () -> Utils
+      .getComponent(VelocityManager.class);
+  protected final Supplier<List<PostJobAction>> postJobActions = () -> Utils
+      .getComponentList(PostJobAction.class);
+  protected final Supplier<IModelAccessFacade> modelAccess = () -> Utils
+      .getComponent(IModelAccessFacade.class);
+
   @Override
   public final void execute(JobExecutionContext jobContext) throws JobExecutionException {
-    JobDataMap data = jobContext.getJobDetail().getJobDataMap();
-
-    // The XWiki context was saved in the Job execution data map. Get it as we'll retrieve
-    // the script to execute from it.
-    XWikiContext xwikiContext = (XWikiContext) data.get("context");
-
-    Execution execution;
+    JobDataMap data = checkNotNull(jobContext.getJobDetail().getJobDataMap());
     try {
-      execution = initExecutionContext(xwikiContext);
-    } catch (ExecutionContextException | DocumentNotExistsException | MalformedURLException exp) {
-      throw new JobExecutionException("Failed to initialize execution context", exp);
-    }
-
-    try {
-      // Execute the job
+      initExecutionContext(data);
       executeJob(jobContext);
     } catch (Throwable exp) {
       getLogger().error("Exception thrown during job '{}' execution",
@@ -89,8 +84,8 @@ public abstract class AbstractJob implements Job {
     } finally {
       // We must ensure we clean the ThreadLocal variables located in the Execution
       // component as otherwise we will have a potential memory leak.
-      execution.removeContext();
-      Utils.getComponentList(PostJobAction.class).forEach(runnable -> {
+      execution.get().removeContext();
+      postJobActions.get().forEach(runnable -> {
         try {
           runnable.accept(jobContext);
         } catch (Exception exc) {
@@ -100,94 +95,56 @@ public abstract class AbstractJob implements Job {
     }
   }
 
-  Execution initExecutionContext(XWikiContext xwikiContext) throws ExecutionContextException,
-      DocumentNotExistsException, MalformedURLException {
-    // Init execution context
-    ExecutionContextManager ecim = Utils.getComponent(ExecutionContextManager.class);
-    Execution execution = Utils.getComponent(Execution.class);
-
-    ExecutionContext ec = new ExecutionContext();
-    XWikiContext scontext = createJobContext(xwikiContext);
-    // Bridge with old XWiki Context, required for old code.
-    ec.setProperty("xwikicontext", scontext);
-
-    ecim.initialize(ec);
-    execution.setContext(ec);
-
-    setupServerUrlAndFactory(scontext, xwikiContext);
-    VelocityManager velocityManager = Utils.getComponent(VelocityManager.class);
-    velocityManager.getVelocityContext();
-    return execution;
+  ExecutionContext initExecutionContext(JobDataMap data)
+      throws ExecutionContextException, DocumentNotExistsException {
+    ExecutionContext context = createEContextForJob(data);
+    executionContextManager.get().initialize(context);
+    prepareXContextForJob(data);
+    setJobDoc(data); // modelAccess only usable after initialize and setting user
+    return context;
   }
 
   /**
-   * create a new copy of the xwiki context. Job Executions always use a different thread.
-   * The xwiki context is NOT thread safe and may not be shared.
-   * TODO CELDEV-534
-   *
-   * @throws DocumentNotExistsException
-   * @throws MalformedURLException
+   * create the execution context with job defaults to allow proper initialization by the
+   * ExecutionContextManager.
    */
-  XWikiContext createJobContext(XWikiContext xwikiContext) {
-    final XWiki xwiki = xwikiContext.getWiki();
-    final String database = xwikiContext.getDatabase();
-
-    // We are sure the context request is a real servlet request
-    // So we force the dummy request with the current host
-    XWikiServletRequestStub dummy = new XWikiServletRequestStub();
-    dummy.setHost(xwikiContext.getRequest().getHeader("x-forwarded-host"));
-    dummy.setScheme(xwikiContext.getRequest().getScheme());
-    XWikiServletRequest request = new XWikiServletRequest(dummy);
-
-    // Force forged context response to a stub response, since the current context response
-    // will not mean anything anymore when running in the scheduler's thread, and can cause
-    // errors.
-    XWikiResponse response = new XWikiServletResponseStub();
-
-    // IMPORTANT: do NOT clone xwikiContext. You would need to ensure that no reference or
-    // unwanted value leaks in the new context.
-    // IMPORTANT: following lines base on XWikiRequestInitializer.prepareContext
-    XWikiContext scontext = new XWikiContext();
-    scontext.setEngineContext(xwikiContext.getEngineContext());
-    scontext.setRequest(request);
-    scontext.setResponse(response);
-    scontext.setAction("view");
-    scontext.setDatabase(database);
-
-    // feed the job context
-    scontext.setUser(xwikiContext.getUser());
-    scontext.setLanguage(xwikiContext.getLanguage());
-    scontext.setMainXWiki(xwikiContext.getMainXWiki());
-    scontext.setMode(XWikiContext.MODE_SERVLET);
-
-    scontext.setWiki(xwiki);
-    scontext.getWiki().getStore().cleanUp(scontext);
-
-    scontext.flushClassCache();
-    scontext.flushArchiveCache();
-    return scontext;
+  private ExecutionContext createEContextForJob(JobDataMap data) {
+    ExecutionContext context = new ExecutionContext();
+    execution.get().setContext(context);
+    context.set(WIKI, Optional.ofNullable(emptyToNull(data.getString("jobDatabase")))
+        .map(WikiReference::new)
+        .orElseGet(((DocumentReference) data.get("jobDocRef"))::getWikiReference));
+    context.set(XWIKI_REQUEST_ACTION, "view");
+    return context;
   }
 
-  void setupServerUrlAndFactory(XWikiContext scontext, XWikiContext xwikiContext)
-      throws MalformedURLException, DocumentNotExistsException {
-    scontext.setDoc(getModelAccess().getDocument(xwikiContext.getDoc().getDocumentReference()));
-
-    final URL url = xwikiContext.getWiki().getServerURL(xwikiContext.getDatabase(), scontext);
-    // Push the URL into the slf4j MDC context so that we can display it in the generated logs
-    // using the %X{url} syntax.
-    MDC.put("url", url.toString());
-    scontext.setURL(url);
-
-    com.xpn.xwiki.web.XWikiURLFactory xurf = xwikiContext.getURLFactory();
-    if (xurf == null) {
-      xurf = scontext.getWiki().getURLFactoryService().createURLFactory(scontext.getMode(),
-          scontext);
+  /**
+   * Feed the stub xwiki context created by the ExecutionContextManager with additional job data for
+   * the job execution thread.
+   */
+  private void prepareXContextForJob(JobDataMap data) {
+    XWikiContext xcontext = getXContext();
+    String jobUser = data.getString("jobUser");
+    xcontext.setUser(jobUser.isEmpty() ? "XWiki.Scheduler" : jobUser);
+    String jobLang = data.getString("jobLang");
+    if (!jobLang.isEmpty()) {
+      xcontext.setLanguage(jobLang);
     }
-    scontext.setURLFactory(xurf);
+    velocityManager.get().getVelocityContext();
   }
 
-  private IModelAccessFacade getModelAccess() {
-    return Utils.getComponent(IModelAccessFacade.class);
+  private void setJobDoc(JobDataMap data) throws DocumentNotExistsException {
+    XWikiDocument jobDoc = modelAccess.get().getDocument((DocumentReference) data.get("jobDocRef"));
+    getEContext().set(DOC, jobDoc);
+    getXContext().setDoc(jobDoc);
+  }
+
+  protected ExecutionContext getEContext() {
+    return execution.get().getContext();
+  }
+
+  protected XWikiContext getXContext() {
+    return getEContext().get(XWIKI_CONTEXT).orElseThrow(IllegalStateException::new);
   }
 
   protected Logger getLogger() {
@@ -195,4 +152,5 @@ public abstract class AbstractJob implements Job {
   }
 
   protected abstract void executeJob(JobExecutionContext jobContext) throws JobExecutionException;
+
 }

@@ -19,6 +19,7 @@
  */
 package com.xpn.xwiki.plugin.lucene;
 
+import static com.celements.execution.XWikiExecutionProp.*;
 import static com.celements.logging.LogUtils.*;
 import static com.google.common.base.Preconditions.*;
 import static com.google.common.base.Predicates.*;
@@ -63,7 +64,6 @@ import com.celements.common.date.DateUtil;
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.access.exception.DocumentLoadException;
 import com.celements.model.access.exception.DocumentNotExistsException;
-import com.celements.model.context.Contextualiser;
 import com.celements.model.context.ModelContext;
 import com.celements.model.metadata.DocumentMetaData;
 import com.celements.model.util.ModelUtils;
@@ -206,44 +206,26 @@ public class IndexRebuilder implements LuceneIndexRebuildService {
   protected void rebuildIndexAsync(final IndexRebuildFuture future) {
     final EntityReference filterRef = future.getReference();
     final Directory directory = expectIndexUpdater().getDirectory();
-    final WikiReference wikiRef = filterRef.extractRef(WikiReference.class).get();
-    new Contextualiser().withWiki(wikiRef).execute(() -> CompletableFuture.runAsync(
-        new AbstractXWikiRunnable(XWikiContext.EXECUTIONCONTEXT_KEY, createJobContext()) {
+    final WikiReference wikiRef = filterRef.extractRef(WikiReference.class).orElseThrow();
+    CompletableFuture.runAsync(new AbstractXWikiRunnable(WIKI.getName(), wikiRef) {
 
-          @Override
-          protected void runInternal() {
-            LOGGER.info("[{}] - started", logRef(filterRef));
-            try (IndexSearcher searcher = new IndexSearcher(directory, true)) {
-              long count = rebuildIndex(searcher, filterRef);
-              LOGGER.info("[{}] - finished: {}", logRef(filterRef), count);
-              future.complete(count);
-            } catch (InterruptedException exc) {
-              LOGGER.error("[{}] - interrupted", filterRef, exc);
-              future.completeExceptionally(exc);
-              Thread.currentThread().interrupt();
-            } catch (Exception exc) {
-              LOGGER.error("[{}] - failed", filterRef, exc);
-              future.completeExceptionally(exc);
-            }
-          }
-        }, rebuildExecutor));
-  }
-
-  /**
-   * creates a new XWikiContext instance for an async job. use ModelContextBuilder when
-   * [CELDEV-534] is complete.
-   */
-  private XWikiContext createJobContext() {
-    XWikiContext ctx = new XWikiContext();
-    ctx.setEngineContext(getXContext().getEngineContext());
-    ctx.setDatabase(getXContext().getDatabase());
-    ctx.setLanguage(getXContext().getLanguage());
-    ctx.setMainXWiki(getXContext().getMainXWiki());
-    ctx.setWiki(getXContext().getWiki());
-    ctx.getWiki().getStore().cleanUp(ctx);
-    ctx.flushClassCache();
-    ctx.flushArchiveCache();
-    return ctx;
+      @Override
+      protected void runInternal() {
+        LOGGER.info("[{}] - started", logRef(filterRef));
+        try (IndexSearcher searcher = new IndexSearcher(directory, true)) {
+          long count = rebuildIndex(searcher, filterRef);
+          LOGGER.info("[{}] - finished: {}", logRef(filterRef), count);
+          future.complete(count);
+        } catch (InterruptedException exc) {
+          LOGGER.error("[{}] - interrupted", filterRef, exc);
+          future.completeExceptionally(exc);
+          Thread.currentThread().interrupt();
+        } catch (Exception exc) {
+          LOGGER.error("[{}] - failed", filterRef, exc);
+          future.completeExceptionally(exc);
+        }
+      }
+    }, rebuildExecutor);
   }
 
   private long rebuildIndex(IndexSearcher searcher, EntityReference filterRef)

@@ -63,10 +63,15 @@
       <artifactId>commons-collections</artifactId>
     </dependency>
     <dependency>
-      <!-- IMPORTANT: includes transitive dependency 'asm' and 'poi-ooxml'
-        on tika upgrade match other existing versions accordingly -->
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-parsers</artifactId>
+      <exclusions>
+        <!-- exclude asm, it is already included in hibernate -->
+        <exclusion>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
