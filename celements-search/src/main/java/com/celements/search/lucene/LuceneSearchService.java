@@ -300,12 +300,19 @@ public class LuceneSearchService implements ILuceneSearchService {
 
   @Override
   public QueryRestriction createRangeRestriction(String field, Range<String> range) {
+    BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : null;
+    BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : null;
+    if (LucenePlugin.VERSION.name().startsWith("LUCENE_3")) {
+      // different bound types only supported with Lucene 4+
+      lowerBoundType = Optional.ofNullable(lowerBoundType).orElse(upperBoundType);
+      upperBoundType = lowerBoundType;
+    }
     String value = ""
-        + (range.hasLowerBound() && (range.lowerBoundType() == BoundType.OPEN) ? "{" : "[")
+        + ((lowerBoundType == BoundType.OPEN) ? "{" : "[")
         + (range.hasLowerBound() ? range.lowerEndpoint() : "0")
         + " TO "
         + (range.hasUpperBound() ? range.upperEndpoint() : "zzzzzzzzzzzz")
-        + (range.hasUpperBound() && (range.upperBoundType() == BoundType.OPEN) ? "}" : "]");
+        + ((upperBoundType == BoundType.OPEN) ? "}" : "]");
     return createRestriction(field, value, false).setAnalyzer(null);
   }
 
