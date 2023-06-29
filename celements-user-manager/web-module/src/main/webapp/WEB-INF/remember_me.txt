@@ -1,1 +1,0 @@
-needed for building, as long as there is no other content in WEB-INF
