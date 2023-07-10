@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -64,6 +65,12 @@ public final class CelTag {
 
   public @NotNull Optional<EntityReference> getScope() {
     return scope;
+  }
+
+  public boolean hasScope(@Nullable EntityReference ref) {
+    return getScope()
+        .map(s -> (ref != null) && ref.equals(s.extractRef(ref.getType()).orElse(null)))
+        .orElse(true); // undefined scope is always in scope
   }
 
   public @NotNull Stream<CelTag> getParents() {

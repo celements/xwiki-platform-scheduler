@@ -1,6 +1,7 @@
 package com.celements.tag.providers;
 
 import static com.celements.common.lambda.LambdaExceptionUtil.*;
+import static com.google.common.base.Strings.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.python.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -116,7 +116,7 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
   }
 
   private Optional<String> getSanitisedDocTitle(XWikiDocument doc) {
-    return Optional.ofNullable(Strings.emptyToNull(doc.getTitle().trim()
+    return Optional.ofNullable(emptyToNull(doc.getTitle().trim()
         .replaceAll("[^!-~]", ""))); // printable ASCII only
   }
 
