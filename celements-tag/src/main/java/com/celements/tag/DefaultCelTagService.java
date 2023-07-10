@@ -15,17 +15,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.stereotype.Service;
-import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.common.lambda.Try;
-import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.field.XObjectFieldAccessor;
+import com.celements.model.object.xwiki.XWikiObjectEditor;
 import com.celements.model.object.xwiki.XWikiObjectFetcher;
 import com.celements.tag.classdefs.CelTagClass;
 import com.celements.tag.providers.CelTagsProvider;
 import com.celements.tag.providers.CelTagsProvider.CelTagsProvisionException;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.xpn.xwiki.doc.XWikiDocument;
+
+import one.util.streamex.StreamEx;
 
 @Service
 public class DefaultCelTagService implements CelTagService {
@@ -33,17 +35,14 @@ public class DefaultCelTagService implements CelTagService {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCelTagService.class);
 
   private final ListableBeanFactory beanFactory;
-  private final IModelAccessFacade modelAccess;
   private final XObjectFieldAccessor fieldAccessor;
   private final AtomicReference<Try<Multimap<String, CelTag>, CelTagsProvisionException>> cache;
 
   @Inject
   public DefaultCelTagService(
       ListableBeanFactory beanFactory,
-      IModelAccessFacade modelAccess,
       XObjectFieldAccessor fieldAccessor) {
     this.beanFactory = beanFactory;
-    this.modelAccess = modelAccess;
     this.fieldAccessor = fieldAccessor;
     this.cache = new AtomicReference<>();
   }
@@ -74,9 +73,8 @@ public class DefaultCelTagService implements CelTagService {
   }
 
   private Multimap<String, CelTag> collectAllTags() throws CelTagsProvisionException {
-    List<CelTag.Builder> tagBuilders = new ArrayList<>();
+    var tagBuilders = new ArrayList<CelTag.Builder>();
     for (CelTagsProvider provider : beanFactory.getBeansOfType(CelTagsProvider.class).values()) {
-      // TODO log list for each provider
       provider.get().forEach(tagBuilders::add);
     }
     Multimap<String, CelTag> tags = topologicalBuild(tagBuilders);
@@ -89,7 +87,7 @@ public class DefaultCelTagService implements CelTagService {
    * acyclic graph
    */
   private Multimap<String, CelTag> topologicalBuild(List<CelTag.Builder> tagBuilders) {
-    ImmutableMultimap.Builder<String, CelTag> tags = ImmutableMultimap.builder();
+    var tags = ImmutableMultimap.<String, CelTag>builder();
     while (!tagBuilders.isEmpty()) {
       List<CelTag> builtTags = buildTagsWithAllDependencies(tagBuilders.iterator());
       for (CelTag tag : builtTags) {
@@ -104,7 +102,7 @@ public class DefaultCelTagService implements CelTagService {
   }
 
   private List<CelTag> buildTagsWithAllDependencies(Iterator<CelTag.Builder> tagBuilderIter) {
-    List<CelTag> built = new ArrayList<>();
+    var built = new ArrayList<CelTag>();
     while (tagBuilderIter.hasNext()) {
       CelTag.Builder builder = tagBuilderIter.next();
       if (builder.hasAllDependencies()) {
@@ -119,9 +117,13 @@ public class DefaultCelTagService implements CelTagService {
     return built;
   }
 
+  public void refresh() {
+    cache.set(null);
+  }
+
   @Override
-  public Stream<CelTag> getDocTags(DocumentReference docRef) {
-    return XWikiObjectFetcher.on(modelAccess.getOrCreateDocument(docRef))
+  public Stream<CelTag> getDocTags(XWikiDocument doc) {
+    return XWikiObjectFetcher.on(doc)
         .filter(CelTagClass.CLASS_REF).stream()
         .flatMap(obj -> getTags(
             fieldAccessor.get(obj, CelTagClass.FIELD_TYPE),
@@ -136,8 +138,20 @@ public class DefaultCelTagService implements CelTagService {
         .filter(tag -> tags.contains(tag.getName()));
   }
 
-  public void refresh() {
-    cache.set(null);
+  @Override
+  public boolean addTags(XWikiDocument doc, CelTag... tags) {
+    boolean changed = false;
+    for (var tagsByType : StreamEx.of(tags).groupingBy(CelTag::getType).entrySet()) {
+      var editor = XWikiObjectEditor.on(doc)
+          .filter(CelTagClass.FIELD_TYPE, tagsByType.getKey());
+      changed |= editor.editField(CelTagClass.FIELD_TAGS)
+          .all(() -> StreamEx.of(editor.fetch().fetchField(CelTagClass.FIELD_TAGS).stream())
+              .flatMap(List::stream)
+              .append(tagsByType.getValue().stream().map(CelTag::getName))
+              .distinct()
+              .toList());
+    }
+    return changed;
   }
 
 }

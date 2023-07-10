@@ -5,9 +5,8 @@ import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
 
-import org.xwiki.model.reference.DocumentReference;
-
 import com.google.common.collect.Multimap;
+import com.xpn.xwiki.doc.XWikiDocument;
 
 @NotNull
 public interface CelTagService {
@@ -18,6 +17,8 @@ public interface CelTagService {
 
   Stream<CelTag> streamTags();
 
-  Stream<CelTag> getDocTags(DocumentReference docRef);
+  Stream<CelTag> getDocTags(XWikiDocument doc);
+
+  boolean addTags(XWikiDocument doc, CelTag... tags);
 
 }

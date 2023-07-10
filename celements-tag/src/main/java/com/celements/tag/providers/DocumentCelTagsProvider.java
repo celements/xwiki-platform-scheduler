@@ -5,6 +5,8 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.query.Query;
@@ -24,11 +26,13 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Component
 public class DocumentCelTagsProvider implements CelTagsProvider {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentCelTagsProvider.class);
+
   // TODO menuitems? see CelTagClass
   private static final String XWQL_TAGS = "from doc.object("
       + PageTypeClass.CLASS_REF.serialize() + ") pt "
       + "where doc.translation = 0 "
-      + "and pt." + PageTypeClass.PAGE_LAYOUT.getName() + " = '" + CelTagPageType.NAME + "'";
+      + "and pt." + PageTypeClass.FIELD_PAGE_TYPE.getName() + " = '" + CelTagPageType.NAME + "'";
 
   private final QueryManager queryManager;
   private final IModelAccessFacade modelAccess;
@@ -59,8 +63,8 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
   }
 
   private CelTag.Builder asCelTagBuilder(XWikiDocument tagDefDoc) {
-    CelTag.Builder builder = new CelTag.Builder();
-    DocumentReference tagDefDocRef = tagDefDoc.getDocumentReference();
+    var builder = new CelTag.Builder();
+    var tagDefDocRef = tagDefDoc.getDocumentReference();
     builder.source(tagDefDocRef);
     builder.type(tagDefDocRef.getLastSpaceReference().getName());
     builder.name(tagDefDocRef.getName());
@@ -72,6 +76,7 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
         .stream()
         .map(DocumentReference::getName)
         .forEach(builder::expectDependency);
+    LOGGER.info("providing tag {} from {}", builder, tagDefDocRef);
     return builder;
   }
 
