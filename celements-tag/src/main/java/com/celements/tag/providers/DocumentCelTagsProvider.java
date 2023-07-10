@@ -60,7 +60,6 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
   public Collection<CelTag.Builder> get() throws CelTagsProvisionException {
     try {
       var tags = wikiService.streamAllWikis()
-          .parallel()
           .flatMap(rethrow(this::getForWiki))
           .collect(Collectors.toList());
       LOGGER.info("providing tags: {}", tags);
