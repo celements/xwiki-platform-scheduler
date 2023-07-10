@@ -29,9 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 import org.easymock.IAnswer;
-import org.jmock.core.Invocation;
-import org.jmock.core.stub.CustomStub;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.model.reference.DocumentReference;
@@ -67,45 +67,27 @@ public class XClassManagerTest extends AbstractComponentTest {
    * @see junit.framework.TestCase#setUp()
    */
   @Before
-  protected void prepare() throws Exception {
+  public void prepare() throws Exception {
+    modelAccessMock = createDefaultMock(IModelAccessFacade.class);
     mockGetDocAndSaveDoc();
-
-    mockXWiki.stubs().method("getClass").will(new CustomStub("Implements XWiki.getClass") {
-
-      @Override
-      public Object invoke(Invocation invocation) throws Throwable {
-        String classFullName = (String) invocation.parameterValues.get(0);
-        XWikiContext context = (XWikiContext) invocation.parameterValues.get(1);
-
-        XWikiDocument doc = context.getWiki().getDocument(classFullName, context);
-
-        return doc.getxWikiClass();
-      }
-    });
-    mockXWiki.stubs().method("getXClass").will(new CustomStub("Implements XWiki.getClass") {
-
-      @Override
-      public Object invoke(Invocation invocation) throws Throwable {
-        DocumentReference classReference = (DocumentReference) invocation.parameterValues.get(0);
-        XWikiContext context = (XWikiContext) invocation.parameterValues.get(1);
-
-        XWikiDocument doc = context.getWiki().getDocument(
-            classReference.getLastSpaceReference().getName() + "." + classReference.getName(),
-            context);
-
-        return doc.getxWikiClass();
-      }
-    });
-    mockXWiki.stubs().method("clearName").will(new CustomStub("Implements XWiki.clearName") {
-
-      @Override
-      public Object invoke(Invocation invocation) throws Throwable {
-        return invocation.parameterValues.get(0);
-      }
-    });
-
-    this.xwiki = (XWiki) mockXWiki.proxy();
-    getContext().setWiki(this.xwiki);
+    xwiki = getMock(XWiki.class);
+    mockClearName();
+    mockGetXClass();
+    /*
+     * is getClass deprecated?!?
+     * mockXWiki.stubs().method("getClass").will(new CustomStub("Implements XWiki.getClass") {
+     *
+     * @Override
+     * public Object invoke(Invocation invocation) throws Throwable {
+     * String classFullName = (String) invocation.parameterValues.get(0);
+     * XWikiContext context = (XWikiContext) invocation.parameterValues.get(1);
+     *
+     * XWikiDocument doc = context.getWiki().getDocument(classFullName, context);
+     *
+     * return doc.getxWikiClass();
+     * }
+     * });
+     */
   }
 
   // ///////////////////////////////////////////////////////////////////////////////////////:
@@ -679,17 +661,17 @@ public class XClassManagerTest extends AbstractComponentTest {
    * HELPER METHODS
    *******************/
 
+  private @NotNull XWikiDocument stubGetDocument(DocumentReference theDocRef) {
+    if (documents.containsKey(theDocRef)) {
+      return documents.get(theDocRef);
+    } else {
+      return new XWikiDocument(theDocRef);
+    }
+  }
+
   private void mockGetDocAndSaveDoc() throws Exception {
-    modelAccessMock = createDefaultMock(IModelAccessFacade.class);
     expect(modelAccessMock.getDocument(isA(DocumentReference.class)))
-        .andAnswer(() -> {
-          DocumentReference theDocRef = getCurrentArgument(0);
-          if (documents.containsKey(theDocRef)) {
-            return documents.get(theDocRef);
-          } else {
-            return new XWikiDocument(theDocRef);
-          }
-        }).anyTimes();
+        .andAnswer(() -> stubGetDocument(getCurrentArgument(0))).anyTimes();
     IAnswer<? extends Object> saveDocStub = () -> {
       XWikiDocument theDoc = getCurrentArgument(0);
       theDoc.setNew(false);
@@ -703,4 +685,21 @@ public class XClassManagerTest extends AbstractComponentTest {
     modelAccessMock.saveDocument(isA(XWikiDocument.class), isA(String.class), anyBoolean());
     expectLastCall().andAnswer(saveDocStub).anyTimes();
   }
+
+  private void mockClearName() throws Exception {
+    expect(xwiki.clearName(isA(String.class), same(getXContext())))
+        .andAnswer(() -> {
+          return getCurrentArgument(0);
+        }).anyTimes();
+  }
+
+  private void mockGetXClass() throws Exception {
+    expect(xwiki.getXClass(isA(DocumentReference.class), same(getXContext())))
+        .andAnswer(() -> {
+          DocumentReference classReference = getCurrentArgument(0);
+          XWikiDocument doc = stubGetDocument(classReference);
+          return doc.getxWikiClass();
+        }).anyTimes();
+  }
+
 }
