@@ -20,7 +20,6 @@
 
 package com.xpn.xwiki.plugin.applicationmanager.core.doc.objects.classes;
 
-import static com.celements.common.test.CelementsTestUtils.*;
 import static org.junit.Assert.*;
 
 import java.util.Collections;
@@ -33,6 +32,7 @@ import org.jmock.core.Invocation;
 import org.jmock.core.stub.CustomStub;
 import org.junit.Before;
 
+import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -69,14 +69,14 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
   public void prepare() throws Exception {
     this.xwiki = new XWiki();
     this.xwiki.setNotificationManager(new XWikiNotificationManager());
-    getContext().setWiki(this.xwiki);
+    getXContext().setWiki(this.xwiki);
 
     // //////////////////////////////////////////////////
     // XWikiHibernateStore
 
     this.mockXWikiStore = mock(XWikiHibernateStore.class,
         new Class[] { XWiki.class, XWikiContext.class }, new Object[] { this.xwiki,
-            getContext() });
+            getXContext() });
     this.mockXWikiStore.stubs().method("loadXWikiDoc").will(
         new CustomStub("Implements XWikiStoreInterface.loadXWikiDoc") {
 
@@ -110,7 +110,7 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
     this.mockXWikiVersioningStore = mock(XWikiHibernateVersioningStore.class,
         new Class[] { XWiki.class, XWikiContext.class }, new Object[] {
-            this.xwiki, getContext() });
+            this.xwiki, getXContext() });
     this.mockXWikiVersioningStore.stubs().method("getXWikiDocumentArchive").will(returnValue(null));
     this.mockXWikiVersioningStore.stubs().method("resetRCSArchive").will(returnValue(null));
 
@@ -171,8 +171,8 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
     // ///
 
-    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getContext());
-    DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass.newXObjectDocument(getContext());
+    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getXContext());
+    DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass.newXObjectDocument(getXContext());
 
     assertNotNull(sdoc);
     assertTrue(sdoc.isNew());
@@ -188,9 +188,9 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
     // ///
 
-    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getContext());
+    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getXContext());
     DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass
-        .newXObjectDocument(DEFAULT_DOCFULLNAME, 0, getContext());
+        .newXObjectDocument(DEFAULT_DOCFULLNAME, 0, getXContext());
 
     assertNotNull(sdoc);
     assertTrue(sdoc.isNew());
@@ -206,12 +206,12 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
     // ///
 
-    XWikiDocument doc = xwiki.getDocument(DEFAULT_DOCFULLNAME, getContext());
-    xwiki.saveDocument(doc, getContext());
+    XWikiDocument doc = xwiki.getDocument(DEFAULT_DOCFULLNAME, getXContext());
+    xwiki.saveDocument(doc, getXContext());
 
-    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getContext());
+    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getXContext());
     DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass
-        .newXObjectDocument(DEFAULT_DOCFULLNAME, 0, getContext());
+        .newXObjectDocument(DEFAULT_DOCFULLNAME, 0, getXContext());
 
     assertNotNull(sdoc);
     assertTrue(sdoc.isNew());
@@ -223,10 +223,12 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
   }
 
   public void testMergeObject() throws XWikiException {
-    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getContext());
-    DefaultXObjectDocument sdoc1 = (DefaultXObjectDocument) sclass.newXObjectDocument(getContext());
+    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getXContext());
+    DefaultXObjectDocument sdoc1 = (DefaultXObjectDocument) sclass
+        .newXObjectDocument(getXContext());
 
-    DefaultXObjectDocument sdoc2 = (DefaultXObjectDocument) sclass.newXObjectDocument(getContext());
+    DefaultXObjectDocument sdoc2 = (DefaultXObjectDocument) sclass
+        .newXObjectDocument(getXContext());
 
     sdoc1.setStringValue(XClassManagerTest.FIELD_string, "valuesdoc1");
     sdoc1.setStringValue(XClassManagerTest.FIELD_string2, "value2sdoc1");
