@@ -1,6 +1,6 @@
 package com.celements.tag.providers;
 
-import java.util.stream.Stream;
+import java.util.Collection;
 
 import javax.inject.Inject;
 
@@ -24,10 +24,10 @@ public class BeanCelTagsProvider implements CelTagsProvider {
   }
 
   @Override
-  public Stream<CelTag.Builder> get() {
+  public Collection<CelTag.Builder> get() {
     var tags = beanFactory.getBeansOfType(CelTag.Builder.class).values();
     LOGGER.info("providing tags: {}", tags);
-    return tags.stream();
+    return tags;
   }
 
 }
