@@ -31,6 +31,7 @@ import org.jmock.Mock;
 import org.jmock.core.Invocation;
 import org.jmock.core.stub.CustomStub;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.XWiki;
@@ -166,6 +167,7 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
   private final String DEFAULT_DOCFULLNAME = DEFAULT_SPACE + "." + DEFAULT_DOCNAME;
 
+  @Test
   public void testInitXObjectDocumentEmpty() throws XWikiException {
     documents.clear();
 
@@ -183,6 +185,7 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
     assertEquals(sdoc.getXClassManager(), sclass);
   }
 
+  @Test
   public void testInitXObjectDocumentDocName() throws XWikiException {
     documents.clear();
 
@@ -201,6 +204,7 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
     assertEquals(sdoc.getXClassManager(), sclass);
   }
 
+  @Test
   public void testInitXObjectDocumentDocNameExists() throws XWikiException {
     documents.clear();
 
@@ -222,6 +226,7 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
     assertEquals(sdoc.getXClassManager(), sclass);
   }
 
+  @Test
   public void testMergeObject() throws XWikiException {
     XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getXContext());
     DefaultXObjectDocument sdoc1 = (DefaultXObjectDocument) sclass
