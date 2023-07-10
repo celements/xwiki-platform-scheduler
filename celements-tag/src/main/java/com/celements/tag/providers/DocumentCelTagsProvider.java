@@ -3,12 +3,14 @@ package com.celements.tag.providers;
 import static com.celements.common.lambda.LambdaExceptionUtil.*;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.python.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,13 +22,15 @@ import org.xwiki.query.QueryManager;
 
 import com.celements.model.access.IModelAccessFacade;
 import com.celements.model.object.xwiki.XWikiObjectFetcher;
+import com.celements.model.reference.RefBuilder;
 import com.celements.model.util.ModelUtils;
 import com.celements.pagetype.classes.PageTypeClass;
 import com.celements.tag.CelTag;
 import com.celements.tag.CelTagPageType;
 import com.celements.tag.classdefs.CelTagDependencyClass;
+import com.celements.web.CelConstant;
 import com.celements.wiki.WikiService;
-import com.google.common.base.Stopwatch;
+import com.xpn.xwiki.XWikiConstant;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 @Component
@@ -34,7 +38,7 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DocumentCelTagsProvider.class);
 
-  // TODO menuitems? see CelTagClass
+  // TODO order by menuitems
   private static final String XWQL_TAGS = "from doc.object("
       + PageTypeClass.CLASS_REF.serialize() + ") pt "
       + "where doc.translation = 0 "
@@ -47,10 +51,10 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
 
   @Inject
   public DocumentCelTagsProvider(
+      QueryManager queryManager,
       WikiService wikiService,
-      ModelUtils modelUtils,
       IModelAccessFacade modelAccess,
-      QueryManager queryManager) {
+      ModelUtils modelUtils) {
     this.wikiService = wikiService;
     this.queryManager = queryManager;
     this.modelAccess = modelAccess;
@@ -73,22 +77,21 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
   }
 
   private Stream<DocumentReference> loadTagDocs(WikiReference wiki) throws QueryException {
-    var timer = Stopwatch.createStarted();
-    var results = queryManager.createQuery(XWQL_TAGS, Query.XWQL)
+    List<String> results = queryManager.createQuery(XWQL_TAGS, Query.XWQL)
         .setWiki(wiki.getName())
         .<String>execute();
-    LOGGER.debug("loading tags for {} took {}", wiki, timer.elapsed());
+    LOGGER.debug("loaded tags for {}: {}", wiki, results);
     return results.stream().map(fn -> modelUtils.resolveRef(fn, DocumentReference.class, wiki));
   }
 
   private CelTag.Builder asCelTagBuilder(XWikiDocument tagDefDoc) {
     var builder = new CelTag.Builder();
-    var tagDefDocRef = tagDefDoc.getDocumentReference();
-    builder.source(tagDefDocRef);
-    // TODO try resolve space title/menuname first?
-    builder.type(modelUtils.serializeRef(tagDefDocRef.getLastSpaceReference()));
-    // TODO doc title/menuname?
-    builder.name(tagDefDocRef.getName());
+    builder.source(tagDefDoc.getDocRef());
+    builder.type(getTagType(tagDefDoc));
+    builder.name(getSanitisedDocTitle(tagDefDoc).orElseGet(() -> tagDefDoc.getDocRef().getName()));
+    if (!CelConstant.CENTRAL_WIKI.equals(tagDefDoc.getWikiRef())) {
+      builder.scope(tagDefDoc.getWikiRef());
+    }
     Optional.ofNullable(tagDefDoc.getParentReference())
         .map(DocumentReference::getName)
         .ifPresent(builder::parent);
@@ -98,6 +101,23 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
         .map(DocumentReference::getName)
         .forEach(builder::expectDependency);
     return builder;
+  }
+
+  /**
+   * space title (WebPreferences) or space name
+   */
+  private String getTagType(XWikiDocument tagDefDoc) {
+    var tagSpaceRef = tagDefDoc.getDocRef().getLastSpaceReference();
+    return modelAccess.getDocumentOpt(RefBuilder.from(tagSpaceRef)
+        .doc(XWikiConstant.WEB_PREF_DOC_NAME)
+        .build(DocumentReference.class))
+        .flatMap(this::getSanitisedDocTitle)
+        .orElse(tagSpaceRef.getName());
+  }
+
+  private Optional<String> getSanitisedDocTitle(XWikiDocument doc) {
+    return Optional.ofNullable(Strings.emptyToNull(doc.getTitle().trim()
+        .replaceAll("[^!-~]", ""))); // printable ASCII only
   }
 
 }

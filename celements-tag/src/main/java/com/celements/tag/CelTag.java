@@ -17,6 +17,8 @@ import javax.annotation.concurrent.Immutable;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import org.xwiki.model.reference.EntityReference;
+
 import com.google.common.base.Strings;
 import com.xpn.xwiki.web.Utils;
 
@@ -34,6 +36,7 @@ public final class CelTag {
 
   private final @NotEmpty String type;
   private final @NotEmpty String name;
+  private final @NotNull Optional<EntityReference> scope;
   private final @NotNull Optional<CelTag> parent;
   private final @NotNull List<CelTag> dependencies;
 
@@ -43,6 +46,7 @@ public final class CelTag {
     checkArgument(!type.isEmpty(), "type cannot be empty");
     this.name = builder.name;
     checkArgument(!name.isEmpty(), "name cannot be empty");
+    this.scope = Optional.ofNullable(builder.scope);
     this.parent = Optional.ofNullable(builder.dependencies.get(builder.parent));
     this.dependencies = builder.dependencies.values().stream()
         .filter(Objects::nonNull)
@@ -56,6 +60,10 @@ public final class CelTag {
 
   public @NotEmpty String getName() {
     return name;
+  }
+
+  public @NotNull Optional<EntityReference> getScope() {
+    return scope;
   }
 
   public @NotNull Stream<CelTag> getParents() {
@@ -80,7 +88,7 @@ public final class CelTag {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, name);
+    return Objects.hash(type, name, scope);
   }
 
   @Override
@@ -89,8 +97,9 @@ public final class CelTag {
       return true;
     } else if (obj instanceof CelTag) {
       CelTag other = (CelTag) obj;
-      return Objects.equals(type, other.type)
-          && Objects.equals(name, other.name);
+      return Objects.equals(this.type, other.type)
+          && Objects.equals(this.name, other.name)
+          && Objects.equals(this.scope, other.scope);
     }
     return false;
   }
@@ -100,6 +109,7 @@ public final class CelTag {
     return "CelTag"
         + " [type=" + type
         + ", name=" + name
+        + ", scope=" + scope
         + ", parent=" + parent
         + ", dependencies=" + dependencies
         + "]";
@@ -109,6 +119,7 @@ public final class CelTag {
 
     private String type = "";
     private String name = "";
+    private EntityReference scope;
     private String parent = "";
     private final Set<String> dependencyNames = new LinkedHashSet<>();
     private final Map<String, CelTag> dependencies = new LinkedHashMap<>();
@@ -121,6 +132,11 @@ public final class CelTag {
 
     public Builder name(String name) {
       this.name = Strings.nullToEmpty(name).trim().toLowerCase();
+      return this;
+    }
+
+    public Builder scope(EntityReference scope) {
+      this.scope = scope;
       return this;
     }
 
@@ -160,6 +176,7 @@ public final class CelTag {
       return "CelTag.Builder"
           + " [type=" + type
           + ", name=" + name
+          + ", scope=" + scope
           + ", parent=" + parent
           + ", dependencies=" + dependencyNames
           + ", source=" + source

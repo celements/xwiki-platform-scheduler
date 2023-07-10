@@ -55,7 +55,7 @@ public class DefaultCelTagService implements CelTagService {
   }
 
   @Override
-  public Stream<CelTag> streamTags() {
+  public Stream<CelTag> streamAllTags() {
     return getTagsByType().values().stream();
   }
 

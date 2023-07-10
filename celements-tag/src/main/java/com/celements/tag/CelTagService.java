@@ -13,9 +13,9 @@ public interface CelTagService {
 
   Optional<CelTag> getTag(String type, String name);
 
-  Multimap<String, CelTag> getTagsByType();
+  Stream<CelTag> streamAllTags();
 
-  Stream<CelTag> streamTags();
+  Multimap<String, CelTag> getTagsByType();
 
   Stream<CelTag> getDocTags(XWikiDocument doc);
 
