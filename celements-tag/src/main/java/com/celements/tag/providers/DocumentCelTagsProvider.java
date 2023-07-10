@@ -26,6 +26,7 @@ import com.celements.tag.CelTag;
 import com.celements.tag.CelTagPageType;
 import com.celements.tag.classdefs.CelTagDependencyClass;
 import com.celements.wiki.WikiService;
+import com.google.common.base.Stopwatch;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 @Component
@@ -60,7 +61,9 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
   public Collection<CelTag.Builder> get() throws CelTagsProvisionException {
     try {
       var tags = wikiService.streamAllWikis()
-          .flatMap(rethrow(this::getForWiki))
+          .flatMap(rethrow(this::loadTagDocs))
+          .map(modelAccess::getOrCreateDocument)
+          .map(this::asCelTagBuilder)
           .collect(Collectors.toList());
       LOGGER.info("providing tags: {}", tags);
       return tags;
@@ -69,21 +72,22 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
     }
   }
 
-  private Stream<CelTag.Builder> getForWiki(WikiReference wiki) throws QueryException {
-    LOGGER.debug("loading tags for {}", wiki);
-    return queryManager.createQuery(XWQL_TAGS, Query.XWQL)
+  private Stream<DocumentReference> loadTagDocs(WikiReference wiki) throws QueryException {
+    var timer = Stopwatch.createStarted();
+    var results = queryManager.createQuery(XWQL_TAGS, Query.XWQL)
         .setWiki(wiki.getName())
-        .<String>execute().stream()
-        .map(fn -> modelUtils.resolveRef(fn, DocumentReference.class, wiki))
-        .map(modelAccess::getOrCreateDocument)
-        .map(this::asCelTagBuilder);
+        .<String>execute();
+    LOGGER.debug("loading tags for {} took {}", wiki, timer.elapsed());
+    return results.stream().map(fn -> modelUtils.resolveRef(fn, DocumentReference.class, wiki));
   }
 
   private CelTag.Builder asCelTagBuilder(XWikiDocument tagDefDoc) {
     var builder = new CelTag.Builder();
     var tagDefDocRef = tagDefDoc.getDocumentReference();
     builder.source(tagDefDocRef);
+    // TODO try resolve space title/menuname first?
     builder.type(modelUtils.serializeRef(tagDefDocRef.getLastSpaceReference()));
+    // TODO doc title/menuname?
     builder.name(tagDefDocRef.getName());
     Optional.ofNullable(tagDefDoc.getParentReference())
         .map(DocumentReference::getName)
@@ -93,7 +97,6 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
         .stream()
         .map(DocumentReference::getName)
         .forEach(builder::expectDependency);
-    LOGGER.debug("providing tag {} from {}", builder, tagDefDocRef);
     return builder;
   }
 

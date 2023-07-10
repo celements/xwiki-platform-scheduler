@@ -144,6 +144,7 @@ public class DefaultCelTagService implements CelTagService {
     for (var tagsByType : StreamEx.of(tags).groupingBy(CelTag::getType).entrySet()) {
       var editor = XWikiObjectEditor.on(doc)
           .filter(CelTagClass.FIELD_TYPE, tagsByType.getKey());
+      editor.createFirstIfNotExists();
       changed |= editor.editField(CelTagClass.FIELD_TAGS)
           .all(() -> StreamEx.of(editor.fetch().fetchField(CelTagClass.FIELD_TAGS).stream())
               .flatMap(List::stream)

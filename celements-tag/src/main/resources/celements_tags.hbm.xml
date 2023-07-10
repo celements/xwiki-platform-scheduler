@@ -7,6 +7,9 @@
       <column name="ID" not-null="true" />
       <generator class="assigned" />
     </id>
+    <property name="type" type="string">
+      <column name="TYPE" length="255"/>
+    </property>
     <property name="tags" type="string">
       <column name="TAGS" length="1024"/>
     </property>
