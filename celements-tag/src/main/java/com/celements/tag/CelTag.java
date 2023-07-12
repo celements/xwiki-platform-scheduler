@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -40,6 +41,7 @@ public final class CelTag {
   private final @NotNull Optional<EntityReference> scope;
   private final @NotNull Optional<CelTag> parent;
   private final @NotNull List<CelTag> dependencies;
+  private final @NotNull Function<String, Optional<String>> prettyNameForLangGetter;
 
   private CelTag(Builder builder) {
     checkArgument(builder.hasAllDependencies());
@@ -53,6 +55,8 @@ public final class CelTag {
         .filter(Objects::nonNull)
         .filter(tag -> !tag.getName().equals(builder.parent))
         .collect(toUnmodifiableList());
+    this.prettyNameForLangGetter = Optional.ofNullable(builder.prettyNameForLangGetter)
+        .orElse(lang -> Optional.empty());
   }
 
   public @NotEmpty String getType() {
@@ -93,6 +97,10 @@ public final class CelTag {
     return dependencies.stream();
   }
 
+  public @NotNull Optional<String> getPrettyName(String lang) {
+    return prettyNameForLangGetter.apply(lang);
+  }
+
   @Override
   public int hashCode() {
     return Objects.hash(type, name, scope);
@@ -122,7 +130,7 @@ public final class CelTag {
         + "]";
   }
 
-  public static class Builder {
+  public static class Builder implements Comparable<Builder> {
 
     private String type = "";
     private String name = "";
@@ -130,6 +138,8 @@ public final class CelTag {
     private String parent = "";
     private final Set<String> dependencyNames = new LinkedHashSet<>();
     private final Map<String, CelTag> dependencies = new LinkedHashMap<>();
+    private Function<String, Optional<String>> prettyNameForLangGetter;
+    private int order;
     private Object source; // only for logging in case of error
 
     public Builder type(String type) {
@@ -169,6 +179,16 @@ public final class CelTag {
       return dependencyNames.isEmpty();
     }
 
+    public Builder prettyName(Function<String, Optional<String>> prettyNameForLangGetter) {
+      this.prettyNameForLangGetter = prettyNameForLangGetter;
+      return this;
+    }
+
+    public Builder order(int order) {
+      this.order = order;
+      return this;
+    }
+
     public Builder source(Object source) {
       this.source = source;
       return this;
@@ -179,6 +199,11 @@ public final class CelTag {
     }
 
     @Override
+    public int compareTo(Builder other) {
+      return Integer.compare(this.order, other.order);
+    }
+
+    @Override
     public String toString() {
       return "CelTag.Builder"
           + " [type=" + type
@@ -186,6 +211,7 @@ public final class CelTag {
           + ", scope=" + scope
           + ", parent=" + parent
           + ", dependencies=" + dependencyNames
+          + ", order=" + order
           + ", source=" + source
           + "]";
     }

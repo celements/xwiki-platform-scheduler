@@ -1,11 +1,17 @@
 package com.celements.tag.providers;
 
+import static com.celements.common.MoreOptional.*;
 import static com.celements.common.lambda.LambdaExceptionUtil.*;
-import static com.google.common.base.Strings.*;
+import static com.celements.navigation.INavigationClassConfig.*;
+import static com.google.common.base.Strings.emptyToNull;
+import static java.util.function.Predicate.*;
+import static org.python.google.common.base.Strings.nullToEmpty;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,6 +20,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.query.Query;
@@ -32,15 +39,17 @@ import com.celements.web.CelConstant;
 import com.celements.wiki.WikiService;
 import com.xpn.xwiki.XWikiConstant;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.objects.BaseObject;
+
+import one.util.streamex.StreamEx;
 
 @Component
 public class DocumentCelTagsProvider implements CelTagsProvider {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DocumentCelTagsProvider.class);
 
-  // TODO order by menuitems
-  private static final String XWQL_TAGS = "from doc.object("
-      + PageTypeClass.CLASS_REF.serialize() + ") pt "
+  private static final String XWQL_TAGS = "from "
+      + "doc.object(" + PageTypeClass.CLASS_REF.serialize() + ") pt "
       + "where doc.translation = 0 "
       + "and pt." + PageTypeClass.FIELD_PAGE_TYPE.getName() + " = '" + CelTagPageType.NAME + "'";
 
@@ -85,10 +94,11 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
   }
 
   private CelTag.Builder asCelTagBuilder(XWikiDocument tagDefDoc) {
+    final var tagDefDocRef = tagDefDoc.getDocRef();
     var builder = new CelTag.Builder();
-    builder.source(tagDefDoc.getDocRef());
+    builder.source(tagDefDocRef);
     builder.type(getTagType(tagDefDoc));
-    builder.name(getSanitisedDocTitle(tagDefDoc).orElseGet(() -> tagDefDoc.getDocRef().getName()));
+    builder.name(getSanitisedDocTitle(tagDefDoc).orElseGet(tagDefDocRef::getName));
     if (!CelConstant.CENTRAL_WIKI.equals(tagDefDoc.getWikiRef())) {
       builder.scope(tagDefDoc.getWikiRef());
     }
@@ -100,6 +110,8 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
         .stream()
         .map(DocumentReference::getName)
         .forEach(builder::expectDependency);
+    builder.prettyName(lang -> getPrettyName(tagDefDocRef, lang));
+    builder.order(getMenuItemOrder(tagDefDoc));
     return builder;
   }
 
@@ -118,6 +130,35 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
   private Optional<String> getSanitisedDocTitle(XWikiDocument doc) {
     return Optional.ofNullable(emptyToNull(doc.getTitle().trim()
         .replaceAll("[^!-~]", ""))); // printable ASCII only
+  }
+
+  private Optional<String> getPrettyName(DocumentReference tagDefDocRef, String lang) {
+    XWikiDocument tagDefDoc = modelAccess.getOrCreateDocument(tagDefDocRef);
+    return streamMenuNameObjs(tagDefDoc, lang)
+        .map(obj -> obj.getStringValue(MENU_NAME_FIELD))
+        .filter(not(String::isBlank))
+        .findFirst()
+        .or(() -> asNonBlank(tagDefDoc.getTitle()))
+        .or(() -> Optional.of(tagDefDocRef.getName()));
+  }
+
+  private StreamEx<BaseObject> streamMenuNameObjs(XWikiDocument tagDefDoc, String lang) {
+    Set<String> validLangs = Set.of(nullToEmpty(lang).trim(), "");
+    return StreamEx.of(XWikiObjectFetcher.on(tagDefDoc)
+        .filter(new ClassReference(MENU_NAME_CLASS_SPACE, MENU_NAME_CLASS_DOC))
+        .stream())
+        .mapToEntry(obj -> obj.getStringValue(MENU_NAME_LANG_FIELD), obj -> obj)
+        .filterKeys(validLangs::contains)
+        .reverseSorted(Map.Entry.comparingByKey()) // specific before default lang
+        .values();
+  }
+
+  private Integer getMenuItemOrder(XWikiDocument tagDefDoc) {
+    return XWikiObjectFetcher.on(tagDefDoc)
+        .filter(new ClassReference(MENU_ITEM_CLASS_SPACE, MENU_ITEM_CLASS_DOC))
+        .findFirst()
+        .map(obj -> obj.getIntValue(MENU_POSITION_FIELD, 0))
+        .orElse(0);
   }
 
 }

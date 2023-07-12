@@ -1,5 +1,8 @@
 package com.celements.tag;
 
+import static com.celements.common.lambda.LambdaExceptionUtil.*;
+import static java.util.stream.Collectors.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -90,11 +93,13 @@ public class DefaultCelTagService
   }
 
   private Multimap<String, CelTag> collectAllTags() throws CelTagsProvisionException {
-    var tagBuilders = new ArrayList<CelTag.Builder>();
-    for (CelTagsProvider provider : beanFactory.getBeansOfType(CelTagsProvider.class).values()) {
-      provider.get().forEach(tagBuilders::add);
-    }
-    Multimap<String, CelTag> tags = topologicalBuild(tagBuilders);
+    Multimap<String, CelTag> tags = topologicalBuild(beanFactory
+        .getBeansOfType(CelTagsProvider.class)
+        .values().stream()
+        .map(rethrow(CelTagsProvider::get))
+        .flatMap(Collection::stream)
+        .sorted()
+        .collect(toList()));
     LOGGER.info("collectAllTags - {}", tags);
     return tags;
   }
@@ -103,7 +108,7 @@ public class DefaultCelTagService
    * build tag graph in topological order with some form of Kahn's algorithm, assuming directed
    * acyclic graph
    */
-  private Multimap<String, CelTag> topologicalBuild(List<CelTag.Builder> tagBuilders) {
+  private Multimap<String, CelTag> topologicalBuild(Collection<CelTag.Builder> tagBuilders) {
     var tags = ImmutableMultimap.<String, CelTag>builder();
     while (!tagBuilders.isEmpty()) {
       List<CelTag> builtTags = buildTagsWithAllDependencies(tagBuilders.iterator());
