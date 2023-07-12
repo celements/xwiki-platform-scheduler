@@ -6,14 +6,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import com.celements.common.lambda.Try;
@@ -26,11 +30,13 @@ import com.celements.tag.providers.CelTagsProvider.CelTagsProvisionException;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.util.AbstractXWikiRunnable;
 
 import one.util.streamex.StreamEx;
 
 @Service
-public class DefaultCelTagService implements CelTagService {
+public class DefaultCelTagService
+    implements CelTagService, ApplicationListener<DefaultCelTagService.RefreshEvent> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCelTagService.class);
 
@@ -70,6 +76,17 @@ public class DefaultCelTagService implements CelTagService {
       LOGGER.error("getTagsByType - failed", exc);
     }
     return ImmutableMultimap.of();
+  }
+
+  @PostConstruct
+  private void refresh() {
+    CompletableFuture.runAsync(new AbstractXWikiRunnable() {
+
+      @Override
+      protected void runInternal() {
+        cache.set(Try.to(DefaultCelTagService.this::collectAllTags));
+      }
+    });
   }
 
   private Multimap<String, CelTag> collectAllTags() throws CelTagsProvisionException {
@@ -117,10 +134,6 @@ public class DefaultCelTagService implements CelTagService {
     return built;
   }
 
-  public void refresh() {
-    cache.set(null);
-  }
-
   @Override
   public Stream<CelTag> getDocTags(XWikiDocument doc) {
     return XWikiObjectFetcher.on(doc)
@@ -153,6 +166,22 @@ public class DefaultCelTagService implements CelTagService {
               .toList());
     }
     return changed;
+  }
+
+  @Override
+  public void onApplicationEvent(RefreshEvent event) {
+    LOGGER.trace("onApplicationEvent - {}", event);
+    refresh();
+  }
+
+  public static class RefreshEvent extends ApplicationEvent {
+
+    private static final long serialVersionUID = 1L;
+
+    public RefreshEvent(Object source) {
+      super(source);
+    }
+
   }
 
 }
