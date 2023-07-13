@@ -13,7 +13,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -81,7 +80,6 @@ public class DefaultCelTagService
     return ImmutableMultimap.of();
   }
 
-  @PostConstruct
   private void refresh() {
     CompletableFuture.runAsync(new AbstractXWikiRunnable() {
 
