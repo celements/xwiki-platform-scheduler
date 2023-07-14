@@ -78,7 +78,11 @@ public final class CelTag {
   }
 
   public @NotNull Stream<CelTag> getParents() {
-    return StreamEx.iterate(parent, p -> p.isPresent(), p -> p.get().parent)
+    return getThisAndParents().skip(1);
+  }
+
+  public @NotNull Stream<CelTag> getThisAndParents() {
+    return StreamEx.iterate(Optional.of(this), t -> t.isPresent(), t -> t.get().parent)
         .map(Optional::get);
   }
 

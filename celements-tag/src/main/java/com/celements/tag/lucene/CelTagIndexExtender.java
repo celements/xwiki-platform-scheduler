@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 import com.celements.model.access.IModelAccessFacade;
+import com.celements.tag.CelTag;
 import com.celements.tag.CelTagService;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.AbstractIndexData;
@@ -45,6 +46,8 @@ public class CelTagIndexExtender implements ILuceneIndexExtender {
     DocumentData docData = (DocumentData) data;
     XWikiDocument doc = modelAccess.getOrCreateDocument(docData.getDocumentReference());
     return tagService.getDocTags(doc)
+        .flatMap(CelTag::getThisAndParents)
+        .distinct()
         .map(tag -> new IndexExtensionField.Builder(INDEX_FIELD + "_" + tag.getType())
             .extensionType(ExtensionType.ADD)
             .value(tag.getName())
