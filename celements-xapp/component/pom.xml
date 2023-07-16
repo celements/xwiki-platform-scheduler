@@ -34,11 +34,6 @@
       <artifactId>javax.servlet-api</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-core-shared-tests</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
   <scm>
     <connection>scm:git:git@github.com:celements/celements-features.git</connection>

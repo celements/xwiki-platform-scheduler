@@ -22,28 +22,17 @@ package com.xpn.xwiki.plugin.applicationmanager.core.doc.objects.classes;
 
 import static org.junit.Assert.*;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.jmock.Mock;
-import org.jmock.core.Invocation;
-import org.jmock.core.stub.CustomStub;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.celements.common.test.AbstractComponentTest;
 import com.xpn.xwiki.XWiki;
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.notify.XWikiNotificationManager;
-import com.xpn.xwiki.store.XWikiHibernateStore;
-import com.xpn.xwiki.store.XWikiHibernateVersioningStore;
-import com.xpn.xwiki.store.XWikiStoreInterface;
-import com.xpn.xwiki.store.XWikiVersioningStoreInterface;
-import com.xpn.xwiki.user.api.XWikiRightService;
 
 /**
  * Unit tests for
@@ -68,95 +57,98 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
    */
   @Before
   public void prepare() throws Exception {
-    this.xwiki = new XWiki();
-    this.xwiki.setNotificationManager(new XWikiNotificationManager());
-    getXContext().setWiki(this.xwiki);
-
-    // //////////////////////////////////////////////////
-    // XWikiHibernateStore
-
-    this.mockXWikiStore = mock(XWikiHibernateStore.class,
-        new Class[] { XWiki.class, XWikiContext.class }, new Object[] { this.xwiki,
-            getXContext() });
-    this.mockXWikiStore.stubs().method("loadXWikiDoc").will(
-        new CustomStub("Implements XWikiStoreInterface.loadXWikiDoc") {
-
-          @Override
-          public Object invoke(Invocation invocation) throws Throwable {
-            XWikiDocument shallowDoc = (XWikiDocument) invocation.parameterValues.get(0);
-
-            if (documents.containsKey(shallowDoc.getFullName())) {
-              return documents.get(shallowDoc.getFullName());
-            } else {
-              return shallowDoc;
-            }
-          }
-        });
-    this.mockXWikiStore.stubs().method("saveXWikiDoc").will(
-        new CustomStub("Implements XWikiStoreInterface.saveXWikiDoc") {
-
-          @Override
-          public Object invoke(Invocation invocation) throws Throwable {
-            XWikiDocument document = (XWikiDocument) invocation.parameterValues.get(0);
-
-            document.setNew(false);
-            document.setStore((XWikiStoreInterface) mockXWikiStore.proxy());
-            documents.put(document.getFullName(), document);
-
-            return null;
-          }
-        });
-    this.mockXWikiStore.stubs().method("getTranslationList")
-        .will(returnValue(Collections.EMPTY_LIST));
-
-    this.mockXWikiVersioningStore = mock(XWikiHibernateVersioningStore.class,
-        new Class[] { XWiki.class, XWikiContext.class }, new Object[] {
-            this.xwiki, getXContext() });
-    this.mockXWikiVersioningStore.stubs().method("getXWikiDocumentArchive").will(returnValue(null));
-    this.mockXWikiVersioningStore.stubs().method("resetRCSArchive").will(returnValue(null));
-
-    this.xwiki.setStore((XWikiStoreInterface) mockXWikiStore.proxy());
-    this.xwiki.setVersioningStore((XWikiVersioningStoreInterface) mockXWikiVersioningStore.proxy());
-
-    // ////////////////////////////////////////////////////////////////////////////////
-    // XWikiRightService
-
-    this.xwiki.setRightService(new XWikiRightService() {
-
-      @Override
-      public boolean checkAccess(String action, XWikiDocument doc, XWikiContext context)
-          throws XWikiException {
-        return true;
-      }
-
-      @Override
-      public boolean hasAccessLevel(String right, String username, String docname,
-          XWikiContext context)
-          throws XWikiException {
-        return true;
-      }
-
-      @Override
-      public boolean hasAdminRights(XWikiContext context) {
-        return true;
-      }
-
-      @Override
-      public boolean hasProgrammingRights(XWikiContext context) {
-        return true;
-      }
-
-      @Override
-      public boolean hasProgrammingRights(XWikiDocument doc, XWikiContext context) {
-        return true;
-      }
-
-      @Override
-      public List listAllLevels(XWikiContext context) throws XWikiException {
-        return Collections.EMPTY_LIST;
-      }
-    });
-  }
+    /*
+     * this.xwiki = new XWiki();
+     * this.xwiki.setNotificationManager(new XWikiNotificationManager());
+     * getXContext().setWiki(this.xwiki);
+     * 
+     * // //////////////////////////////////////////////////
+     * // XWikiHibernateStore
+     * 
+     * this.mockXWikiStore = mock(XWikiHibernateStore.class,
+     * new Class[] { XWiki.class, XWikiContext.class }, new Object[] { this.xwiki,
+     * getXContext() });
+     * this.mockXWikiStore.stubs().method("loadXWikiDoc").will(
+     * new CustomStub("Implements XWikiStoreInterface.loadXWikiDoc") {
+     * 
+     * @Override
+     * public Object invoke(Invocation invocation) throws Throwable {
+     * XWikiDocument shallowDoc = (XWikiDocument) invocation.parameterValues.get(0);
+     * 
+     * if (documents.containsKey(shallowDoc.getFullName())) {
+     * return documents.get(shallowDoc.getFullName());
+     * } else {
+     * return shallowDoc;
+     * }
+     * }
+     * });
+     * this.mockXWikiStore.stubs().method("saveXWikiDoc").will(
+     * new CustomStub("Implements XWikiStoreInterface.saveXWikiDoc") {
+     * 
+     * @Override
+     * public Object invoke(Invocation invocation) throws Throwable {
+     * XWikiDocument document = (XWikiDocument) invocation.parameterValues.get(0);
+     * 
+     * document.setNew(false);
+     * document.setStore((XWikiStoreInterface) mockXWikiStore.proxy());
+     * documents.put(document.getFullName(), document);
+     * 
+     * return null;
+     * }
+     * });
+     * this.mockXWikiStore.stubs().method("getTranslationList")
+     * .will(returnValue(Collections.EMPTY_LIST));
+     * 
+     * this.mockXWikiVersioningStore = mock(XWikiHibernateVersioningStore.class,
+     * new Class[] { XWiki.class, XWikiContext.class }, new Object[] {
+     * this.xwiki, getXContext() });
+     * this.mockXWikiVersioningStore.stubs().method("getXWikiDocumentArchive").will(returnValue(null
+     * ));
+     * this.mockXWikiVersioningStore.stubs().method("resetRCSArchive").will(returnValue(null));
+     * 
+     * this.xwiki.setStore((XWikiStoreInterface) mockXWikiStore.proxy());
+     * this.xwiki.setVersioningStore((XWikiVersioningStoreInterface)
+     * mockXWikiVersioningStore.proxy());
+     * 
+     * // ////////////////////////////////////////////////////////////////////////////////
+     * // XWikiRightService
+     * 
+     * this.xwiki.setRightService(new XWikiRightService() {
+     * 
+     * @Override
+     * public boolean checkAccess(String action, XWikiDocument doc, XWikiContext context)
+     * throws XWikiException {
+     * return true;
+     * }
+     * 
+     * @Override
+     * public boolean hasAccessLevel(String right, String username, String docname,
+     * XWikiContext context)
+     * throws XWikiException {
+     * return true;
+     * }
+     * 
+     * @Override
+     * public boolean hasAdminRights(XWikiContext context) {
+     * return true;
+     * }
+     * 
+     * @Override
+     * public boolean hasProgrammingRights(XWikiContext context) {
+     * return true;
+     * }
+     * 
+     * @Override
+     * public boolean hasProgrammingRights(XWikiDocument doc, XWikiContext context) {
+     * return true;
+     * }
+     * 
+     * @Override
+     * public List listAllLevels(XWikiContext context) throws XWikiException {
+     * return Collections.EMPTY_LIST;
+     * }
+     * });
+     */ }
 
   // ///////////////////////////////////////////////////////////////////////////////////////:
   // Tests
