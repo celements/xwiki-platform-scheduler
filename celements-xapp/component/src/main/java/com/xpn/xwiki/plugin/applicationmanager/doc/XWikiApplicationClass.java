@@ -23,9 +23,15 @@ package com.xpn.xwiki.plugin.applicationmanager.doc;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import com.celements.model.access.IModelAccessFacade;
+import com.celements.model.context.ModelContext;
+import com.celements.model.util.ModelUtils;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
@@ -36,6 +42,7 @@ import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.plugin.applicationmanager.ApplicationManagerException;
 import com.xpn.xwiki.plugin.applicationmanager.ApplicationManagerMessageTool;
 import com.xpn.xwiki.plugin.applicationmanager.core.doc.objects.classes.AbstractXClassManager;
+import com.xpn.xwiki.web.Utils;
 
 /**
  * {@link com.xpn.xwiki.plugin.applicationmanager.core.doc.objects.classes.XClassManager}
@@ -46,6 +53,7 @@ import com.xpn.xwiki.plugin.applicationmanager.core.doc.objects.classes.Abstract
  * @see com.xpn.xwiki.plugin.applicationmanager.core.doc.objects.classes.XClassManager
  * @see com.xpn.xwiki.plugin.applicationmanager.core.doc.objects.classes.AbstractXClassManager
  */
+@Component
 public class XWikiApplicationClass extends AbstractXClassManager<XWikiApplication> {
 
   private static final Logger logger = LoggerFactory.getLogger(XWikiApplicationClass.class);
@@ -237,17 +245,14 @@ public class XWikiApplicationClass extends AbstractXClassManager<XWikiApplicatio
   private static final String DEFAULT_APPLICATION_VERSION = "1.0";
 
   /**
-   * Unique instance of XWikiApplicationClass.
-   */
-  private static XWikiApplicationClass instance;
-
-  /**
    * Construct the overload of AbstractXClassManager with spaceprefix={@link #CLASS_SPACE_PREFIX}
    * and prefix=
    * {@link #CLASS_PREFIX}.
    */
-  protected XWikiApplicationClass() {
-    super(CLASS_SPACE_PREFIX, CLASS_PREFIX);
+  @Inject
+  protected XWikiApplicationClass(IModelAccessFacade modelAccess, ModelContext mContext,
+      ModelUtils modelUtils) {
+    super(CLASS_SPACE_PREFIX, CLASS_PREFIX, modelAccess, mContext, modelUtils);
   }
 
   /**
@@ -265,17 +270,12 @@ public class XWikiApplicationClass extends AbstractXClassManager<XWikiApplicatio
    */
   public static XWikiApplicationClass getInstance(XWikiContext context, boolean check)
       throws XWikiException {
-    synchronized (XWikiApplicationClass.class) {
-      if (instance == null) {
-        instance = new XWikiApplicationClass();
-      }
-    }
-
+    XWikiApplicationClass xappService = Utils.getComponent(XWikiApplicationClass.class);
     if (check) {
-      instance.check(context);
+      xappService.check(context);
     }
 
-    return instance;
+    return xappService;
   }
 
   /**

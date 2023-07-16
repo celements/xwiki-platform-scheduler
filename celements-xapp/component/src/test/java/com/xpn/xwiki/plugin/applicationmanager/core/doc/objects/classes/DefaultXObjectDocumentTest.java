@@ -30,9 +30,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.celements.common.test.AbstractComponentTest;
+import com.celements.model.access.IModelAccessFacade;
+import com.celements.model.context.ModelContext;
+import com.celements.model.util.ModelUtils;
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
+import com.xpn.xwiki.web.Utils;
 
 /**
  * Unit tests for
@@ -50,6 +54,10 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
   private Map<String, XWikiDocument> documents = new HashMap<>();
 
+  private IModelAccessFacade modelAccessMock;
+  private ModelContext mContext;
+  private ModelUtils modelUtils;
+
   /**
    * {@inheritDoc}
    *
@@ -57,24 +65,27 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
    */
   @Before
   public void prepare() throws Exception {
+    mContext = Utils.getComponent(ModelContext.class);
+    modelUtils = Utils.getComponent(ModelUtils.class);
+    modelAccessMock = createDefaultMock(IModelAccessFacade.class);
     /*
      * this.xwiki = new XWiki();
      * this.xwiki.setNotificationManager(new XWikiNotificationManager());
      * getXContext().setWiki(this.xwiki);
-     * 
+     *
      * // //////////////////////////////////////////////////
      * // XWikiHibernateStore
-     * 
+     *
      * this.mockXWikiStore = mock(XWikiHibernateStore.class,
      * new Class[] { XWiki.class, XWikiContext.class }, new Object[] { this.xwiki,
      * getXContext() });
      * this.mockXWikiStore.stubs().method("loadXWikiDoc").will(
      * new CustomStub("Implements XWikiStoreInterface.loadXWikiDoc") {
-     * 
+     *
      * @Override
      * public Object invoke(Invocation invocation) throws Throwable {
      * XWikiDocument shallowDoc = (XWikiDocument) invocation.parameterValues.get(0);
-     * 
+     *
      * if (documents.containsKey(shallowDoc.getFullName())) {
      * return documents.get(shallowDoc.getFullName());
      * } else {
@@ -84,65 +95,65 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
      * });
      * this.mockXWikiStore.stubs().method("saveXWikiDoc").will(
      * new CustomStub("Implements XWikiStoreInterface.saveXWikiDoc") {
-     * 
+     *
      * @Override
      * public Object invoke(Invocation invocation) throws Throwable {
      * XWikiDocument document = (XWikiDocument) invocation.parameterValues.get(0);
-     * 
+     *
      * document.setNew(false);
      * document.setStore((XWikiStoreInterface) mockXWikiStore.proxy());
      * documents.put(document.getFullName(), document);
-     * 
+     *
      * return null;
      * }
      * });
      * this.mockXWikiStore.stubs().method("getTranslationList")
      * .will(returnValue(Collections.EMPTY_LIST));
-     * 
+     *
      * this.mockXWikiVersioningStore = mock(XWikiHibernateVersioningStore.class,
      * new Class[] { XWiki.class, XWikiContext.class }, new Object[] {
      * this.xwiki, getXContext() });
      * this.mockXWikiVersioningStore.stubs().method("getXWikiDocumentArchive").will(returnValue(null
      * ));
      * this.mockXWikiVersioningStore.stubs().method("resetRCSArchive").will(returnValue(null));
-     * 
+     *
      * this.xwiki.setStore((XWikiStoreInterface) mockXWikiStore.proxy());
      * this.xwiki.setVersioningStore((XWikiVersioningStoreInterface)
      * mockXWikiVersioningStore.proxy());
-     * 
+     *
      * // ////////////////////////////////////////////////////////////////////////////////
      * // XWikiRightService
-     * 
+     *
      * this.xwiki.setRightService(new XWikiRightService() {
-     * 
+     *
      * @Override
      * public boolean checkAccess(String action, XWikiDocument doc, XWikiContext context)
      * throws XWikiException {
      * return true;
      * }
-     * 
+     *
      * @Override
      * public boolean hasAccessLevel(String right, String username, String docname,
      * XWikiContext context)
      * throws XWikiException {
      * return true;
      * }
-     * 
+     *
      * @Override
      * public boolean hasAdminRights(XWikiContext context) {
      * return true;
      * }
-     * 
+     *
      * @Override
      * public boolean hasProgrammingRights(XWikiContext context) {
      * return true;
      * }
-     * 
+     *
      * @Override
      * public boolean hasProgrammingRights(XWikiDocument doc, XWikiContext context) {
      * return true;
      * }
-     * 
+     *
      * @Override
      * public List listAllLevels(XWikiContext context) throws XWikiException {
      * return Collections.EMPTY_LIST;
@@ -165,7 +176,8 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
     // ///
 
-    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getXContext());
+    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(modelAccessMock,
+        mContext, modelUtils);
     DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass.newXObjectDocument(getXContext());
 
     assertNotNull(sdoc);
@@ -183,7 +195,8 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
     // ///
 
-    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getXContext());
+    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(modelAccessMock,
+        mContext, modelUtils);
     DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass
         .newXObjectDocument(DEFAULT_DOCFULLNAME, 0, getXContext());
 
@@ -205,7 +218,8 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
     XWikiDocument doc = xwiki.getDocument(DEFAULT_DOCFULLNAME, getXContext());
     xwiki.saveDocument(doc, getXContext());
 
-    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getXContext());
+    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(modelAccessMock,
+        mContext, modelUtils);
     DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass
         .newXObjectDocument(DEFAULT_DOCFULLNAME, 0, getXContext());
 
@@ -220,7 +234,8 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
   @Test
   public void testMergeObject() throws XWikiException {
-    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(getXContext());
+    XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(modelAccessMock,
+        mContext, modelUtils);
     DefaultXObjectDocument sdoc1 = (DefaultXObjectDocument) sclass
         .newXObjectDocument(getXContext());
 
