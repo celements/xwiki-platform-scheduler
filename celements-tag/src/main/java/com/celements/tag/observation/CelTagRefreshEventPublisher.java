@@ -28,15 +28,15 @@ import com.celements.tag.CelTagService;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 @Component
-public class CelTagReloadListener
+public class CelTagRefreshEventPublisher
     implements ApplicationListener<CelementsInitialisedEvent>, EventListener, Ordered {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CelTagReloadListener.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CelTagRefreshEventPublisher.class);
 
   private final ApplicationEventPublisher eventPublisher;
 
   @Inject
-  public CelTagReloadListener(ApplicationEventPublisher eventPublisher) {
+  public CelTagRefreshEventPublisher(ApplicationEventPublisher eventPublisher) {
     this.eventPublisher = eventPublisher;
   }
 
