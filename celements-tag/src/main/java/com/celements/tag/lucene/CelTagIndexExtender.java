@@ -46,7 +46,7 @@ public class CelTagIndexExtender implements ILuceneIndexExtender {
     DocumentData docData = (DocumentData) data;
     XWikiDocument doc = modelAccess.getOrCreateDocument(docData.getDocumentReference());
     return tagService.getDocTags(doc)
-        .flatMap(CelTag::getThisAndParents)
+        .flatMap(CelTag::getThisAndAncestors)
         .distinct()
         .map(tag -> new IndexExtensionField.Builder(INDEX_FIELD + "_" + tag.getType())
             .extensionType(ExtensionType.ADD)

@@ -100,11 +100,11 @@ public final class CelTag {
     return parent;
   }
 
-  public @NotNull Stream<CelTag> getParents() {
-    return getThisAndParents().skip(1);
+  public @NotNull Stream<CelTag> getAncestors() {
+    return getThisAndAncestors().skip(1);
   }
 
-  public @NotNull Stream<CelTag> getThisAndParents() {
+  public @NotNull Stream<CelTag> getThisAndAncestors() {
     return StreamEx.iterate(Optional.of(this), t -> t.isPresent(), t -> t.get().parent)
         .map(Optional::get);
   }
@@ -113,9 +113,9 @@ public final class CelTag {
     return children.get().stream();
   }
 
-  public @NotNull Stream<CelTag> getAllChildren() {
+  public @NotNull Stream<CelTag> getDescendents() {
     return getChildren().flatMap(child -> StreamEx.of(child)
-        .append(child.getAllChildren()));
+        .append(child.getDescendents()));
   }
 
   public @NotNull Stream<CelTag> getDependencies() {
