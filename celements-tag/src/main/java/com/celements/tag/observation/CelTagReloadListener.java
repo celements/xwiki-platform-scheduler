@@ -24,7 +24,7 @@ import com.celements.init.CelementsInitialisedEvent;
 import com.celements.model.object.xwiki.XWikiObjectFetcher;
 import com.celements.pagetype.classes.PageTypeClass;
 import com.celements.tag.CelTagPageType;
-import com.celements.tag.DefaultCelTagService;
+import com.celements.tag.CelTagService;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 @Component
@@ -57,7 +57,7 @@ public class CelTagReloadListener
 
   @Override
   public void onApplicationEvent(CelementsInitialisedEvent event) {
-    eventPublisher.publishEvent(new DefaultCelTagService.RefreshEvent(event));
+    eventPublisher.publishEvent(new CelTagService.RefreshEvent(event));
   }
 
   @Override
@@ -67,7 +67,7 @@ public class CelTagReloadListener
         && XWikiObjectFetcher.on((XWikiDocument) source)
             .filter(PageTypeClass.FIELD_PAGE_TYPE, CelTagPageType.NAME)
             .exists())) {
-      eventPublisher.publishEvent(new DefaultCelTagService.RefreshEvent(event));
+      eventPublisher.publishEvent(new CelTagService.RefreshEvent(event));
     }
   }
 
