@@ -3,7 +3,6 @@ package com.celements.tag;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
 
@@ -15,10 +14,6 @@ import com.google.common.collect.Sets;
 public class CelTagPageType extends AbstractJavaPageType {
 
   public static final String NAME = "CelTag";
-
-  static final String VIEW_TEMPLATE_NAME = "CelTagView";
-
-  static final String EDIT_TEMPLATE_NAME = "CelTagEdit";
 
   private final IPageTypeCategoryRole pageTypeCategory;
 
@@ -58,21 +53,9 @@ public class CelTagPageType extends AbstractJavaPageType {
     return true;
   }
 
-  String getViewTemplateName() {
-    return VIEW_TEMPLATE_NAME;
-  }
-
-  String getEditTemplateName() {
-    return EDIT_TEMPLATE_NAME;
-  }
-
   @Override
-  public @NotNull String getRenderTemplateForRenderMode(String renderMode) {
-    if ("edit".equals(renderMode)) {
-      return getEditTemplateName();
-    } else {
-      return getViewTemplateName();
-    }
+  public String getRenderTemplateForRenderMode(String renderMode) {
+    return "";
   }
 
   @Override
