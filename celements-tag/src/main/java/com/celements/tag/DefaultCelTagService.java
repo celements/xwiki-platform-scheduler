@@ -91,34 +91,33 @@ public class DefaultCelTagService
   }
 
   private Multimap<String, CelTag> collectAllTags() throws CelTagsProvisionException {
-    Multimap<String, CelTag> tags = topologicalBuild(beanFactory
+    List<CelTag.Builder> tagBuilders = beanFactory
         .getBeansOfType(CelTagsProvider.class)
         .values().stream()
         .map(rethrow(CelTagsProvider::get))
         .flatMap(Collection::stream)
-        .sorted()
-        .collect(toList()));
-    LOGGER.info("collectAllTags - {}", tags);
-    return tags;
+        .collect(toList());
+    LOGGER.info("collectAllTags - {}", tagBuilders);
+    return topologicalBuild(tagBuilders);
   }
 
   /**
    * build tag graph in topological order with some form of Kahn's algorithm, assuming directed
    * acyclic graph
    */
-  private Multimap<String, CelTag> topologicalBuild(Collection<CelTag.Builder> tagBuilders) {
-    var tags = ImmutableMultimap.<String, CelTag>builder();
-    while (!tagBuilders.isEmpty()) {
-      List<CelTag> builtTags = buildTagsWithAllDependencies(tagBuilders.iterator());
+  private Multimap<String, CelTag> topologicalBuild(List<CelTag.Builder> toBuild) {
+    var mapBuilder = ImmutableMultimap.<String, CelTag>builder();
+    while (!toBuild.isEmpty()) {
+      List<CelTag> builtTags = buildTagsWithAllDependencies(toBuild.iterator());
       for (CelTag tag : builtTags) {
-        tags.put(tag.getType(), tag);
-        tagBuilders.stream().forEach(b -> b.addDependency(tag));
+        mapBuilder.put(tag.getType(), tag);
+        toBuild.stream().forEach(b -> b.addDependency(tag));
       }
       if (builtTags.isEmpty()) {
-        throw new IllegalStateException("tags don't form a directed acyclic graph: " + tagBuilders);
+        throw new IllegalStateException("tags don't form a directed acyclic graph: " + toBuild);
       }
     }
-    return tags.build();
+    return mapBuilder.build();
   }
 
   private List<CelTag> buildTagsWithAllDependencies(Iterator<CelTag.Builder> tagBuilderIter) {

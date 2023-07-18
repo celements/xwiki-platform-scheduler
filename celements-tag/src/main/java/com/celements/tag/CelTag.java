@@ -1,8 +1,10 @@
 package com.celements.tag;
 
+import static com.celements.spring.context.SpringContextProvider.*;
 import static com.google.common.base.Preconditions.*;
 import static java.util.stream.Collectors.*;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -22,15 +24,16 @@ import javax.validation.constraints.NotNull;
 import org.xwiki.model.reference.EntityReference;
 
 import com.google.common.base.Strings;
-import com.xpn.xwiki.web.Utils;
+import com.google.common.base.Suppliers;
 
 import one.util.streamex.StreamEx;
 
 @Immutable
 public final class CelTag {
 
-  private static final Supplier<CelTagService> tagService = () -> Utils
-      .getComponent(CelTagService.class);
+  public static final Comparator<CelTag> CMP_ORDER = Comparator.comparing(CelTag::getOrder);
+  public static final Function<String, Comparator<CelTag>> CMP_NAME = lang -> Comparator
+      .comparing(tag -> tag.getPrettyName(lang).orElseGet(tag::getName));
 
   public static Builder builder() {
     return new Builder();
@@ -42,6 +45,13 @@ public final class CelTag {
   private final @NotNull Optional<CelTag> parent;
   private final @NotNull List<CelTag> dependencies;
   private final @NotNull Function<String, Optional<String>> prettyNameForLangGetter;
+  private final int order;
+  private final Supplier<List<CelTag>> children = Suppliers.memoize(() -> getBeanFactory()
+      .getBean(CelTagService.class)
+      .getTagsByType()
+      .get(getType()).stream()
+      .filter(tag -> tag.getParent().filter(this::equals).isPresent())
+      .collect(toUnmodifiableList()));
 
   private CelTag(Builder builder) {
     checkArgument(builder.hasAllDependencies());
@@ -57,6 +67,7 @@ public final class CelTag {
         .collect(toUnmodifiableList());
     this.prettyNameForLangGetter = Optional.ofNullable(builder.prettyNameForLangGetter)
         .orElse(lang -> Optional.empty());
+    this.order = builder.order;
   }
 
   public @NotEmpty String getType() {
@@ -77,6 +88,18 @@ public final class CelTag {
         .orElse(true); // undefined scope is always in scope
   }
 
+  public boolean isRoot() {
+    return parent.isEmpty();
+  }
+
+  public boolean isLeaf() {
+    return children.get().isEmpty();
+  }
+
+  public @NotNull Optional<CelTag> getParent() {
+    return parent;
+  }
+
   public @NotNull Stream<CelTag> getParents() {
     return getThisAndParents().skip(1);
   }
@@ -87,9 +110,7 @@ public final class CelTag {
   }
 
   public @NotNull Stream<CelTag> getChildren() {
-    return tagService.get().getTagsByType()
-        .get(getType()).stream()
-        .filter(tag -> tag.parent.filter(this::equals).isPresent());
+    return children.get().stream();
   }
 
   public @NotNull Stream<CelTag> getAllChildren() {
@@ -103,6 +124,10 @@ public final class CelTag {
 
   public @NotNull Optional<String> getPrettyName(String lang) {
     return prettyNameForLangGetter.apply(lang);
+  }
+
+  public int getOrder() {
+    return order;
   }
 
   @Override
@@ -134,7 +159,7 @@ public final class CelTag {
         + "]";
   }
 
-  public static class Builder implements Comparable<Builder> {
+  public static class Builder {
 
     private String type = "";
     private String name = "";
@@ -143,7 +168,7 @@ public final class CelTag {
     private final Set<String> dependencyNames = new LinkedHashSet<>();
     private final Map<String, CelTag> dependencies = new LinkedHashMap<>();
     private Function<String, Optional<String>> prettyNameForLangGetter;
-    private int order;
+    private int order = 0;
     private Object source; // only for logging in case of error
 
     public Builder type(String type) {
@@ -200,11 +225,6 @@ public final class CelTag {
 
     public CelTag build() {
       return new CelTag(this);
-    }
-
-    @Override
-    public int compareTo(Builder other) {
-      return Integer.compare(this.order, other.order);
     }
 
     @Override
