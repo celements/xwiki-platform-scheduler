@@ -33,11 +33,11 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.rendering.syntax.Syntax;
 
 import com.celements.model.access.IModelAccessFacade;
+import com.celements.model.access.exception.DocumentSaveException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.reference.RefBuilder;
 import com.celements.model.util.ModelUtils;
 import com.celements.model.util.ReferenceSerializationMode;
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.api.Document;
@@ -45,7 +45,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.objects.classes.BooleanClass;
-import com.xpn.xwiki.user.api.XWikiRightService;
 
 /**
  * Abstract implementation of XClassManager.
@@ -148,6 +147,7 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
    * @see #getClassSheetFullName()
    */
   private final String classSheetFullName;
+  private DocumentReference classSheetDocRef;
 
   /**
    * Space of class template document.
@@ -262,6 +262,8 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
     this.classSheetName = classPrefix + XWIKI_CLASSSHEET_SUFFIX;
     this.classSheetFullName = classSheetSpace + XObjectDocument.SPACE_DOC_SEPARATOR
         + classSheetName;
+    this.classSheetDocRef = RefBuilder.from(mContext.getWikiRef()).space(classSheetSpace)
+        .doc(classSheetName).build(DocumentReference.class);
 
     this.classTemplateSpace = dispatch ? classSpacePrefix + XWIKI_CLASSTEMPLATE_SPACE_SUFFIX
         : classSpacePrefix;
@@ -324,6 +326,7 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
    *
    * @see XClassManager#getClassFullName()
    */
+  @Deprecated
   @Override
   public String getClassFullName() {
     return this.classFullName;
@@ -359,6 +362,7 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
    *
    * @see XClassManager#getClassTemplateFullName()
    */
+  @Deprecated
   @Override
   public String getClassTemplateFullName() {
     return modelUtils.serializeRef(this.classTemplateDocRef, ReferenceSerializationMode.LOCAL);
@@ -394,9 +398,15 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
    *
    * @see XClassManager#getClassSheetFullName()
    */
+  @Deprecated
   @Override
   public String getClassSheetFullName() {
     return this.classSheetFullName;
+  }
+
+  @Override
+  public DocumentReference getClassSheetDocRef() {
+    return this.classSheetDocRef;
   }
 
   /**
@@ -442,27 +452,20 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
     this.checkingClass = true;
 
     try {
-      XWikiDocument doc;
-      XWiki xwiki = context.getWiki();
-      boolean needsUpdate = false;
-
-      try {
-        doc = modelAccess.getDocument(getClassDocRef());
-      } catch (Exception e) {
-        doc = new XWikiDocument(getClassDocRef());
-        doc.setParent(DEFAULT_XWIKICLASS_PARENT);
-        doc.setCreator(XWikiRightService.SUPERADMIN_USER);
-        doc.setAuthor(doc.getCreator());
-        needsUpdate = true;
-      }
+      XWikiDocument doc = modelAccess.getOrCreateDocument(getClassDocRef());
+      doc.setParent(DEFAULT_XWIKICLASS_PARENT);
+      boolean needsUpdate = doc.isNew();
 
       this.baseClass = doc.getxWikiClass();
 
       needsUpdate |= updateBaseClass(this.baseClass);
 
       if (doc.isNew() || needsUpdate) {
-        xwiki.saveDocument(doc, context);
+        modelAccess.saveDocument(doc);
       }
+    } catch (DocumentSaveException exp) {
+      throw new XWikiException(XWikiException.MODULE_XWIKI_PLUGINS,
+          XWikiException.ERROR_XWIKI_STORE_HIBERNATE_SAVING_DOC, exp.getMessage(), exp);
     } finally {
       this.checkingClass = false;
     }
@@ -526,19 +529,9 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
     this.checkingClassSheet = true;
 
     try {
-      XWikiDocument doc;
-      XWiki xwiki = context.getWiki();
-      boolean needsUpdate = false;
-
-      try {
-        doc = xwiki.getDocument(getClassSheetFullName(), context);
-      } catch (Exception e) {
-        doc = new XWikiDocument();
-        doc.setSpace(getClassSheetSpace());
-        doc.setName(getClassSheetName());
-        doc.setParent(getClassFullName());
-        needsUpdate = true;
-      }
+      XWikiDocument doc = modelAccess.getOrCreateDocument(getClassSheetDocRef());
+      doc.setParent(getClassFullName());
+      boolean needsUpdate = doc.isNew();
 
       if (doc.isNew()) {
         String documentContentPath = DOCUMENTCONTENT_SHEET_PREFIX + getClassSheetFullName()
@@ -549,8 +542,11 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
       }
 
       if (doc.isNew() || needsUpdate) {
-        xwiki.saveDocument(doc, context);
+        modelAccess.saveDocument(doc);
       }
+    } catch (DocumentSaveException exp) {
+      throw new XWikiException(XWikiException.MODULE_XWIKI_PLUGINS,
+          XWikiException.ERROR_XWIKI_STORE_HIBERNATE_SAVING_DOC, exp.getMessage(), exp);
     } finally {
       this.checkingClassSheet = false;
     }
@@ -582,16 +578,8 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
     this.checkingClassTemplate = true;
 
     try {
-      XWikiDocument doc;
-      XWiki xwiki = context.getWiki();
-      boolean needsUpdate = false;
-
-      try {
-        doc = modelAccess.getDocument(getClassTemplateDocRef());
-      } catch (Exception e) {
-        doc = new XWikiDocument(getClassTemplateDocRef());
-        needsUpdate = true;
-      }
+      XWikiDocument doc = modelAccess.getOrCreateDocument(getClassTemplateDocRef());
+      boolean needsUpdate = doc.isNew();
 
       if (doc.getObject(getClassFullName()) == null) {
         doc.createNewObject(getClassFullName(), context);
@@ -612,8 +600,11 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
       needsUpdate |= updateClassTemplateDocument(doc);
 
       if (doc.isNew() || needsUpdate) {
-        xwiki.saveDocument(doc, context);
+        modelAccess.saveDocument(doc);
       }
+    } catch (DocumentSaveException exp) {
+      throw new XWikiException(XWikiException.MODULE_XWIKI_PLUGINS,
+          XWikiException.ERROR_XWIKI_STORE_HIBERNATE_SAVING_DOC, exp.getMessage(), exp);
     } finally {
       this.checkingClassTemplate = false;
     }
@@ -755,7 +746,7 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
   public Document getClassDocument(XWikiContext context) throws XWikiException {
     check(context);
 
-    return context.getWiki().getDocument(getClassFullName(), context).newDocument(context);
+    return modelAccess.getOrCreateDocument(getClassDocRef()).newDocument(context);
   }
 
   /**

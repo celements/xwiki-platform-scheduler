@@ -195,8 +195,19 @@ public interface XClassManager<T extends XObjectDocument> {
    *         ClassSheetSpace.ClassSheetName.
    * @see #getClassSheetSpace()
    * @see #getClassSheetName()
+   * @deprecated
    */
+  @Deprecated
   String getClassSheetFullName();
+
+  /**
+   * @return the document reference of the document containing the class sheet. Usually class sheet
+   *         full name is :
+   *         ClassSheetSpace.ClassSheetName.
+   * @see #getClassSheetSpace()
+   * @see #getClassSheetName()
+   */
+  public DocumentReference getClassSheetDocRef();
 
   /**
    * @return indicate if the document names has to respect the default generated name style. This is

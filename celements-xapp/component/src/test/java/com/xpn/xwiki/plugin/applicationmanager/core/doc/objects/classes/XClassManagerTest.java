@@ -24,6 +24,7 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +35,12 @@ import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.rendering.syntax.Syntax;
 
 import com.celements.common.test.AbstractComponentTest;
 import com.celements.model.access.IModelAccessFacade;
+import com.celements.model.access.XWikiDocumentCreator;
+import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
 import com.xpn.xwiki.XWiki;
@@ -46,6 +50,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.PropertyInterface;
 import com.xpn.xwiki.objects.classes.BaseClass;
+import com.xpn.xwiki.user.api.XWikiRightService;
 import com.xpn.xwiki.web.Utils;
 
 /**
@@ -63,6 +68,7 @@ public class XClassManagerTest extends AbstractComponentTest {
   private IModelAccessFacade modelAccessMock;
   private ModelContext mContext;
   private ModelUtils modelUtils;
+  private XWikiDocumentCreator docCreator;
 
   /**
    * {@inheritDoc}
@@ -73,6 +79,7 @@ public class XClassManagerTest extends AbstractComponentTest {
   public void prepare() throws Exception {
     mContext = Utils.getComponent(ModelContext.class);
     modelUtils = Utils.getComponent(ModelUtils.class);
+    docCreator = Utils.getComponent(XWikiDocumentCreator.class);
     modelAccessMock = createDefaultMock(IModelAccessFacade.class);
     mockGetDocAndSaveDoc();
     xwiki = getMock(XWiki.class);
@@ -341,12 +348,10 @@ public class XClassManagerTest extends AbstractComponentTest {
   @Test
   public void testInitXClassManagerDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     XClassManager<XObjectDocument> xClassManager = DispatchXClassManager.getInstance(
         modelAccessMock, mContext, modelUtils);
-
+    verifyDefault();
     assertEquals(CLASS_SPACE_PREFIX, xClassManager.getClassSpacePrefix());
     assertEquals(CLASS_PREFIX, xClassManager.getClassPrefix());
 
@@ -365,12 +370,10 @@ public class XClassManagerTest extends AbstractComponentTest {
   @Test
   public void testInitXClassManagerNoDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     XClassManager<XObjectDocument> xClassManager = NoDispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils);
-
+    verifyDefault();
     assertEquals(CLASS_SPACE_PREFIX, xClassManager.getClassSpacePrefix());
     assertEquals(CLASS_PREFIX, xClassManager.getClassPrefix());
 
@@ -423,26 +426,24 @@ public class XClassManagerTest extends AbstractComponentTest {
   @Test
   public void testCkeckDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     ptestCkeck(
         NoDispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils));
+    verifyDefault();
   }
 
   @Test
   public void testCkeckNoDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     ptestCkeck(
         NoDispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils));
+    verifyDefault();
   }
 
   private void ptestGetClassDocument(XClassManager<XObjectDocument> xClassManager)
       throws XWikiException {
-    XWikiDocument doc = xwiki.getDocument(xClassManager.getClassFullName(), getXContext());
+    XWikiDocument doc = modelAccessMock.getOrCreateDocument(xClassManager.getClassDocRef());
     Document docFromClass = xClassManager.getClassDocument(getXContext());
 
     assertFalse(docFromClass.isNew());
@@ -452,28 +453,26 @@ public class XClassManagerTest extends AbstractComponentTest {
   @Test
   public void testGetClassDocumentDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     ptestGetClassDocument(
         DispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils));
+    verifyDefault();
   }
 
   @Test
   public void testGetClassDocumentNoDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     ptestGetClassDocument(
         NoDispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils));
+    verifyDefault();
   }
 
   private void ptestGetClassSheetDocument(XClassManager<XObjectDocument> xClassManager)
       throws XWikiException {
     XWikiDocument doc = xwiki.getDocument(xClassManager.getClassSheetFullName(), getXContext());
     Document docFromClass = xClassManager.getClassSheetDocument(getXContext());
-
+    verifyDefault();
     assertFalse(docFromClass.isNew());
     assertEquals(doc.getFullName(), docFromClass.getFullName());
   }
@@ -481,28 +480,26 @@ public class XClassManagerTest extends AbstractComponentTest {
   @Test
   public void testGetClassSheetDocumentDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     ptestGetClassSheetDocument(
         DispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils));
+    verifyDefault();
   }
 
   @Test
   public void testGetClassSheetDocumentNoDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     ptestGetClassSheetDocument(
         NoDispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils));
+    verifyDefault();
   }
 
   private void ptestGetClassTemplateDocument(XClassManager<XObjectDocument> xClassManager)
       throws XWikiException {
     XWikiDocument doc = xwiki.getDocument(xClassManager.getClassTemplateFullName(), getXContext());
     Document docFromClass = xClassManager.getClassTemplateDocument(getXContext());
-
+    verifyDefault();
     assertFalse(docFromClass.isNew());
     assertEquals(doc.getFullName(), docFromClass.getFullName());
   }
@@ -510,75 +507,86 @@ public class XClassManagerTest extends AbstractComponentTest {
   @Test
   public void testGetClassTemplateDocumentDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     ptestGetClassTemplateDocument(
         DispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils));
+    verifyDefault();
   }
 
   @Test
   public void testGetClassTemplateDocumentNoDispatch() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     ptestGetClassTemplateDocument(
         NoDispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils));
+    verifyDefault();
   }
 
   @Test
   public void testGetItemDefaultNameDisptach() throws XWikiException {
+    replayDefault();
     assertEquals(DEFAULT_ITEM_NAME,
         DispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils)
             .getItemDefaultName(
                 DISPATCH_DEFAULT_ITEMDOCUMENT_FULLNAME));
+    verifyDefault();
   }
 
   @Test
   public void testGetItemDefaultNameNoDispatch() throws XWikiException {
+    replayDefault();
     assertEquals(DEFAULT_ITEM_NAME,
         NoDispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils)
             .getItemDefaultName(
                 NODISPATCH_DEFAULT_ITEMDOCUMENT_FULLNAME));
+    verifyDefault();
   }
 
   @Test
   public void testGetItemDocumentDefaultNameDispatch() throws XWikiException {
+    replayDefault();
     assertEquals(DEFAULT_ITEMDOCUMENT_NAME,
         DispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils)
             .getItemDocumentDefaultName(DEFAULT_ITEM_NAME, getXContext()));
+    verifyDefault();
   }
 
   @Test
   public void testGetItemDocumentDefaultNameNoDispatch() throws XWikiException {
+    replayDefault();
     assertEquals(DEFAULT_ITEMDOCUMENT_NAME,
         NoDispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils)
             .getItemDocumentDefaultName(
                 DEFAULT_ITEM_NAME,
                 getXContext()));
+    verifyDefault();
   }
 
   @Test
   public void testGetItemDocumentDefaultFullNameDispatch() throws XWikiException {
+    replayDefault();
     assertEquals(DISPATCH_DEFAULT_ITEMDOCUMENT_FULLNAME,
         DispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils)
             .getItemDocumentDefaultFullName(
                 DEFAULT_ITEM_NAME,
                 getXContext()));
+    verifyDefault();
   }
 
   @Test
   public void testGetItemDocumentDefaultFullNameNoDispatch() throws XWikiException {
+    replayDefault();
     assertEquals(NODISPATCH_DEFAULT_ITEMDOCUMENT_FULLNAME,
         NoDispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils)
             .getItemDocumentDefaultFullName(
                 DEFAULT_ITEM_NAME,
                 getXContext()));
+    verifyDefault();
   }
 
   @Test
   public void testIsInstanceNoDispatch() throws XWikiException {
+    replayDefault();
     assertTrue(NoDispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils).isInstance(
             NoDispatchXClassManager
@@ -588,10 +596,12 @@ public class XClassManagerTest extends AbstractComponentTest {
     assertFalse(
         NoDispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils)
             .isInstance(new XWikiDocument()));
+    verifyDefault();
   }
 
   @Test
   public void testIsInstanceDispatch() throws XWikiException {
+    replayDefault();
     assertTrue(DispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils).isInstance(
             DispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils)
@@ -600,112 +610,142 @@ public class XClassManagerTest extends AbstractComponentTest {
     assertFalse(
         DispatchXClassManager.getInstance(modelAccessMock, mContext, modelUtils)
             .isInstance(new XWikiDocument()));
+    verifyDefault();
   }
 
   @Test
   public void testCreateWhereClause_null() throws XWikiException {
     List<Object> list = new ArrayList<>();
-
+    replayDefault();
     String where = DispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils)
         .createWhereClause(null, list);
-
     assertEquals(WHERECLAUSE_null, where);
+    verifyDefault();
   }
 
   @Test
   public void testCreateWhereClause_nothing() throws XWikiException {
     List<Object> list = new ArrayList<>();
     String[][] fieldDescriptors = new String[][] {};
-
+    replayDefault();
     String where = DispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils)
         .createWhereClause(fieldDescriptors, list);
-
     assertEquals(WHERECLAUSE_null, where);
+    verifyDefault();
   }
 
   @Test
   public void testCreateWhereClause_doc() throws XWikiException {
     List<Object> list = new ArrayList<>();
-
+    replayDefault();
     String where = DispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils)
         .createWhereClause(WHERECLAUSE_PARAM_doc, list);
-
     assertEquals(WHERECLAUSE_doc, where);
+    verifyDefault();
   }
 
   @Test
   public void testCreateWhereClause_doc_multi() throws XWikiException {
     List<Object> list = new ArrayList<>();
-
+    replayDefault();
     String where = DispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils)
         .createWhereClause(WHERECLAUSE_PARAM_doc_multi, list);
-
     assertEquals(WHERECLAUSE_doc_multi, where);
+    verifyDefault();
   }
 
   @Test
   public void testCreateWhereClause_obj() throws XWikiException {
     List<Object> list = new ArrayList<>();
-
+    replayDefault();
     String where = DispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils)
         .createWhereClause(WHERECLAUSE_PARAM_obj, list);
-
     assertEquals(WHERECLAUSE_obj, where);
+    verifyDefault();
   }
 
   @Test
   public void testCreateWhereClause_obj_multi() throws XWikiException {
     List<Object> list = new ArrayList<>();
-
+    replayDefault();
     String where = DispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils)
         .createWhereClause(WHERECLAUSE_PARAM_obj_multi, list);
-
     assertEquals(WHERECLAUSE_obj_multi, where);
+    verifyDefault();
   }
 
   @Test
   public void testCreateWhereClause_objdoc() throws XWikiException {
     List<Object> list = new ArrayList<>();
-
+    replayDefault();
     String where = DispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils)
         .createWhereClause(WHERECLAUSE_PARAM_objdoc, list);
-
     assertEquals(WHERECLAUSE_objdoc, where);
+    verifyDefault();
   }
 
   @Test
   public void testCreateWhereClause_objdoc_multi() throws XWikiException {
     List<Object> list = new ArrayList<>();
-
+    replayDefault();
     String where = DispatchXClassManager
         .getInstance(modelAccessMock, mContext, modelUtils)
         .createWhereClause(WHERECLAUSE_PARAM_objdoc_multi, list);
-
     assertEquals(WHERECLAUSE_objdoc_multi, where);
+    verifyDefault();
   }
 
   /*******************
    * HELPER METHODS
    *******************/
 
-  private @NotNull XWikiDocument stubGetDocument(DocumentReference theDocRef) {
+  private @NotNull XWikiDocument stubGetDocument(DocumentReference theDocRef)
+      throws DocumentNotExistsException {
     if (documents.containsKey(theDocRef)) {
       return documents.get(theDocRef);
     } else {
-      return new XWikiDocument(theDocRef);
+      throw new DocumentNotExistsException(theDocRef);
+    }
+  }
+
+  private @NotNull XWikiDocument stubGetOrCreateDocument(DocumentReference theDocRef)
+      throws DocumentNotExistsException {
+    if (documents.containsKey(theDocRef)) {
+      return documents.get(theDocRef);
+    } else {
+      XWikiDocument doc = new XWikiDocument(theDocRef);
+      doc.setNew(true);
+      doc.setLanguage(DEFAULT_LANG);
+      doc.setDefaultLanguage(DEFAULT_LANG);
+      doc.setTranslation(0);
+      Date creationDate = new Date();
+      doc.setCreationDate(creationDate);
+      doc.setContentUpdateDate(creationDate);
+      doc.setDate(creationDate);
+      doc.setCreator(XWikiRightService.SUPERADMIN_USER);
+      doc.setAuthor(XWikiRightService.SUPERADMIN_USER);
+      doc.setContentAuthor(XWikiRightService.SUPERADMIN_USER);
+      doc.setContent("");
+      doc.setContentDirty(true);
+      doc.setMetaDataDirty(true);
+      doc.setOriginalDocument(new XWikiDocument(doc.getDocumentReference()));
+      doc.setSyntax(Syntax.XWIKI_1_0);
+      return doc;
     }
   }
 
   private void mockGetDocAndSaveDoc() throws Exception {
     expect(modelAccessMock.getDocument(isA(DocumentReference.class)))
         .andAnswer(() -> stubGetDocument(getCurrentArgument(0))).anyTimes();
+    expect(modelAccessMock.getOrCreateDocument(isA(DocumentReference.class)))
+        .andAnswer(() -> stubGetOrCreateDocument(getCurrentArgument(0))).anyTimes();
     IAnswer<? extends Object> saveDocStub = () -> {
       XWikiDocument theDoc = getCurrentArgument(0);
       theDoc.setNew(false);

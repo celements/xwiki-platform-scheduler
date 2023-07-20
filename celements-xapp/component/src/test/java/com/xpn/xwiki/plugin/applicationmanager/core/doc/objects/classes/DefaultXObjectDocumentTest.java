@@ -173,13 +173,11 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
   @Test
   public void testInitXObjectDocumentEmpty() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(modelAccessMock,
         mContext, modelUtils);
     DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass.newXObjectDocument(getXContext());
-
+    verifyDefault();
     assertNotNull(sdoc);
     assertTrue(sdoc.isNew());
 
@@ -192,14 +190,12 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
   @Test
   public void testInitXObjectDocumentDocName() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(modelAccessMock,
         mContext, modelUtils);
     DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass
         .newXObjectDocument(DEFAULT_DOCFULLNAME, 0, getXContext());
-
+    verifyDefault();
     assertNotNull(sdoc);
     assertTrue(sdoc.isNew());
 
@@ -212,9 +208,7 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
   @Test
   public void testInitXObjectDocumentDocNameExists() throws XWikiException {
     documents.clear();
-
-    // ///
-
+    replayDefault();
     XWikiDocument doc = xwiki.getDocument(DEFAULT_DOCFULLNAME, getXContext());
     xwiki.saveDocument(doc, getXContext());
 
@@ -222,7 +216,7 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
         mContext, modelUtils);
     DefaultXObjectDocument sdoc = (DefaultXObjectDocument) sclass
         .newXObjectDocument(DEFAULT_DOCFULLNAME, 0, getXContext());
-
+    verifyDefault();
     assertNotNull(sdoc);
     assertTrue(sdoc.isNew());
 
@@ -234,6 +228,7 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
   @Test
   public void testMergeObject() throws XWikiException {
+    replayDefault();
     XClassManager sclass = XClassManagerTest.DispatchXClassManager.getInstance(modelAccessMock,
         mContext, modelUtils);
     DefaultXObjectDocument sdoc1 = (DefaultXObjectDocument) sclass
@@ -249,7 +244,7 @@ public class DefaultXObjectDocumentTest extends AbstractComponentTest {
     sdoc2.setIntValue(XClassManagerTest.FIELD_int, 2);
 
     sdoc1.mergeObject(sdoc2);
-
+    verifyDefault();
     assertEquals("The field is not overwritten",
         sdoc1.getStringValue(XClassManagerTest.FIELD_string),
         sdoc2.getStringValue(XClassManagerTest.FIELD_string));
