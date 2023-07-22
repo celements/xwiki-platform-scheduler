@@ -1011,9 +1011,9 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
    *      int, com.xpn.xwiki.XWikiContext)
    */
   @Override
-  public T newXObjectDocument(String docFullName, int objId, XWikiContext context)
+  public T newXObjectDocument(DocumentReference docDocRef, int objId, XWikiContext context)
       throws XWikiException {
-    return newXObjectDocument(context.getWiki().getDocument(docFullName, context), objId, context);
+    return newXObjectDocument(modelAccess.getOrCreateDocument(docDocRef), objId, context);
   }
 
   /**

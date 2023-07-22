@@ -416,7 +416,8 @@ public interface XClassManager<T extends XObjectDocument> {
    * @see #getClassFullName()
    * @future XA2 : rename to newDocumentObject.
    */
-  T newXObjectDocument(String docFullName, int objId, XWikiContext context) throws XWikiException;
+  T newXObjectDocument(DocumentReference docRef, int objId, XWikiContext context)
+      throws XWikiException;
 
   /**
    * Create new super documents for each object of class {@link #getClassFullName()} for provided

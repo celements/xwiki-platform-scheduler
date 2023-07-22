@@ -135,7 +135,7 @@ public class DefaultXObjectDocument extends Document implements XObjectDocument 
 
       XWikiDocument docTemplate = modelAccess
           .getOrCreateDocument(this.sclass.getClassTemplateDocRef());
-      BaseObject templateObject = docTemplate.getObject(this.sclass.getClassFullName());
+      BaseObject templateObject = docTemplate.getXObject(this.sclass.getClassDocRef());
 
       if (templateObject != null) {
         object.merge(templateObject);
@@ -194,9 +194,9 @@ public class DefaultXObjectDocument extends Document implements XObjectDocument 
     BaseObject obj;
 
     if (toWrite) {
-      obj = getDoc().getObject(this.sclass.getClassFullName(), this.objectId);
+      obj = getDoc().getXObject(this.sclass.getClassDocRef(), this.objectId);
     } else {
-      obj = this.doc.getObject(this.sclass.getClassFullName(), this.objectId);
+      obj = this.doc.getXObject(this.sclass.getClassDocRef(), this.objectId);
     }
 
     return obj;
@@ -217,10 +217,8 @@ public class DefaultXObjectDocument extends Document implements XObjectDocument 
     BaseObject obj1 = getBaseObject(true);
     BaseObject obj2 = sdoc.getBaseObject(false);
 
-    for (Object fieldNameObj : obj2.getPropertyList()) {
-      String fieldName = (String) fieldNameObj;
-      Object fieldValue2 = obj2.safeget(fieldName);
-
+    for (String fieldName : obj2.getPropertyList()) {
+      PropertyInterface fieldValue2 = obj2.safeget(fieldName);
       if (fieldValue2 != null) {
         obj1.safeput(fieldName, (PropertyInterface) ((BaseElement) fieldValue2).clone());
       }
