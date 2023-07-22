@@ -758,7 +758,7 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
   public Document getClassSheetDocument(XWikiContext context) throws XWikiException {
     check(context);
 
-    return context.getWiki().getDocument(getClassSheetFullName(), context).newDocument(context);
+    return modelAccess.getOrCreateDocument(getClassSheetDocRef()).newDocument(context);
   }
 
   /**
@@ -770,7 +770,7 @@ public abstract class AbstractXClassManager<T extends XObjectDocument> implement
   public Document getClassTemplateDocument(XWikiContext context) throws XWikiException {
     check(context);
 
-    return context.getWiki().getDocument(getClassTemplateFullName(), context).newDocument(context);
+    return modelAccess.getOrCreateDocument(getClassTemplateDocRef()).newDocument(context);
   }
 
   /**

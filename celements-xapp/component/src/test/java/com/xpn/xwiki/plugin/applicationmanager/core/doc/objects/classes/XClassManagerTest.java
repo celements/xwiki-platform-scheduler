@@ -39,7 +39,6 @@ import org.xwiki.rendering.syntax.Syntax;
 
 import com.celements.common.test.AbstractComponentTest;
 import com.celements.model.access.IModelAccessFacade;
-import com.celements.model.access.XWikiDocumentCreator;
 import com.celements.model.access.exception.DocumentNotExistsException;
 import com.celements.model.context.ModelContext;
 import com.celements.model.util.ModelUtils;
@@ -68,7 +67,6 @@ public class XClassManagerTest extends AbstractComponentTest {
   private IModelAccessFacade modelAccessMock;
   private ModelContext mContext;
   private ModelUtils modelUtils;
-  private XWikiDocumentCreator docCreator;
 
   /**
    * {@inheritDoc}
@@ -77,10 +75,9 @@ public class XClassManagerTest extends AbstractComponentTest {
    */
   @Before
   public void prepare() throws Exception {
+    modelAccessMock = registerComponentMock(IModelAccessFacade.class);
     mContext = Utils.getComponent(ModelContext.class);
     modelUtils = Utils.getComponent(ModelUtils.class);
-    docCreator = Utils.getComponent(XWikiDocumentCreator.class);
-    modelAccessMock = createDefaultMock(IModelAccessFacade.class);
     mockGetDocAndSaveDoc();
     xwiki = getMock(XWiki.class);
     mockClearName();
@@ -390,36 +387,31 @@ public class XClassManagerTest extends AbstractComponentTest {
   }
 
   private void ptestCkeck(XClassManager<XObjectDocument> xclass) throws XWikiException {
-    XWikiDocument doc = xwiki.getDocument(xclass.getClassFullName(), getXContext());
+    XWikiDocument doc = modelAccessMock.getOrCreateDocument(xclass.getClassDocRef());
 
     assertFalse(doc.isNew());
 
     BaseClass baseclass = doc.getxWikiClass();
-
     assertEquals(xclass.getClassFullName(), baseclass.getName());
 
     PropertyInterface prop = baseclass.getField(FIELD_string);
-
     assertNotNull(prop);
 
     prop = baseclass.getField(FIELD_stringlist);
-
     assertNotNull(prop);
 
     // ///
 
-    XWikiDocument docSheet = xwiki.getDocument(xclass.getClassSheetFullName(), getXContext());
-
+    XWikiDocument docSheet = modelAccessMock.getOrCreateDocument(xclass.getClassSheetDocRef());
     assertFalse(docSheet.isNew());
 
     // ///
 
-    XWikiDocument docTemplate = xwiki.getDocument(xclass.getClassTemplateFullName(), getXContext());
-
+    XWikiDocument docTemplate = modelAccessMock
+        .getOrCreateDocument(xclass.getClassTemplateDocRef());
     assertFalse(docTemplate.isNew());
 
     BaseObject baseobject = docTemplate.getObject(xclass.getClassFullName());
-
     assertNotNull(baseobject);
   }
 
@@ -470,7 +462,7 @@ public class XClassManagerTest extends AbstractComponentTest {
 
   private void ptestGetClassSheetDocument(XClassManager<XObjectDocument> xClassManager)
       throws XWikiException {
-    XWikiDocument doc = xwiki.getDocument(xClassManager.getClassSheetFullName(), getXContext());
+    XWikiDocument doc = modelAccessMock.getOrCreateDocument(xClassManager.getClassSheetDocRef());
     Document docFromClass = xClassManager.getClassSheetDocument(getXContext());
     verifyDefault();
     assertFalse(docFromClass.isNew());
@@ -497,7 +489,7 @@ public class XClassManagerTest extends AbstractComponentTest {
 
   private void ptestGetClassTemplateDocument(XClassManager<XObjectDocument> xClassManager)
       throws XWikiException {
-    XWikiDocument doc = xwiki.getDocument(xClassManager.getClassTemplateFullName(), getXContext());
+    XWikiDocument doc = modelAccessMock.getOrCreateDocument(xClassManager.getClassTemplateDocRef());
     Document docFromClass = xClassManager.getClassTemplateDocument(getXContext());
     verifyDefault();
     assertFalse(docFromClass.isNew());
@@ -505,7 +497,7 @@ public class XClassManagerTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testGetClassTemplateDocumentDispatch() throws XWikiException {
+  public void testGetClassTemplateDocumentDispatch() throws Exception {
     documents.clear();
     replayDefault();
     ptestGetClassTemplateDocument(
@@ -514,7 +506,7 @@ public class XClassManagerTest extends AbstractComponentTest {
   }
 
   @Test
-  public void testGetClassTemplateDocumentNoDispatch() throws XWikiException {
+  public void testGetClassTemplateDocumentNoDispatch() throws Exception {
     documents.clear();
     replayDefault();
     ptestGetClassTemplateDocument(
@@ -762,6 +754,10 @@ public class XClassManagerTest extends AbstractComponentTest {
 
   private void mockClearName() throws Exception {
     expect(xwiki.clearName(isA(String.class), same(getXContext())))
+        .andAnswer(() -> {
+          return getCurrentArgument(0);
+        }).anyTimes();
+    expect(xwiki.clearName(isA(String.class), anyBoolean(), anyBoolean(), same(getXContext())))
         .andAnswer(() -> {
           return getCurrentArgument(0);
         }).anyTimes();
