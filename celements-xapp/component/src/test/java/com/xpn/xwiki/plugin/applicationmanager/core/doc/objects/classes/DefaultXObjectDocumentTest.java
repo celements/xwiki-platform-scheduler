@@ -30,7 +30,6 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 import org.easymock.IAnswer;
-import org.jmock.Mock;
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.model.reference.DocumentReference;
@@ -57,10 +56,6 @@ import com.xpn.xwiki.web.Utils;
 public class DefaultXObjectDocumentTest extends AbstractComponentTest {
 
   private XWiki xwiki;
-
-  private Mock mockXWikiStore;
-
-  private Mock mockXWikiVersioningStore;
 
   private Map<DocumentReference, XWikiDocument> documents = new HashMap<>();
 
