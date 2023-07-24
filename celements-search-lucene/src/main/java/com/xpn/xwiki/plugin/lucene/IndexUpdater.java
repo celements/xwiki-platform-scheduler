@@ -36,7 +36,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
-import org.xwiki.context.Execution;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.WikiReference;
 import org.xwiki.observation.ObservationManager;
@@ -49,8 +48,9 @@ import com.celements.model.util.References;
 import com.celements.search.lucene.index.queue.IndexQueuePriority;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Ordering;
+import com.google.common.primitives.Longs;
+import com.xpn.xwiki.XWikiConfigSource;
 import com.xpn.xwiki.XWikiConstant;
-import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.plugin.lucene.indexExtension.ILuceneIndexExtensionServiceRole;
 import com.xpn.xwiki.plugin.lucene.observation.event.LuceneDocumentDeletedEvent;
 import com.xpn.xwiki.plugin.lucene.observation.event.LuceneDocumentDeletingEvent;
@@ -100,11 +100,12 @@ public class IndexUpdater extends AbstractXWikiRunnable {
 
   private final AtomicBoolean optimize = new AtomicBoolean(false);
 
-  IndexUpdater(IndexWriter writer, LucenePlugin plugin, XWikiContext context) throws IOException {
-    super(XWikiContext.EXECUTIONCONTEXT_KEY, context.clone());
+  IndexUpdater(IndexWriter writer, LucenePlugin plugin) {
     this.plugin = plugin;
-    this.indexingInterval = 1000 * context.getWiki().ParamAsLong(PROP_INDEXING_INTERVAL, 30);
-    this.commitInterval = context.getWiki().ParamAsLong(PROP_COMMIT_INTERVAL, 5000);
+    this.indexingInterval = 1000L * Optional.ofNullable(Longs.tryParse(getXWikiCfg()
+        .getProperty(PROP_INDEXING_INTERVAL))).orElse(30L);
+    this.commitInterval = Optional.ofNullable(Longs.tryParse(getXWikiCfg()
+        .getProperty(PROP_COMMIT_INTERVAL))).orElse(5000L);
     this.writer = writer;
   }
 
@@ -358,6 +359,10 @@ public class IndexUpdater extends AbstractXWikiRunnable {
 
   private ModelContext getContext() {
     return Utils.getComponent(ModelContext.class);
+  }
+
+  private XWikiConfigSource getXWikiCfg() {
+    return Utils.getComponent(XWikiConfigSource.class);
   }
 
 }
