@@ -17,6 +17,7 @@ import com.celements.model.classes.fields.StringField;
 import com.celements.model.classes.fields.list.EnumListField;
 import com.celements.model.classes.fields.list.single.EnumSingleListField;
 import com.celements.model.classes.fields.number.FloatField;
+import com.celements.search.lucene.query.QueryRestriction.SearchMode;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 
 @Immutable
@@ -55,10 +56,6 @@ public class WebSearchFieldConfigClass extends AbstractClassDefinition implement
   @Override
   public boolean isInternalMapping() {
     return false;
-  }
-
-  public enum SearchMode {
-    TOKENIZED, EXACT;
   }
 
 }

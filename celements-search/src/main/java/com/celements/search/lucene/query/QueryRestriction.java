@@ -1,5 +1,7 @@
 package com.celements.search.lucene.query;
 
+import static com.celements.search.lucene.LuceneUtils.*;
+import static com.google.common.base.MoreObjects.*;
 import static com.google.common.base.Strings.*;
 
 import java.text.DecimalFormat;
@@ -21,6 +23,10 @@ import com.google.common.base.Optional;
 
 public class QueryRestriction implements IQueryRestriction {
 
+  public enum SearchMode {
+    DEFAULT, EXACT, TOKENIZED, TOKENIZED_OR;
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(QueryRestriction.class);
 
   private static final Pattern TOKEN_PATTERN = Pattern.compile("( ?\"[^\"]*\" ?)|[^ ]+");
@@ -28,7 +34,7 @@ public class QueryRestriction implements IQueryRestriction {
   private boolean negate = false;
   private String specifier = null;
   private String query = null;
-  private boolean tokenizeQuery = true;
+  private SearchMode mode = SearchMode.TOKENIZED;
   private Float fuzzy = null;
   private Integer proximity = null;
   private Float boost = null;
@@ -39,6 +45,7 @@ public class QueryRestriction implements IQueryRestriction {
     setQuery(query);
   }
 
+  @Deprecated
   public QueryRestriction(String specifier, String query, boolean tokenizeQuery) {
     this(specifier, query);
     setTokenizeQuery(tokenizeQuery);
@@ -80,8 +87,13 @@ public class QueryRestriction implements IQueryRestriction {
    * @param tokenizeQuery
    * @return
    */
+  @Deprecated
   public QueryRestriction setTokenizeQuery(boolean tokenizeQuery) {
-    this.tokenizeQuery = tokenizeQuery;
+    return setSearchMode(tokenizeQuery ? SearchMode.TOKENIZED : SearchMode.DEFAULT);
+  }
+
+  public QueryRestriction setSearchMode(SearchMode mode) {
+    this.mode = firstNonNull(mode, SearchMode.DEFAULT);
     return this;
   }
 
@@ -180,7 +192,7 @@ public class QueryRestriction implements IQueryRestriction {
   public String getQueryString() {
     String ret = "";
     if (!specifier.isEmpty()) {
-      ret = tokenizeQuery ? getTokenizedQuery() : filterToken(query);
+      ret = getQueryValue();
       if (!ret.isEmpty()) {
         DecimalFormat formater = getDecimalFormater();
         ret = makeRestrictionFuzzy(ret, formater);
@@ -199,7 +211,20 @@ public class QueryRestriction implements IQueryRestriction {
     return ret;
   }
 
-  private String getTokenizedQuery() {
+  private String getQueryValue() {
+    switch (mode) {
+      case TOKENIZED:
+        return getTokenizedQuery(true);
+      case TOKENIZED_OR:
+        return getTokenizedQuery(false);
+      case EXACT:
+        return exactify(filterToken(query));
+      default:
+        return filterToken(query);
+    }
+  }
+
+  private String getTokenizedQuery(boolean and) {
     Matcher m = TOKEN_PATTERN.matcher(query);
     StringBuilder tokenizedQuery = new StringBuilder();
     while (m.find()) {
@@ -209,7 +234,7 @@ public class QueryRestriction implements IQueryRestriction {
         token = QueryParser.escape(token);
         token = token.replaceAll("^(\\\\([+-]))?(\\\\(\"))?(.*?)(\\\\(\"))?$", "$2$4$5$7");
         token = token.replaceAll("^(.+)\\\\([\\?\\*].*)$", "$1$2");
-        if (!token.matches("^[+-].*")) {
+        if (and && !token.matches("^[+-].*")) {
           tokenizedQuery.append("+");
         }
         tokenizedQuery.append(token);
@@ -261,11 +286,12 @@ public class QueryRestriction implements IQueryRestriction {
 
   @Override
   public QueryRestriction copy() {
-    QueryRestriction copy = new QueryRestriction(specifier, query, tokenizeQuery);
+    QueryRestriction copy = new QueryRestriction(specifier, query);
     copy.fuzzy = fuzzy;
     copy.proximity = proximity;
     copy.boost = boost;
     copy.negate = negate;
+    copy.mode = mode;
     copy.analyzer = analyzer;
     return copy;
   }
@@ -277,7 +303,7 @@ public class QueryRestriction implements IQueryRestriction {
 
   @Override
   public int hashCode() {
-    return Objects.hash(boost, fuzzy, negate, proximity, query, specifier, tokenizeQuery, analyzer);
+    return Objects.hash(boost, fuzzy, negate, proximity, query, specifier, mode, analyzer);
   }
 
   @Override
@@ -290,7 +316,7 @@ public class QueryRestriction implements IQueryRestriction {
           && Objects.equals(fuzzy, other.fuzzy)
           && Objects.equals(negate, other.negate)
           && Objects.equals(proximity, other.proximity)
-          && Objects.equals(tokenizeQuery, other.tokenizeQuery)
+          && Objects.equals(mode, other.mode)
           && Objects.equals(analyzer, other.analyzer);
     } else {
       return false;
