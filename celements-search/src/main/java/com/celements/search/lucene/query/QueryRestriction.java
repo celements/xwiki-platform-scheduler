@@ -46,8 +46,7 @@ public class QueryRestriction implements IQueryRestriction {
   }
 
   /**
-   *
-   * @Deprecated instead user {@link #setMode(QueryMode)}
+   * @deprecated since 6.0 instead use {@link #setMode(QueryMode)}
    */
   @Deprecated
   public QueryRestriction(String specifier, String query, boolean tokenizeQuery) {
@@ -96,7 +95,7 @@ public class QueryRestriction implements IQueryRestriction {
    * @param tokenizeQuery
    * @return
    *
-   * @Deprecated instead user {@link #setMode(QueryMode)}
+   * @deprecated since 6.0 instead use {@link #setMode(QueryMode)}
    */
   @Deprecated
   public QueryRestriction setTokenizeQuery(boolean tokenizeQuery) {
