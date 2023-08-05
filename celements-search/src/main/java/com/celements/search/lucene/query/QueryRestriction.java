@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.QueryParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +84,11 @@ public class QueryRestriction implements IQueryRestriction {
     return this;
   }
 
+  public QueryRestriction setMode(@Nullable QueryMode mode) {
+    this.mode = firstNonNull(mode, DEFAULT);
+    return this;
+  }
+
   /**
    * Uses required/AND for multiple keywords when true, e.g. (+keyword1 +keyword2),
    * else (keyword1 keyword2)
@@ -97,11 +101,6 @@ public class QueryRestriction implements IQueryRestriction {
   @Deprecated
   public QueryRestriction setTokenizeQuery(boolean tokenizeQuery) {
     return setMode(tokenizeQuery ? TOKENIZED : DEFAULT);
-  }
-
-  public QueryRestriction setMode(@Nullable QueryMode mode) {
-    this.mode = firstNonNull(mode, DEFAULT);
-    return this;
   }
 
   @Override
@@ -294,18 +293,18 @@ public class QueryRestriction implements IQueryRestriction {
   @Override
   public QueryRestriction copy() {
     QueryRestriction copy = new QueryRestriction(specifier, query);
+    copy.mode = mode;
     copy.fuzzy = fuzzy;
     copy.proximity = proximity;
     copy.boost = boost;
     copy.negate = negate;
-    copy.mode = mode;
     copy.analyzer = analyzer;
     return copy;
   }
 
   @Override
   public boolean isEmpty() {
-    return StringUtils.isBlank(getQueryString());
+    return getQueryString().isBlank();
   }
 
   @Override
@@ -319,11 +318,11 @@ public class QueryRestriction implements IQueryRestriction {
       QueryRestriction other = (QueryRestriction) obj;
       return Objects.equals(specifier, other.specifier)
           && Objects.equals(query, other.query)
+          && Objects.equals(mode, other.mode)
           && Objects.equals(boost, other.boost)
           && Objects.equals(fuzzy, other.fuzzy)
           && Objects.equals(negate, other.negate)
           && Objects.equals(proximity, other.proximity)
-          && Objects.equals(mode, other.mode)
           && Objects.equals(analyzer, other.analyzer);
     } else {
       return false;
