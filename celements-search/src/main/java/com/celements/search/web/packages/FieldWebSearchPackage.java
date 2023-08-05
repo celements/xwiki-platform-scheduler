@@ -1,6 +1,6 @@
 package com.celements.search.web.packages;
 
-import static com.celements.search.lucene.query.QueryRestriction.SearchMode.*;
+import static com.celements.search.lucene.query.QueryRestriction.QueryMode.*;
 import static com.celements.search.web.classes.WebSearchFieldConfigClass.*;
 import static java.util.stream.Collectors.*;
 
@@ -24,7 +24,7 @@ import com.celements.model.object.xwiki.XWikiObjectFetcher;
 import com.celements.search.lucene.ILuceneSearchService;
 import com.celements.search.lucene.query.IQueryRestriction;
 import com.celements.search.lucene.query.LuceneDocType;
-import com.celements.search.lucene.query.QueryRestriction.SearchMode;
+import com.celements.search.lucene.query.QueryRestriction.QueryMode;
 import com.celements.search.lucene.query.QueryRestrictionGroup;
 import com.celements.search.lucene.query.QueryRestrictionGroup.Type;
 import com.celements.search.web.classes.WebSearchFieldConfigClass;
@@ -99,10 +99,10 @@ public class FieldWebSearchPackage implements WebSearchPackage {
         .map(mode -> createRestriction(mode, field, value, boost)));
   }
 
-  private IQueryRestriction createRestriction(SearchMode mode,
+  private IQueryRestriction createRestriction(QueryMode mode,
       String field, String value, float boost) {
     return searchService.createRestriction(field, value)
-        .setSearchMode(mode)
+        .setMode(mode)
         .setBoost(boost * (mode == EXACT ? 2 : 1));
   }
 

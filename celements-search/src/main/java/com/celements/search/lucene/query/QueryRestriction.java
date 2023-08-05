@@ -1,6 +1,7 @@
 package com.celements.search.lucene.query;
 
 import static com.celements.search.lucene.LuceneUtils.*;
+import static com.celements.search.lucene.query.QueryRestriction.QueryMode.*;
 import static com.google.common.base.MoreObjects.*;
 import static com.google.common.base.Strings.*;
 
@@ -23,7 +24,7 @@ import com.google.common.base.Optional;
 
 public class QueryRestriction implements IQueryRestriction {
 
-  public enum SearchMode {
+  public enum QueryMode {
     DEFAULT, EXACT, TOKENIZED, TOKENIZED_OR;
   }
 
@@ -34,7 +35,7 @@ public class QueryRestriction implements IQueryRestriction {
   private boolean negate = false;
   private String specifier = null;
   private String query = null;
-  private SearchMode mode = SearchMode.TOKENIZED;
+  private QueryMode mode = TOKENIZED;
   private Float fuzzy = null;
   private Integer proximity = null;
   private Float boost = null;
@@ -45,6 +46,10 @@ public class QueryRestriction implements IQueryRestriction {
     setQuery(query);
   }
 
+  /**
+   *
+   * @Deprecated instead user {@link #setMode(QueryMode)}
+   */
   @Deprecated
   public QueryRestriction(String specifier, String query, boolean tokenizeQuery) {
     this(specifier, query);
@@ -86,14 +91,16 @@ public class QueryRestriction implements IQueryRestriction {
    *
    * @param tokenizeQuery
    * @return
+   *
+   * @Deprecated instead user {@link #setMode(QueryMode)}
    */
   @Deprecated
   public QueryRestriction setTokenizeQuery(boolean tokenizeQuery) {
-    return setSearchMode(tokenizeQuery ? SearchMode.TOKENIZED : SearchMode.DEFAULT);
+    return setMode(tokenizeQuery ? TOKENIZED : DEFAULT);
   }
 
-  public QueryRestriction setSearchMode(SearchMode mode) {
-    this.mode = firstNonNull(mode, SearchMode.DEFAULT);
+  public QueryRestriction setMode(@Nullable QueryMode mode) {
+    this.mode = firstNonNull(mode, DEFAULT);
     return this;
   }
 
