@@ -1,0 +1,7 @@
+#set($userDocRef = $doc.getDocumentReference())
+#set($groupDocRefList = $services.rightsAccess.getGroupRefsForUser($userDocRef))
+
+#foreach ($groupDocRef in $groupDocRefList)
+  #set($prettyName = $adminMsg.get("cel_groupname_${groupDocRef.name}"))
+  $prettyName
+#end
