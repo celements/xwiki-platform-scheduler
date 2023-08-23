@@ -1,6 +1,7 @@
 #set($userDocRef = $doc.getDocumentReference())
+#set($xwikiAllGroupDoc = $services.modelAccess.getDocument($services.reference.resolveDocRef("XWiki.XWikiAllGroup")))
 #set($groupDocRefList = $services.rightsAccess.getGroupRefsForUser($userDocRef))
-
+#set($dev = $groupsDocList.remove($xwikiAllGroupDoc))
 #foreach ($groupDocRef in $groupDocRefList)
   #set($prettyName = $adminMsg.get("cel_groupname_${groupDocRef.name}"))
   $prettyName
