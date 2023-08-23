@@ -1,38 +1,40 @@
 @charset "UTF-8";
 
-.formWrapper {
+div.userAdmin div.editUser form div.formWrapper {
     display: flex;
     flex-flow: row;
 }
 
-.personalData {
+div.userAdmin div.editUser form div.formWrapper div.personalData {
     width: 100%;
     padding: 0px 10px 0px 0px;
 }
 
-.optionsWrapper {
+div.userAdmin div.editUser form div.formWrapper div.optionsWrapper {
     width: 100%;
     padding: 0px 0px 0px 10px;
 }
 
-#groups {
+div.userAdmin div.editUser form div.formWrapper div.optionsWrapper #groups {
     display: flex;
     flex-flow: row wrap;
     padding: 3px 0px 12px;
 }
 
-#groups div.checkboxWrapper {
+div.userAdmin div.editUser form div.formWrapper div.optionsWrapper #groups div.checkboxWrapper {
     display: flex;
     flex-flow: row;
     flex: 0 0 200px;
 }
 
-.cel_cell.adduser input, select, .submitaction {
+div.userAdmin div.editUser form div.formWrapper div.adduser input, 
+div.userAdmin div.editUser form div.formWrapper select.adduser, 
+div.userAdmin div.editUser form div.formWrapper div.submitaction {
     width: 100%;
     margin: 3px 0 12px;
 }
 
-input[type="checkbox"] {
+div.userAdmin div.editUser form div.formWrapper input[type="checkbox"] {
     appearance: none;
     position: relative;
     width: 16px !important;
@@ -43,12 +45,12 @@ input[type="checkbox"] {
     align-self: center;
 }
 
-input[type="checkbox"]:checked {
+div.userAdmin div.editUser form div.formWrapper input[type="checkbox"]:checked {
     border: none;
     background-color: #156eb9;
 }
 
-input[type="checkbox"]:checked::before {
+div.userAdmin div.editUser form div.formWrapper input[type="checkbox"]:checked::before {
     font-family: 'FontAwesome';
     content: "\f00c";
     display: block;
@@ -59,28 +61,29 @@ input[type="checkbox"]:checked::before {
     left: 2px;
 }
 
-div.checkboxWrapper label {
+div.userAdmin div.editUser form div.formWrapper div.checkboxWrapper label {
     padding-left: 5px;
 }
 
-.cel_cell.adduser input[type=text] {
+div.userAdmin div.editUser form div.formWrapper div.adduser input[type=text] {
     padding: 10px 10px;
     border: none;
     border-bottom: 2px solid lightgrey;
 }
 
-.cel_cell.adduser input[type=text]:focus {
+div.userAdmin div.editUser form div.formWrapper div.adduser input[type=text]:focus {
     outline:none;
     border-bottom: 2px solid black;
 }
 
-select.cel_cell.adduser  {
+div.userAdmin div.editUser form div.formWrapper select.adduser  {
     padding: 10px 10px;
     border: none;
     background-color: lightgrey;
 }
 
-.submitaction, .cancelaction {
+div.userAdmin div.editUser form div.submitaction, 
+div.userAdmin div.editUser form div.cancelaction {
     display: block;
     text-align: center;
     text-decoration: none;
@@ -92,11 +95,13 @@ select.cel_cell.adduser  {
     margin: 6px 0 12px;
 }
 
-.submitaction a, .cancelaction a {
+div.userAdmin div.editUser form div.submitaction a, 
+div.userAdmin div.editUser form div.cancelaction a {
     text-decoration: none;
     color: black;
 }
 
-.submitaction:hover, .cancelaction:hover {
+div.userAdmin div.editUser form div.submitaction:hover, 
+div.userAdmin div.editUser form div.cancelaction:hover {
     opacity: 80%;
 }

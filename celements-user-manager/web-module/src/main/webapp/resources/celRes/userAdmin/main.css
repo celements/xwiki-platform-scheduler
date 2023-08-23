@@ -1,42 +1,42 @@
 @charset "UTF-8";
-.userAdmin {
+div.userAdmin {
     font-family: 'Open Sans', sans-serif;
     display: flex;
     flex-flow: column;
     margin: 8px 30px;
 }
 
-.userAdmin  *{
+div.userAdmin  *{
     box-sizing: border-box;
 }
 
-.userAdmin h1{
+div.userAdmin h1{
     background-color: #156eb9;
     color: white;
     font-size: 16px;
     padding: 6px 10px;
 }
 
-.userAdmin h2{
+div.userAdmin h2{
     background-color: #156eb9;
     color: white;
     font-size: 14px;
     padding: 4px 10px;
 }
 
-.userAdminContent {
+div.userAdmin div.userAdminContent {
     flex-grow: 6;
     width: 100%;
     display: flex;
     flex-flow: column;
 }
 
-
-.userAdmin .searchUser, .editUser{
+div.userAdmin div.searchUser,
+div.userAdmin div.editUser{
     margin: 0px 20px;
 }
 
-.userAdmin .searchUser {
+div.userAdmin div.searchUser {
     display: flex;
     flex-flow: column;
 }

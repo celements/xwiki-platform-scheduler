@@ -1,4 +1,4 @@
-.cel_cell .dropdown  {
+div.userAdminContent div.searchUser div > div.dropdown  {
     display: block;
     width: 60px;
     float: right;
@@ -6,7 +6,7 @@
     margin: 15px 0px 0px;
 }
 
-.cel_cell .dropbtn {
+div.userAdminContent div.searchUser div > div.dropdown .dropbtn {
     display: block;
     border: 2px solid #156eb9;;
     color: #156eb9;;
@@ -17,11 +17,11 @@
     margin: 1px 0px;
 }
 
-.cel_cell .dropdown:hover .dropdown-content {
+div.userAdminContent div.searchUser div > div.dropdown:hover div.dropdown-content {
     display: block;
 }
 
-.cel_cell .dropdown-content {
+div.userAdminContent div.searchUser div > div.dropdown div.dropdown-content {
     display: none;
     background-color: whitesmoke;
     min-width: 160px;
@@ -33,7 +33,7 @@
     z-index: 1000;
 }
 
-.cel_cell .dropdown-content a {
+div.userAdminContent div.searchUser div > div.dropdown div.dropdown-content a {
     display: block;
     text-decoration: none;
     color: black;
@@ -41,6 +41,6 @@
     border-top: 0.5px solid black;
 }
 
-.cel_cell .dropdown-content a:hover {
+div.userAdminContent div.searchUser div > div.dropdown div.dropdown-content a:hover {
     background-color: lightgrey;
 }

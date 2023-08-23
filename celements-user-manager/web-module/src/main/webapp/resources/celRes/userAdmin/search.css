@@ -1,10 +1,10 @@
 @charset "UTF-8";
-.cel_cell.searchbar {
+div.userAdminContent div.searchUser div.searchbar {
     position: relative;
     width: 100%;
 }
 
-.cel_cell.searchbar::before {
+div.userAdminContent div.searchUser div.searchbar::before {
     font-family: 'FontAwesome';
     content: "\f002";
     position: absolute;
@@ -13,7 +13,7 @@
     color: lightgray;
 }
 
-.cel_cell.searchbar input {
+div.userAdminContent div.searchUser div.searchbar input {
     width: 100%;
     padding: 10px 30px;
     border: none;
@@ -21,7 +21,7 @@
     margin: 3px 0 12px;
   }
 
-.cel_cell.searchbar input:focus {
+  div.userAdminContent div.searchUser div.searchbar input:focus {
     outline:none;
     border-bottom: 2px solid black;
 }
