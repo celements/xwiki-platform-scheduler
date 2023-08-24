@@ -1,145 +1,145 @@
 @charset "UTF-8";
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table {
-    display: flex;
-    flex-flow: column;
+  display: flex;
+  flex-flow: column;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul.struct_table_header, 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul.struct_table_data {
-    list-style-type: none;
+  list-style-type: none;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul.struct_table_header {
-    padding: 5px 0px;
-    margin: 0px 0px;
-    font-weight: bold;
+  padding: 5px 0px;
+  margin: 0px 0px;
+  font-weight: bold;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul.struct_table_data {
-    display: flex;
-    flex-flow: column;
-    padding: 0px 0px;
-    margin: 0px 0px;
+  display: flex;
+  flex-flow: column;
+  padding: 0px 0px;
+  margin: 0px 0px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul.struct_table_data .struct_table_row:nth-child(odd){
-    background-color: whitesmoke;
+  background-color: whitesmoke;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul li.struct_table_row {
-    display: flex;
-    flex-flow: row wrap;
-    align-items: flex-start;
-    padding: 2px 0px;
-    margin: 1px 0px;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  padding: 2px 0px;
+  margin: 1px 0px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul.struct_table_data li.struct_table_row:hover,
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul.struct_table_data li.struct_table_row.open {
-    background-color: lightgrey;
+  background-color: lightgrey;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table div.column_arrow {
-    flex: 0 0 20px;
-    text-align: center;
+  flex: 0 0 20px;
+  text-align: center;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table li.struct_table_row div.column_arrow {
-    -webkit-transition: transform 0.5s linear;
-    -moz-transition: transform 0.5s linear;
-    -o-transition: transform 0.5s linear;
-    transition: transform 0.5s linear;
-    transform: rotate(0deg);
-    content: "\f0da";
+  -webkit-transition: transform 0.5s linear;
+  -moz-transition: transform 0.5s linear;
+  -o-transition: transform 0.5s linear;
+  transition: transform 0.5s linear;
+  transform: rotate(0deg);
+  content: "\f0da";
   }
 
   div.userAdmin div.searchUser #searchoutput cel-table.struct_table li.struct_table_row.open div.column_arrow {
-    -webkit-transition: transform 0.5s linear;
-    -moz-transition: transform 0.5s linear;
-    -o-transition: transform 0.5s linear;
-    transition: transform 0.5s linear;
-    transform: rotate(90deg);
+  -webkit-transition: transform 0.5s linear;
+  -moz-transition: transform 0.5s linear;
+  -o-transition: transform 0.5s linear;
+  transition: transform 0.5s linear;
+  transform: rotate(90deg);
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table div.column_active {
-    flex: 0 0 22px;
-    text-align: center;
+  flex: 0 0 22px;
+  text-align: center;
 }
 
 .fa-user-slash {
-    color: red;
+  color: red;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table .column_name {
-    flex: 1 0 150px;
+  flex: 1 0 150px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table .column_firstname{
-    flex: 1 0 100px;
+  flex: 1 0 100px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table .column_email{
-    flex: 1 0 350px;
+  flex: 1 0 350px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table .column_roles {
-    flex: 2 0 120px;
+  flex: 2 0 120px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table .column_edit, 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table .column_delete {
-    flex: 0 0 20px;
+  flex: 0 0 20px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table div.column_edit a.icon-link, 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table div.column_delete a.icon-link {
-    text-decoration: none;
-    color: black;
+  text-decoration: none;
+  color: black;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table div.column_edit a.icon-link:hover, 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table div.column_delete a.icon-link:hover {
-    color: #156eb9;
+  color: #156eb9;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE {
 	display: flex;
-    flex-flow: row;
-    flex: 1 1 100%;
-    max-height: 0;
-    padding: 0 0px;
-    margin-left: 40px;
-    transition: max-height 0.3s ease-out;
-    overflow: hidden;
+  flex-flow: row;
+  flex: 1 1 100%;
+  max-height: 0;
+  padding: 0 0px;
+  margin-left: 40px;
+  transition: max-height 0.3s ease-out;
+  overflow: hidden;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul li.struct_table_row.open div.editContentRTE {
-    margin-left: 22px;
-    margin-right: 45px;
-    margin-bottom: 2px;
-    margin-top: 4px;
-    max-height: 1000px;
-    transition: max-height 0.8s ease-in;
-    border-top: 1px solid darkgray;
-    padding: 3px 15px;
+  margin-left: 22px;
+  margin-right: 45px;
+  margin-bottom: 2px;
+  margin-top: 4px;
+  max-height: 1000px;
+  transition: max-height 0.8s ease-in;
+  border-top: 1px solid darkgray;
+  padding: 3px 15px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.companyWrapper, 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.languageWrapper {
-    display: flex;
-    flex-flow: row wrap;
-    padding: 0px 10px;
+  display: flex;
+  flex-flow: row wrap;
+  padding: 0px 10px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.companyWrapper {
-    flex: 0 0 200px;
+  flex: 0 0 200px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.languageWrapper {
-    flex: 0 0 80px;
+  flex: 0 0 80px;
 }
 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.companyWrapper div.companyLabel, 
 div.userAdmin div.searchUser #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.companyWrapper div.languageLabel {
-    flex: 0 0 20px;
+  flex: 0 0 20px;
 }
