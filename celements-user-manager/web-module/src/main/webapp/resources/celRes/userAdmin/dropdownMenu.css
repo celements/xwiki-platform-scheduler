@@ -1,4 +1,4 @@
-div.userAdminContent div.searchUser div > div.dropdown  {
+#userAdmin #searchForm div > div.dropdown  {
   display: block;
   width: 60px;
   float: right;
@@ -6,10 +6,10 @@ div.userAdminContent div.searchUser div > div.dropdown  {
   margin: 15px 0px 0px;
 }
 
-div.userAdminContent div.searchUser div > div.dropdown .dropbtn {
+#userAdmin #searchForm div > div.dropdown .dropbtn {
   display: block;
-  border: 2px solid #156eb9;;
-  color: #156eb9;;
+  border: 2px solid var(--accent-color);
+  color: var(--accent-color);
   font-size: 14px;
   text-align: center;
   font-weight: bolder;
@@ -17,13 +17,13 @@ div.userAdminContent div.searchUser div > div.dropdown .dropbtn {
   margin: 1px 0px;
 }
 
-div.userAdminContent div.searchUser div > div.dropdown:hover div.dropdown-content {
+#userAdmin #searchForm div > div.dropdown:hover div.dropdown-content {
   display: block;
 }
 
-div.userAdminContent div.searchUser div > div.dropdown div.dropdown-content {
+#userAdmin #searchForm div > div.dropdown div.dropdown-content {
   display: none;
-  background-color: whitesmoke;
+  background-color: var(--dirty-white);
   min-width: 160px;
   position: absolute;
   right: 0;
@@ -33,7 +33,7 @@ div.userAdminContent div.searchUser div > div.dropdown div.dropdown-content {
   z-index: 1000;
 }
 
-div.userAdminContent div.searchUser div > div.dropdown div.dropdown-content a {
+#userAdmin #searchForm div > div.dropdown div.dropdown-content a {
   display: block;
   text-decoration: none;
   color: black;
@@ -41,6 +41,6 @@ div.userAdminContent div.searchUser div > div.dropdown div.dropdown-content a {
   border-top: 0.5px solid black;
 }
 
-div.userAdminContent div.searchUser div > div.dropdown div.dropdown-content a:hover {
-  background-color: lightgrey;
+#userAdmin #searchForm div > div.dropdown div.dropdown-content a:hover {
+  background-color: var(--lightgrey-color);
 }

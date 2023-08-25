@@ -1,42 +1,52 @@
 @charset "UTF-8";
-div.userAdmin {
+:root {
+  --accent-color: #156eb9;
+  --lightgrey-color: lightgrey;
+  --dirty-white: whitesmoke;
+}
+#userAdmin,
+#userAdminEdit {
   font-family: 'Open Sans', sans-serif;
   display: flex;
   flex-flow: column;
   margin: 8px 30px;
 }
 
-div.userAdmin  *{
+#userAdmin  *,
+#userAdminEdit *{
   box-sizing: border-box;
 }
 
-div.userAdmin h1{
-  background-color: #156eb9;
+#userAdmin h1,
+#userAdminEdit h1{
+  background-color: var(--accent-color);
   color: white;
   font-size: 16px;
   padding: 6px 10px;
 }
 
-div.userAdmin h2{
-  background-color: #156eb9;
+#userAdmin h2,
+#userAdminEdit h2{
+  background-color: var(--accent-color);
   color: white;
   font-size: 14px;
   padding: 4px 10px;
 }
 
-div.userAdmin div.userAdminContent {
+#userAdmin #content,
+#userAdminEdit #editContent {
   flex-grow: 6;
   width: 100%;
   display: flex;
   flex-flow: column;
 }
 
-div.userAdmin div.searchUser,
-div.userAdmin div.editUser{
+#userAdmin #searchForm,
+#userAdminEdit #editUser{
   margin: 0px 20px;
 }
 
-div.userAdmin div.searchUser {
+#userAdmin #searchForm {
   display: flex;
   flex-flow: column;
 }

@@ -1,27 +1,27 @@
 @charset "UTF-8";
-div.userAdminContent div.searchUser div.searchbar {
+#userAdmin #searchForm #searchWrapper {
   position: relative;
   width: 100%;
 }
 
-div.userAdminContent div.searchUser div.searchbar::before {
+#userAdmin #searchForm #searchWrapper::before {
   font-family: 'FontAwesome';
   content: "\f002";
   position: absolute;
   top: 10px;
   left: 10px;
-  color: lightgray;
+  color: var(--lightgrey-color);
 }
 
-div.userAdminContent div.searchUser div.searchbar input {
+#userAdmin #searchForm #searchWrapper input {
   width: 100%;
   padding: 10px 30px;
   border: none;
-  border-bottom: 2px solid lightgrey;
+  border-bottom: 2px solid var(--lightgrey-color);
   margin: 3px 0 12px;
   }
 
-  div.userAdminContent div.searchUser div.searchbar input:focus {
+  #userAdmin #searchForm #searchWrapper input:focus {
   outline:none;
   border-bottom: 2px solid black;
 }

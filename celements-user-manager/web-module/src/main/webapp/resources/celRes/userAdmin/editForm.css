@@ -1,56 +1,56 @@
 @charset "UTF-8";
 
-div.userAdmin div.editUser form div.formWrapper {
+#userAdmin #editUser form div.formWrapper {
   display: flex;
   flex-flow: row;
 }
 
-div.userAdmin div.editUser form div.formWrapper div.personalData {
+#userAdmin #editUser form div.formWrapper div.personalData {
   width: 100%;
   padding: 0px 10px 0px 0px;
 }
 
-div.userAdmin div.editUser form div.formWrapper div.optionsWrapper {
+#userAdmin #editUser form div.formWrapper div.optionsWrapper {
   width: 100%;
   padding: 0px 0px 0px 10px;
 }
 
-div.userAdmin div.editUser form div.formWrapper div.optionsWrapper #groups {
+#userAdmin #editUser form div.formWrapper div.optionsWrapper #groups {
   display: flex;
   flex-flow: row wrap;
   padding: 3px 0px 12px;
 }
 
-div.userAdmin div.editUser form div.formWrapper div.optionsWrapper #groups div.checkboxWrapper {
+#userAdmin #editUser form div.formWrapper div.optionsWrapper #groups div.checkboxWrapper {
   display: flex;
   flex-flow: row;
   flex: 0 0 200px;
 }
 
-div.userAdmin div.editUser form div.formWrapper div.adduser input, 
-div.userAdmin div.editUser form div.formWrapper select.adduser, 
-div.userAdmin div.editUser form div.formWrapper div.submitaction {
+#userAdmin #editUser form div.formWrapper div.adduser input, 
+#userAdmin #editUser form div.formWrapper select.adduser, 
+#userAdmin #editUser form div.formWrapper div.submitaction {
   width: 100%;
   margin: 3px 0 12px;
 }
 
-div.userAdmin div.editUser form div.formWrapper input[type="checkbox"] {
+#userAdmin #editUser form div.formWrapper input[type="checkbox"] {
   appearance: none;
   position: relative;
   width: 16px !important;
   height: 16px;
   margin: 0px !important;
-  border: 2px solid lightgray;
+  border: 2px solid var(--lightgrey-color);
   border-radius: 1px;
   align-self: center;
 }
 
-div.userAdmin div.editUser form div.formWrapper input[type="checkbox"]:checked {
+#userAdmin #editUser form div.formWrapper input[type="checkbox"]:checked {
   border: none;
-  background-color: #156eb9;
+  background-color: var(--accent-color);
 }
 
-div.userAdmin div.editUser form div.formWrapper input[type="checkbox"]:checked::before {
+#userAdmin #editUser form div.formWrapper input[type="checkbox"]:checked::before {
   font-family: 'FontAwesome';
   content: "\f00c";
   display: block;
@@ -61,47 +61,47 @@ div.userAdmin div.editUser form div.formWrapper input[type="checkbox"]:checked::
   left: 2px;
 }
 
-div.userAdmin div.editUser form div.formWrapper div.checkboxWrapper label {
+#userAdmin #editUser form div.formWrapper div.checkboxWrapper label {
   padding-left: 5px;
 }
 
-div.userAdmin div.editUser form div.formWrapper div.adduser input[type=text] {
+#userAdmin #editUser form div.formWrapper div.adduser input[type=text] {
   padding: 10px 10px;
   border: none;
-  border-bottom: 2px solid lightgrey;
+  border-bottom: 2px solid var(--lightgrey-color);
 }
 
-div.userAdmin div.editUser form div.formWrapper div.adduser input[type=text]:focus {
+#userAdmin #editUser form div.formWrapper div.adduser input[type=text]:focus {
   outline:none;
   border-bottom: 2px solid black;
 }
 
-div.userAdmin div.editUser form div.formWrapper select.adduser  {
+#userAdmin #editUser form div.formWrapper select.adduser  {
   padding: 10px 10px;
   border: none;
-  background-color: lightgrey;
+  background-color: var(--lightgrey-color);
 }
 
-div.userAdmin div.editUser form div.submitaction, 
-div.userAdmin div.editUser form div.cancelaction {
+#userAdmin #editUser form div.submitaction, 
+#userAdmin #editUser form div.cancelaction {
   display: block;
   text-align: center;
   text-decoration: none;
   height: 100%;
-  background-color: lightgrey;
+  background-color: var(--lightgrey-color);
   color: black;
   border: none;
   padding: 8px 8px;
   margin: 6px 0 12px;
 }
 
-div.userAdmin div.editUser form div.submitaction a, 
-div.userAdmin div.editUser form div.cancelaction a {
+#userAdmin #editUser form div.submitaction a, 
+#userAdmin #editUser form div.cancelaction a {
   text-decoration: none;
   color: black;
 }
 
-div.userAdmin div.editUser form div.submitaction:hover, 
-div.userAdmin div.editUser form div.cancelaction:hover {
+#userAdmin #editUser form div.submitaction:hover, 
+#userAdmin #editUser form div.cancelaction:hover {
   opacity: 80%;
 }
