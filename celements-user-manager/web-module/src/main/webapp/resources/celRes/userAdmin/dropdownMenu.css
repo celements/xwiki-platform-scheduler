@@ -1,4 +1,4 @@
-#userAdmin #searchForm div > div.dropdown  {
+#userAdminActionMenu  {
   display: block;
   width: 60px;
   float: right;
@@ -6,7 +6,7 @@
   margin: 15px 0px 0px;
 }
 
-#userAdmin #searchForm div > div.dropdown .dropbtn {
+#userAdminActionMenu .dropbtn {
   display: block;
   border: 2px solid var(--accent-color);
   color: var(--accent-color);
@@ -17,11 +17,11 @@
   margin: 1px 0px;
 }
 
-#userAdmin #searchForm div > div.dropdown:hover div.dropdown-content {
+#userAdminActionMenu:hover .dropdown-content {
   display: block;
 }
 
-#userAdmin #searchForm div > div.dropdown div.dropdown-content {
+#userAdminActionMenu .dropdown-content {
   display: none;
   background-color: var(--dirty-white);
   min-width: 160px;
@@ -33,7 +33,7 @@
   z-index: 1000;
 }
 
-#userAdmin #searchForm div > div.dropdown div.dropdown-content a {
+#userAdminActionMenu .dropdown-content a {
   display: block;
   text-decoration: none;
   color: black;
@@ -41,6 +41,6 @@
   border-top: 0.5px solid black;
 }
 
-#userAdmin #searchForm div > div.dropdown div.dropdown-content a:hover {
+#userAdminActionMenu .dropdown-content a:hover {
   background-color: var(--lightgrey-color);
 }
