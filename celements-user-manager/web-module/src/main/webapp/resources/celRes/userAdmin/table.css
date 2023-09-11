@@ -62,7 +62,7 @@
 }
 
 #userAdmin #searchForm #searchoutput .struct_table .column_active {
-  flex: 0 0 22px;
+  flex: 0 0 25px;
   text-align: center;
 }
 
@@ -88,7 +88,8 @@
 
 #userAdmin #searchForm #searchoutput .struct_table .column_edit, 
 #userAdmin #searchForm #searchoutput .struct_table .column_delete {
-  flex: 0 0 20px;
+  flex: 0 0 25px;
+  text-align: center;
 }
 
 #userAdmin #searchForm #searchoutput .struct_table .column_edit a.icon-link, 
@@ -115,7 +116,7 @@
 
 #userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row.open .editContentRTE {
   margin-left: 22px;
-  margin-right: 45px;
+  margin-right: 50px;
   margin-bottom: 2px;
   margin-top: 4px;
   max-height: 1000px;
@@ -140,6 +141,6 @@
 }
 
 #userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper .companyLabel, 
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper .languageLabel {
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .languageWrapper .languageLabel {
   flex: 0 0 20px;
 }
