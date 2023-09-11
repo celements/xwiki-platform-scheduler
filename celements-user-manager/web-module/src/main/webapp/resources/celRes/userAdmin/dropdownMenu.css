@@ -17,7 +17,7 @@
   margin: 1px 0px;
 }
 
-#userAdminActionMenu:hover .dropdown-content {
+#userAdminActionMenu .dropdown-content.open {
   display: block;
 }
 
