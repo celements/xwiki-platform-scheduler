@@ -1,32 +1,32 @@
 @charset "UTF-8";
-#userAdmin #searchForm #searchoutput cel-table.struct_table {
+#userAdmin #searchForm #searchoutput .struct_table {
   display: flex;
   flex-flow: column;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul.struct_table_header, 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul.struct_table_data {
+#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_header, 
+#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data {
   list-style-type: none;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul.struct_table_header {
+#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_header {
   padding: 5px 0px;
   margin: 0px 0px;
   font-weight: bold;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul.struct_table_data {
+#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data {
   display: flex;
   flex-flow: column;
   padding: 0px 0px;
   margin: 0px 0px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul.struct_table_data .struct_table_row:nth-child(odd){
+#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data li.struct_table_row:nth-child(odd){
   background-color: var(--dirty-white);
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul li.struct_table_row {
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row {
   display: flex;
   flex-flow: row wrap;
   align-items: flex-start;
@@ -34,17 +34,17 @@
   margin: 1px 0px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul.struct_table_data li.struct_table_row:hover,
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul.struct_table_data li.struct_table_row.open {
+#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data li.struct_table_row:hover,
+#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data li.struct_table_row.open {
   background-color: var(--lightgrey-color);
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table div.column_arrow {
+#userAdmin #searchForm #searchoutput .struct_table .column_arrow {
   flex: 0 0 20px;
   text-align: center;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table li.struct_table_row div.column_arrow {
+#userAdmin #searchForm #searchoutput .struct_table li.struct_table_row .column_arrow {
   -webkit-transition: transform 0.5s linear;
   -moz-transition: transform 0.5s linear;
   -o-transition: transform 0.5s linear;
@@ -53,7 +53,7 @@
   content: "\f0da";
   }
 
-  #userAdmin #searchForm #searchoutput cel-table.struct_table li.struct_table_row.open div.column_arrow {
+  #userAdmin #searchForm #searchoutput .struct_table li.struct_table_row.open .column_arrow {
   -webkit-transition: transform 0.5s linear;
   -moz-transition: transform 0.5s linear;
   -o-transition: transform 0.5s linear;
@@ -61,7 +61,7 @@
   transform: rotate(90deg);
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table div.column_active {
+#userAdmin #searchForm #searchoutput .struct_table .column_active {
   flex: 0 0 22px;
   text-align: center;
 }
@@ -70,39 +70,39 @@
   color: red;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table .column_name {
+#userAdmin #searchForm #searchoutput .struct_table .column_name {
   flex: 1 0 150px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table .column_firstname{
+#userAdmin #searchForm #searchoutput .struct_table .column_firstname{
   flex: 1 0 100px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table .column_email{
+#userAdmin #searchForm #searchoutput .struct_table .column_email{
   flex: 1 0 350px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table .column_roles {
+#userAdmin #searchForm #searchoutput .struct_table .column_roles {
   flex: 2 0 120px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table .column_edit, 
-#userAdmin #searchForm #searchoutput cel-table.struct_table .column_delete {
+#userAdmin #searchForm #searchoutput .struct_table .column_edit, 
+#userAdmin #searchForm #searchoutput .struct_table .column_delete {
   flex: 0 0 20px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table div.column_edit a.icon-link, 
-#userAdmin #searchForm #searchoutput cel-table.struct_table div.column_delete a.icon-link {
+#userAdmin #searchForm #searchoutput .struct_table .column_edit a.icon-link, 
+#userAdmin #searchForm #searchoutput .struct_table .column_delete a.icon-link {
   text-decoration: none;
   color: black;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table div.column_edit a.icon-link:hover, 
-#userAdmin #searchForm #searchoutput cel-table.struct_table div.column_delete a.icon-link:hover {
+#userAdmin #searchForm #searchoutput .struct_table .column_edit a.icon-link:hover, 
+#userAdmin #searchForm #searchoutput .struct_table .column_delete a.icon-link:hover {
   color: var(--accent-color);
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE {
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE {
 	display: flex;
   flex-flow: row;
   flex: 1 1 100%;
@@ -113,7 +113,7 @@
   overflow: hidden;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul li.struct_table_row.open div.editContentRTE {
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row.open .editContentRTE {
   margin-left: 22px;
   margin-right: 45px;
   margin-bottom: 2px;
@@ -124,22 +124,22 @@
   padding: 3px 15px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.companyWrapper, 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.languageWrapper {
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper, 
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .languageWrapper {
   display: flex;
   flex-flow: row wrap;
   padding: 0px 10px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.companyWrapper {
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper {
   flex: 0 0 200px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.languageWrapper {
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .languageWrapper {
   flex: 0 0 80px;
 }
 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.companyWrapper div.companyLabel, 
-#userAdmin #searchForm #searchoutput cel-table.struct_table ul li.struct_table_row div.editContentRTE div.companyWrapper div.languageLabel {
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper .companyLabel, 
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper .languageLabel {
   flex: 0 0 20px;
 }

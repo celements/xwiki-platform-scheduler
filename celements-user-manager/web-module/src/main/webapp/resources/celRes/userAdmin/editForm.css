@@ -1,40 +1,40 @@
 @charset "UTF-8";
 
-#userAdmin #editUser form div.formWrapper {
+#userAdminEdit #editUser form#userEditForm .formWrapper {
   display: flex;
   flex-flow: row;
 }
 
-#userAdmin #editUser form div.formWrapper div.personalData {
+#userAdminEdit #editUser form#userEditForm .formWrapper .personalData {
   width: 100%;
   padding: 0px 10px 0px 0px;
 }
 
-#userAdmin #editUser form div.formWrapper div.optionsWrapper {
+#userAdminEdit #editUser form#userEditForm .formWrapper .optionsWrapper {
   width: 100%;
   padding: 0px 0px 0px 10px;
 }
 
-#userAdmin #editUser form div.formWrapper div.optionsWrapper #groups {
+#userAdminEdit #editUser form#userEditForm .formWrapper .optionsWrapper #groups {
   display: flex;
   flex-flow: row wrap;
   padding: 3px 0px 12px;
 }
 
-#userAdmin #editUser form div.formWrapper div.optionsWrapper #groups div.checkboxWrapper {
+#userAdminEdit #editUser form#userEditForm .formWrapper .optionsWrapper #groups .checkboxWrapper {
   display: flex;
   flex-flow: row;
   flex: 0 0 200px;
 }
 
-#userAdmin #editUser form div.formWrapper div.adduser input, 
-#userAdmin #editUser form div.formWrapper select.adduser, 
-#userAdmin #editUser form div.formWrapper div.submitaction {
+#userAdminEdit #editUser form#userEditForm .formWrapper .adduser input, 
+#userAdminEdit #editUser form#userEditForm .formWrapper select.adduser, 
+#userAdminEdit #editUser form#userEditForm .formWrapper .submitaction {
   width: 100%;
   margin: 3px 0 12px;
 }
 
-#userAdmin #editUser form div.formWrapper input[type="checkbox"] {
+#userAdminEdit #editUser form#userEditForm .formWrapper .checkboxWrapper input[type="checkbox"] {
   appearance: none;
   position: relative;
   width: 16px !important;
@@ -45,12 +45,12 @@
   align-self: center;
 }
 
-#userAdmin #editUser form div.formWrapper input[type="checkbox"]:checked {
+#userAdminEdit #editUser form#userEditForm .formWrapper .checkboxWrapper input[type="checkbox"]:checked {
   border: none;
   background-color: var(--accent-color);
 }
 
-#userAdmin #editUser form div.formWrapper input[type="checkbox"]:checked::before {
+#userAdminEdit #editUser form#userEditForm .formWrapper .checkboxWrapper input[type="checkbox"]:checked::before {
   font-family: 'FontAwesome';
   content: "\f00c";
   display: block;
@@ -61,29 +61,29 @@
   left: 2px;
 }
 
-#userAdmin #editUser form div.formWrapper div.checkboxWrapper label {
+#userAdminEdit #editUser form#userEditForm .formWrapper .checkboxWrapper label {
   padding-left: 5px;
 }
 
-#userAdmin #editUser form div.formWrapper div.adduser input[type=text] {
+#userAdminEdit #editUser form#userEditForm .formWrapper .adduser input[type=text] {
   padding: 10px 10px;
   border: none;
   border-bottom: 2px solid var(--lightgrey-color);
 }
 
-#userAdmin #editUser form div.formWrapper div.adduser input[type=text]:focus {
+#userAdminEdit #editUser form#userEditForm .formWrapper .adduser input[type=text]:focus {
   outline:none;
   border-bottom: 2px solid black;
 }
 
-#userAdmin #editUser form div.formWrapper select.adduser  {
+#userAdminEdit #editUser form#userEditForm .formWrapper select.adduser  {
   padding: 10px 10px;
   border: none;
   background-color: var(--lightgrey-color);
 }
 
-#userAdmin #editUser form div.submitaction, 
-#userAdmin #editUser form div.cancelaction {
+#userAdminEdit #editUser form#userEditForm .submitaction, 
+#userAdminEdit #editUser form#userEditForm .cancelaction {
   display: block;
   text-align: center;
   text-decoration: none;
@@ -95,13 +95,13 @@
   margin: 6px 0 12px;
 }
 
-#userAdmin #editUser form div.submitaction a, 
-#userAdmin #editUser form div.cancelaction a {
+#userAdminEdit #editUser form#userEditForm .submitaction a, 
+#userAdminEdit #editUser form#userEditForm .cancelaction a {
   text-decoration: none;
   color: black;
 }
 
-#userAdmin #editUser form div.submitaction:hover, 
-#userAdmin #editUser form div.cancelaction:hover {
+#userAdminEdit #editUser form#userEditForm .submitaction:hover, 
+#userAdminEdit #editUser form#userEditForm .cancelaction:hover {
   opacity: 80%;
 }
