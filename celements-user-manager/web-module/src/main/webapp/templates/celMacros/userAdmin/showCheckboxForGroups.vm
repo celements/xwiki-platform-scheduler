@@ -14,10 +14,8 @@
     #set($objNb = -1)
   #end
   <div class='checkboxWrapper'>
-    #set($inputName = "$!{services.reference.serialize($groupDocRef, 
-  'local')}_XWiki.XWikiGroups_$!{objNb}_member")
-    <input type='checkbox' value='$!{services.reference.serialize($doc.documentReference)}' 
-   name='$!{inputName}' #if($isMember == 1)  checked #end>
+    #set($inputName = "$!{services.reference.serialize($groupDocRef, 'local')}_XWiki.XWikiGroups_$!{objNb}_member")
+    <input type='checkbox' value='$!{services.reference.serialize($doc.documentReference)}' name='$!{inputName}' #if($isMember == 1)  checked #end>
     <input type='hidden' value='' name='$!{inputName}'>
     <label for='$!{inputName}'>$!prettyName</label>
   </div>
