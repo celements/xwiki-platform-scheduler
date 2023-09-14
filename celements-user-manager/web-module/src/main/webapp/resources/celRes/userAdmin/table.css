@@ -45,18 +45,12 @@
 }
 
 #userAdmin #searchForm #searchoutput .struct_table li.struct_table_row .column_arrow {
-  -webkit-transition: transform 0.5s linear;
-  -moz-transition: transform 0.5s linear;
-  -o-transition: transform 0.5s linear;
   transition: transform 0.5s linear;
   transform: rotate(0deg);
   content: "\f0da";
   }
 
   #userAdmin #searchForm #searchoutput .struct_table li.struct_table_row.open .column_arrow {
-  -webkit-transition: transform 0.5s linear;
-  -moz-transition: transform 0.5s linear;
-  -o-transition: transform 0.5s linear;
   transition: transform 0.5s linear;
   transform: rotate(90deg);
 }
@@ -66,7 +60,7 @@
   text-align: center;
 }
 
-.fa-user-slash {
+#userAdmin #searchForm #searchoutput .struct_table .column_active .fa-user-slash {
   color: red;
 }
 
