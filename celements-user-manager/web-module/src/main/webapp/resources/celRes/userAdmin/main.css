@@ -1,0 +1,52 @@
+@charset "UTF-8";
+:root {
+  --accent-color: #156eb9;
+  --lightgrey-color: lightgrey;
+  --dirty-white: whitesmoke;
+}
+#userAdmin,
+#userAdminEdit {
+  font-family: 'Open Sans', sans-serif;
+  display: flex;
+  flex-flow: column;
+  margin: 8px 30px;
+}
+
+#userAdmin  *,
+#userAdminEdit *{
+  box-sizing: border-box;
+}
+
+#userAdmin h1,
+#userAdminEdit h1{
+  background-color: var(--accent-color);
+  color: white;
+  font-size: 16px;
+  padding: 6px 10px;
+}
+
+#userAdmin h2,
+#userAdminEdit h2{
+  background-color: var(--accent-color);
+  color: white;
+  font-size: 14px;
+  padding: 4px 10px;
+}
+
+#userAdmin #content,
+#userAdminEdit #editContent {
+  flex-grow: 6;
+  width: 100%;
+  display: flex;
+  flex-flow: column;
+}
+
+#userAdmin #searchForm,
+#userAdminEdit #editUser{
+  margin: 0px 20px;
+}
+
+#userAdmin #searchForm {
+  display: flex;
+  flex-flow: column;
+}
