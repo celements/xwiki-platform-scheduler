@@ -1,6 +1,6 @@
-#set($xwikiAllGroupDoc = $services.modelAccess.getDocument($services.reference.resolveDocRef("XWiki.XWikiAllGroup")))
+#set($xwikiAllGroupDocRef = $services.reference.resolveDocRef("XWiki.XWikiAllGroup"))
 #set($groupsDocRefList = $services.group.getAllLocalGroups())
-#set($dev = $groupsDocRefList.remove($xwikiAllGroupDoc))
+#set($dev = $groupsDocRefList.remove($xwikiAllGroupDocRef))
 #foreach($groupDocRef in $groupsDocRefList)
   #set($groupDoc = $services.modelAccess.getDocument($groupDocRef))
   #set($prettyName = $services.group.getGroupPrettyName($groupDocRef))
