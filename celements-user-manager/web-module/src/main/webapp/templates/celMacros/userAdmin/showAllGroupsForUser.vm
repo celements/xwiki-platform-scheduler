@@ -3,5 +3,5 @@
 #set($groupDocRefList = $services.rightsAccess.getGroupRefsForUser($userDocRef))
 #set($dev = $groupDocRefList.remove($xwikiAllGroupRefDoc))
 #foreach ($groupDocRef in $groupDocRefList)
-  $!services.group.getGroupPrettyName($groupDocRef))
+  $!services.group.getGroupPrettyName($groupDocRef)
 #end
