@@ -144,13 +144,22 @@ public class CelTagService implements ApplicationListener<CelTagService.RefreshE
   }
 
   @NotNull
-  public Stream<CelTag> getDocTags(@NotNull XWikiDocument doc) {
-    return XWikiObjectFetcher.on(doc)
-        .filter(CelTagClass.CLASS_REF).stream()
-        .flatMap(obj -> getTags(
-            fieldAccessor.get(obj, CelTagClass.FIELD_TYPE),
-            fieldAccessor.get(obj, CelTagClass.FIELD_TAGS)
-                .map(Set::copyOf).orElse(Set.of())));
+  public StreamEx<CelTag> getDocTags(@NotNull XWikiDocument doc) {
+    return getDocTags(doc, null);
+  }
+
+  @NotNull
+  public StreamEx<CelTag> getDocTags(@NotNull XWikiDocument doc, @Nullable String type) {
+    XWikiObjectFetcher fetcher = XWikiObjectFetcher.on(doc)
+        .filter(CelTagClass.CLASS_REF);
+    type = nullToEmpty(type).trim();
+    if (!type.isEmpty()) {
+      fetcher = fetcher.filter(CelTagClass.FIELD_TYPE, type);
+    }
+    return StreamEx.of(fetcher.stream()).flatMap(obj -> getTags(
+        fieldAccessor.get(obj, CelTagClass.FIELD_TYPE),
+        fieldAccessor.get(obj, CelTagClass.FIELD_TAGS)
+            .map(Set::copyOf).orElse(Set.of())));
   }
 
   private Stream<CelTag> getTags(Optional<String> type, Set<String> tags) {

@@ -49,8 +49,8 @@ public final class CelTag {
   private final @NotNull Optional<CelTag> parent;
   private final @NotNull List<CelTag> dependencies;
   private final @NotNull Function<String, Optional<String>> prettyNameForLangGetter;
-  private final int order;
   private final int depth; // root=0
+  private final int order;
   private final Supplier<List<CelTag>> children = Suppliers.memoize(() -> getBeanFactory()
       .getBean(CelTagService.class)
       .getTagsByType()
@@ -72,8 +72,8 @@ public final class CelTag {
         .collect(toUnmodifiableList());
     this.prettyNameForLangGetter = Optional.ofNullable(builder.prettyNameForLangGetter)
         .orElse(lang -> Optional.empty());
-    this.order = builder.order;
     this.depth = (int) getAncestors().count();
+    this.order = builder.order;
   }
 
   public @NotEmpty String getType() {
@@ -167,8 +167,10 @@ public final class CelTag {
     return "CelTag"
         + " [type=" + type
         + ", name=" + name
-        + ", scope=" + scope
-        + ", parent=" + parent
+        + ", depth=" + depth
+        + ", order=" + order
+        + ", scope=" + scope.map(EntityReference::getName).orElse(null)
+        + ", parent=" + parent.map(CelTag::getName).orElse(null)
         + ", dependencies=" + dependencies
         + "]";
   }
@@ -186,6 +188,7 @@ public final class CelTag {
     private Object source; // only for logging in case of error
 
     public Builder type(String type) {
+      checkArgument(parent.isEmpty(), "parent already added");
       this.type = Strings.nullToEmpty(type).trim().toLowerCase();
       return this;
     }
@@ -201,25 +204,26 @@ public final class CelTag {
     }
 
     public Builder parent(String parent) {
-      this.parent = Strings.nullToEmpty(parent).trim().toLowerCase();
-      if (!this.parent.isEmpty()) {
-        expectDependency(this.parent);
-      }
+      this.parent = expectDependency(type, parent);
       return this;
     }
 
-    public void expectDependency(String tag) {
-      dependencyNames.add(Strings.nullToEmpty(tag).trim().toLowerCase());
+    public String expectDependency(String type, String name) {
+      name = Strings.nullToEmpty(name).trim().toLowerCase();
+      if (!name.isEmpty()) {
+        dependencyNames.add(type + "|" + name);
+      }
+      return name;
     }
 
     public void addDependency(CelTag tag) {
-      if ((tag != null) && dependencyNames.remove(tag.getName())) {
+      if ((tag != null) && dependencyNames.contains(tag.getType() + "|" + tag.getName())) {
         dependencies.put(tag.getName(), tag);
       }
     }
 
     public boolean hasAllDependencies() {
-      return dependencyNames.isEmpty();
+      return dependencyNames.size() == dependencies.size();
     }
 
     public Builder prettyName(Function<String, Optional<String>> prettyNameForLangGetter) {
