@@ -1,6 +1,7 @@
 package com.celements.tag;
 
 import static com.celements.common.lambda.LambdaExceptionUtil.*;
+import static com.google.common.base.Strings.*;
 import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
@@ -64,8 +65,13 @@ public class CelTagService implements ApplicationListener<CelTagService.RefreshE
   }
 
   @NotNull
-  public Stream<CelTag> streamAllTags() {
-    return getTagsByType().values().stream();
+  public StreamEx<CelTag> streamTags(@Nullable String type) {
+    return StreamEx.of(getTagsByType().get(nullToEmpty(type).toLowerCase()));
+  }
+
+  @NotNull
+  public StreamEx<CelTag> streamAllTags() {
+    return StreamEx.of(getTagsByType().values());
   }
 
   @NotNull

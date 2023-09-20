@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -25,15 +24,20 @@ import org.xwiki.model.reference.EntityReference;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
+import com.google.common.collect.Ordering;
 
 import one.util.streamex.StreamEx;
 
 @Immutable
 public final class CelTag {
 
-  public static final Comparator<CelTag> CMP_ORDER = Comparator.comparing(CelTag::getOrder);
+  public static final Comparator<CelTag> CMP_DEPTH = Comparator.comparingInt(CelTag::getDepth);
+  public static final Comparator<CelTag> CMP_ORDER = Ordering.natural().<Integer>lexicographical()
+      .onResultOf(tag -> tag.getAncestorsAndThis().map(CelTag::getOrder));
   public static final Function<String, Comparator<CelTag>> CMP_NAME = lang -> Comparator
       .comparing(tag -> tag.getPrettyName(lang).orElseGet(tag::getName));
+  public static final Function<String, Comparator<CelTag>> CMP_DEFAULT = lang -> CMP_ORDER
+      .thenComparing(CMP_NAME.apply(lang));
 
   public static Builder builder() {
     return new Builder();
@@ -46,6 +50,7 @@ public final class CelTag {
   private final @NotNull List<CelTag> dependencies;
   private final @NotNull Function<String, Optional<String>> prettyNameForLangGetter;
   private final int order;
+  private final int depth; // root=0
   private final Supplier<List<CelTag>> children = Suppliers.memoize(() -> getBeanFactory()
       .getBean(CelTagService.class)
       .getTagsByType()
@@ -68,6 +73,7 @@ public final class CelTag {
     this.prettyNameForLangGetter = Optional.ofNullable(builder.prettyNameForLangGetter)
         .orElse(lang -> Optional.empty());
     this.order = builder.order;
+    this.depth = (int) getAncestors().count();
   }
 
   public @NotEmpty String getType() {
@@ -96,30 +102,38 @@ public final class CelTag {
     return children.get().isEmpty();
   }
 
+  public int getDepth() {
+    return this.depth;
+  }
+
   public @NotNull Optional<CelTag> getParent() {
     return parent;
   }
 
-  public @NotNull Stream<CelTag> getAncestors() {
+  public @NotNull StreamEx<CelTag> getAncestors() {
     return getThisAndAncestors().skip(1);
   }
 
-  public @NotNull Stream<CelTag> getThisAndAncestors() {
+  public @NotNull StreamEx<CelTag> getThisAndAncestors() {
     return StreamEx.iterate(Optional.of(this), t -> t.isPresent(), t -> t.get().parent)
         .map(Optional::get);
   }
 
-  public @NotNull Stream<CelTag> getChildren() {
-    return children.get().stream();
+  public @NotNull StreamEx<CelTag> getAncestorsAndThis() {
+    return getThisAndAncestors().reverseSorted(CMP_DEPTH);
   }
 
-  public @NotNull Stream<CelTag> getDescendents() {
+  public @NotNull StreamEx<CelTag> getChildren() {
+    return StreamEx.of(children.get());
+  }
+
+  public @NotNull StreamEx<CelTag> getDescendents() {
     return getChildren().flatMap(child -> StreamEx.of(child)
         .append(child.getDescendents()));
   }
 
-  public @NotNull Stream<CelTag> getDependencies() {
-    return dependencies.stream();
+  public @NotNull StreamEx<CelTag> getDependencies() {
+    return StreamEx.of(dependencies);
   }
 
   public @NotNull Optional<String> getPrettyName(String lang) {
