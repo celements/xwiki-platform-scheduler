@@ -120,7 +120,7 @@ public final class CelTag {
   }
 
   public @NotNull StreamEx<CelTag> getAncestorsAndThis() {
-    return getThisAndAncestors().reverseSorted(CMP_DEPTH);
+    return getThisAndAncestors().sorted(CMP_DEPTH);
   }
 
   public @NotNull StreamEx<CelTag> getChildren() {
