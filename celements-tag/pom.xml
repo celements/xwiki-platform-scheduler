@@ -28,13 +28,13 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>celements-tag</artifactId>
-  <version>6.1-SNAPSHOT</version>
+  <version>6.2-SNAPSHOT</version>
   <description>Celements Tags</description>
   <dependencies>
     <dependency>
       <groupId>com.celements</groupId>
       <artifactId>celements-xwiki-core</artifactId>
-      <version>6.0</version>
+      <version>6.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -46,7 +46,7 @@
     <dependency>
       <groupId>com.celements</groupId>
       <artifactId>celements-core</artifactId>
-      <version>6.0</version>
+      <version>6.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
