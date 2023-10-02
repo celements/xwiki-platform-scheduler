@@ -170,7 +170,7 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public QueryRestriction createRestriction(String field, String value) {
     QueryRestriction restriction = new QueryRestriction(field, value);
-    if (isAnalyzedOnIndex(field, value)) {
+    if (!restriction.getSpecifier().isEmpty() && isAnalyzedOnIndex(restriction)) {
       getLucenePlugin().map(LucenePlugin::getAnalyzer)
           .flatMap(a -> tryCast(a, CelAnalyzer.class))
           .ifPresent(restriction::setAnalyzer);
@@ -178,9 +178,12 @@ public class LuceneSearchService implements ILuceneSearchService {
     return restriction;
   }
 
-  private boolean isAnalyzedOnIndex(String field, String value) {
-    var indexField = new IndexExtensionField.Builder(field).value(value).build();
-    return indexField.getLuceneField().isTokenized();
+  private boolean isAnalyzedOnIndex(QueryRestriction restriction) {
+    return new IndexExtensionField.Builder(restriction.getSpecifier())
+        .value(restriction.getQuery())
+        .build()
+        .getLuceneField()
+        .isTokenized();
   }
 
   @Override
