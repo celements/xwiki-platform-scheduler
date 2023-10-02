@@ -56,6 +56,7 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.plugin.lucene.IndexFields;
 import com.xpn.xwiki.plugin.lucene.LucenePlugin;
+import com.xpn.xwiki.plugin.lucene.indexExtension.IndexExtensionField;
 
 @Component
 public class LuceneSearchService implements ILuceneSearchService {
@@ -169,10 +170,17 @@ public class LuceneSearchService implements ILuceneSearchService {
   @Override
   public QueryRestriction createRestriction(String field, String value) {
     QueryRestriction restriction = new QueryRestriction(field, value);
-    getLucenePlugin().map(LucenePlugin::getAnalyzer)
-        .flatMap(a -> tryCast(a, CelAnalyzer.class))
-        .ifPresent(restriction::setAnalyzer);
+    if (isAnalyzedOnIndex(field, value)) {
+      getLucenePlugin().map(LucenePlugin::getAnalyzer)
+          .flatMap(a -> tryCast(a, CelAnalyzer.class))
+          .ifPresent(restriction::setAnalyzer);
+    }
     return restriction;
+  }
+
+  private boolean isAnalyzedOnIndex(String field, String value) {
+    var indexField = new IndexExtensionField.Builder(field).value(value).build();
+    return indexField.getLuceneField().isTokenized();
   }
 
   @Override

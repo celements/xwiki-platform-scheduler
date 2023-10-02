@@ -160,9 +160,10 @@ public class IndexExtensionField {
 
     private Field.Index determineIndexByNameOrValue() {
       String name = this.name.toLowerCase();
-      return name.endsWith("_s") || name.endsWith("_fullname")
-          || value.equals("true") || value.equals("false")
-          || (Doubles.tryParse(value) != null)
+      return name.endsWith("_s") || name.endsWith("_fullname") // reserved suffixes
+          || value.equals("true") || value.equals("false") // boolean query
+          || value.contains(" TO ") // range query
+          || (Doubles.tryParse(value) != null) // number query
               ? Field.Index.NOT_ANALYZED
               : Field.Index.ANALYZED;
     }
