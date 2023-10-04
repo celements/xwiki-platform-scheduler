@@ -63,12 +63,32 @@ public class IndexExtensionField {
     return luceneField.name();
   }
 
+  public String getValue() {
+    return luceneField.stringValue();
+  }
+
   public ExtensionType getExtensionType() {
     return extensionType;
   }
 
   public Fieldable getLuceneField() {
     return luceneField;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getName(), getValue(), getExtensionType());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj instanceof IndexExtensionField) {
+      IndexExtensionField that = (IndexExtensionField) obj;
+      return Objects.equals(this.getName(), that.getName())
+          && Objects.equals(this.getValue(), that.getValue())
+          && Objects.equals(this.getExtensionType(), that.getExtensionType());
+    }
+    return false;
   }
 
   @Override
