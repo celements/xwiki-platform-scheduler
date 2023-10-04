@@ -3,6 +3,7 @@ package com.celements.tag;
 import static com.celements.spring.context.SpringContextProvider.*;
 import static com.google.common.base.Preconditions.*;
 import static java.util.stream.Collectors.*;
+import static one.util.streamex.MoreCollectors.*;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -121,6 +122,10 @@ public final class CelTag {
 
   public @NotNull StreamEx<CelTag> getAncestorsAndThis() {
     return getThisAndAncestors().sorted(CMP_DEPTH);
+  }
+
+  public @NotNull CelTag getRoot() {
+    return getAncestors().collect(last()).orElse(this);
   }
 
   public @NotNull StreamEx<CelTag> getChildren() {
