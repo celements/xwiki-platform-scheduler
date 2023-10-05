@@ -3,6 +3,7 @@ package com.xpn.xwiki.plugin.lucene.indexExtension;
 import static com.celements.common.MoreOptional.*;
 import static com.celements.common.date.DateFormat.*;
 import static com.google.common.base.Strings.*;
+import static com.xpn.xwiki.plugin.lucene.IndexFields.*;
 
 import java.time.temporal.Temporal;
 import java.util.Collection;
@@ -180,7 +181,7 @@ public class IndexExtensionField {
 
     private Field.Index determineIndexByNameOrValue() {
       String name = this.name.toLowerCase();
-      return name.endsWith("_s") || name.endsWith("_fullname") // reserved suffixes
+      return name.endsWith(SUFFIX_SORT) || name.endsWith("_fullname") // reserved suffixes
           || value.equals("true") || value.equals("false") // boolean query
           || value.contains(" TO ") // range query
           || (Doubles.tryParse(value) != null) // number query
