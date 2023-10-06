@@ -2,6 +2,7 @@ package com.celements.tag.lucene;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -45,14 +46,17 @@ public class CelTagIndexExtender implements ILuceneIndexExtender {
   public Collection<IndexExtensionField> getExtensionFields(AbstractIndexData data) {
     DocumentData docData = (DocumentData) data;
     XWikiDocument doc = modelAccess.getOrCreateDocument(docData.getDocumentReference());
-    return tagService.getDocTags(doc)
-        .flatMap(CelTag::getThisAndAncestors)
+    return toExtensionFields(tagService.getDocTags(doc))
+        .collect(Collectors.toList());
+  }
+
+  public Stream<IndexExtensionField> toExtensionFields(Stream<CelTag> tags) {
+    return tags.flatMap(CelTag::getThisAndAncestors)
         .distinct()
         .map(tag -> new IndexExtensionField.Builder(INDEX_FIELD + "_" + tag.getType())
             .extensionType(ExtensionType.ADD)
             .value(tag.getName())
-            .build())
-        .collect(Collectors.toList());
+            .build());
   }
 
 }
