@@ -44,6 +44,10 @@ public class CelTagScriptService implements ScriptService {
         .collect(toList());
   }
 
+  public CelTag getTag(String type, String name) {
+    return tagService.getTag(type, name).orElse(null);
+  }
+
   public List<CelTag> getTags(DocumentReference docRef) {
     return rightsAccess.hasAccessLevel(docRef, EAccessLevel.VIEW)
         ? tagService.getDocTags(modelAccess.getOrCreateDocument(docRef)).collect(toList())
