@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.concurrent.Immutable;
@@ -17,18 +18,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.celements.tag.CelTag;
 import com.celements.tag.CelTagService;
+import com.celements.web.service.IWebUtilsService;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import one.util.streamex.EntryStream;
+import one.util.streamex.StreamEx;
 
 @RestController
 @RequestMapping("/celtags")
 public class CelTagController {
 
   private final CelTagService tagService;
+  private final IWebUtilsService webUtils;
 
   @Inject
-  public CelTagController(CelTagService tagService) {
+  public CelTagController(
+      CelTagService tagService,
+      IWebUtilsService webUtils) {
     this.tagService = tagService;
+    this.webUtils = webUtils;
   }
 
   @GetMapping
@@ -65,16 +73,25 @@ public class CelTagController {
   }
 
   @Immutable
+  @JsonInclude(JsonInclude.Include.NON_EMPTY)
   public class TagDto {
 
     public final String name;
-    public final String type;
+    public final int order;
+    public final Map<String, String> prettyName;
     public final List<TagDto> children;
 
     public TagDto(CelTag tag) {
       name = tag.getName();
-      type = tag.getType();
-      children = tag.getChildren().map(TagDto::new).toImmutableList(); // TODO sort?
+      order = tag.getOrder();
+      prettyName = StreamEx.of(webUtils.getAllowedLanguages())
+          .mapToEntry(tag::getPrettyName)
+          .flatMapValues(Optional::stream)
+          .toImmutableMap();
+      children = tag.getChildren()
+          .sorted(CelTag.CMP_ORDER)
+          .map(TagDto::new)
+          .toImmutableList();
     }
   }
 
