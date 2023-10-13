@@ -2,7 +2,9 @@ package com.celements.tag.controller;
 
 import static java.util.stream.Collectors.*;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.celements.tag.CelTag;
 import com.celements.tag.CelTagService;
-import com.google.common.collect.Multimap;
 
 @RestController
 @RequestMapping("/celtags")
@@ -29,13 +30,12 @@ public class CelTagController {
   }
 
   @GetMapping
-  public Multimap<String, CelTag> getTags() {
-    return tagService.getTagsByType();
+  public Map<String, Collection<CelTag>> getTags() {
+    return tagService.getTagsByType().asMap();
   }
 
   @GetMapping("/types")
-  public Set<String> getTypes(
-      @PathVariable String type) {
+  public Set<String> getTypes() {
     return tagService.getTagsByType().keySet();
   }
 
