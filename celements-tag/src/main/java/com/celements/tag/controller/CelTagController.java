@@ -25,7 +25,7 @@ import one.util.streamex.EntryStream;
 import one.util.streamex.StreamEx;
 
 @RestController
-@RequestMapping("/celtags")
+@RequestMapping("/v1/celtags")
 public class CelTagController {
 
   private final CelTagService tagService;
