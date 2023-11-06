@@ -3,50 +3,65 @@
   --accent-color: #156eb9;
   --lightgrey-color: lightgrey;
   --dirty-white: whitesmoke;
+  --font: 'Open Sans', sans-serif;
+}
+#sitecontainer {
+  padding-top: 10px;
+  padding-bottom: 20px;
 }
 #userAdmin,
 #userAdminEdit {
-  font-family: 'Open Sans', sans-serif;
   display: flex;
   flex-flow: column;
-  margin: 8px 30px;
+  margin: 0px 2%;
 }
-
 #userAdmin  *,
 #userAdminEdit *{
   box-sizing: border-box;
 }
-
 #userAdmin h1,
-#userAdminEdit h1{
+#userAdminEdit h1 {
+  font-family: var(--font);
+  background-color: var(--accent-color);
+  color: white;
+  font-size: 18px;
+  line-height: 26px;
+  padding: 6px 10px;
+  text-transform: uppercase;
+  font-weight: normal;
+  margin: 0px;
+}
+#userAdmin h2,
+#userAdminEdit h2{
+  font-family: var(--font);
   background-color: var(--accent-color);
   color: white;
   font-size: 16px;
-  padding: 6px 10px;
+  line-height: 23px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  font-weight: normal;
+  margin: 0px;
 }
-
-#userAdmin h2,
-#userAdminEdit h2{
-  background-color: var(--accent-color);
-  color: white;
-  font-size: 14px;
-  padding: 4px 10px;
+#userAdmin li,
+#userAdmin a,
+#userAdminEdit a,
+#userAdmin input,
+#userAdminEdit input,
+#userAdmin label,
+#userAdminEdit label {
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 23px;
 }
-
 #userAdmin #content,
 #userAdminEdit #editContent {
-  flex-grow: 6;
   width: 100%;
   display: flex;
   flex-flow: column;
+  gap: 20px;
 }
-
 #userAdmin #searchForm,
 #userAdminEdit #editUser{
   margin: 0px 20px;
-}
-
-#userAdmin #searchForm {
-  display: flex;
-  flex-flow: column;
 }

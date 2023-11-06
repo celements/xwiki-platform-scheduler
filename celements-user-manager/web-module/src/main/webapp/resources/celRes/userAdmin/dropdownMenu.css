@@ -1,26 +1,27 @@
+#menu {
+  align-self: flex-end;
+  padding-top: 30px;
+}
 #userAdminActionMenu  {
   display: block;
-  width: 60px;
-  float: right;
+  width: 50px;
   position: relative;
-  margin: 15px 0px 0px;
 }
-
 #userAdminActionMenu .dropbtn {
   display: block;
   border: 2px solid var(--accent-color);
   color: var(--accent-color);
-  font-size: 14px;
   text-align: center;
-  font-weight: bolder;
-  padding: 0px 0px 6px;
-  margin: 1px 0px;
+  margin-bottom: 1px;
+  background-color: #8fdfff26;
 }
-
+#userAdminActionMenu .dropbtn .fa-ellipsis {
+  font-size: 20px;
+  line-height: 26px;
+}
 #userAdminActionMenu .dropdown-content.open {
   display: block;
 }
-
 #userAdminActionMenu .dropdown-content {
   display: none;
   background-color: var(--dirty-white);
@@ -32,7 +33,6 @@
   border-bottom: 0.5px solid black;
   z-index: 1000;
 }
-
 #userAdminActionMenu .dropdown-content a {
   display: block;
   text-decoration: none;
@@ -40,7 +40,6 @@
   padding: 5px;
   border-top: 0.5px solid black;
 }
-
 #userAdminActionMenu .dropdown-content a:hover {
   background-color: var(--lightgrey-color);
 }
