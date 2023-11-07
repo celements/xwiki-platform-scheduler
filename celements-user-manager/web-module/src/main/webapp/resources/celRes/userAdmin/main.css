@@ -1,8 +1,8 @@
 @charset "UTF-8";
 :root {
   --accent-color: #156eb9;
-  --lightgrey-color: lightgrey;
-  --dirty-white: whitesmoke;
+  --background-color: #e9f6fb;
+  --lightgrey-color: #eaeaea;
   --font: 'Open Sans', sans-serif;
 }
 #sitecontainer {
@@ -46,10 +46,11 @@
 #userAdmin li,
 #userAdmin a,
 #userAdminEdit a,
-#userAdmin input,
-#userAdminEdit input,
+#userAdmin input:not(input[type="checkbox"]),
+#userAdminEdit input:not(input[type="checkbox"]),
 #userAdmin label,
-#userAdminEdit label {
+#userAdminEdit label,
+#userAdminEdit select {
   font-family: var(--font);
   font-size: 16px;
   line-height: 23px;

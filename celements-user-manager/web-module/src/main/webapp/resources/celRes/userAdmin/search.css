@@ -14,13 +14,13 @@
   position: absolute;
   top: 12px;
   left: 10px;
-  color: var(--lightgrey-color);
+  color: var(--accent-color);
 }
 #userAdmin #searchForm #searchWrapper input {
   width: 100%;
   padding: 10px 40px;
   border: none;
-  border-bottom: 2px solid var(--lightgrey-color);
+  border-bottom: 2px solid var(--accent-color);
 }
   #userAdmin #searchForm #searchWrapper input:focus {
   outline:none;

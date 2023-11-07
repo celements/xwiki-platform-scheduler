@@ -1,6 +1,6 @@
 #menu {
   align-self: flex-end;
-  padding-top: 30px;
+  padding-top: 40px;
 }
 #userAdminActionMenu  {
   display: block;
@@ -13,7 +13,7 @@
   color: var(--accent-color);
   text-align: center;
   margin-bottom: 1px;
-  background-color: #8fdfff26;
+  background-color: #e9f6fb;
 }
 #userAdminActionMenu .dropbtn .fa-ellipsis {
   font-size: 20px;
@@ -24,7 +24,7 @@
 }
 #userAdminActionMenu .dropdown-content {
   display: none;
-  background-color: var(--dirty-white);
+  background-color: var(--background-color);
   min-width: 160px;
   position: absolute;
   right: 0;

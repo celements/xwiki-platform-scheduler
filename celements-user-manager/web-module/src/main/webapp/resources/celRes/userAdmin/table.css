@@ -2,80 +2,67 @@
 #userAdmin #searchForm #searchoutput .struct_table {
   display: flex;
   flex-flow: column;
+  gap: 3px;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table ul.struct_table_header, 
 #userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data {
   list-style-type: none;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table ul.struct_table_header {
-  padding: 5px 0px;
+  padding: 0px 0px;
   margin: 0px 0px;
   font-weight: bold;
+  text-transform: uppercase;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data {
   display: flex;
   flex-flow: column;
   padding: 0px 0px;
   margin: 0px 0px;
+  gap: 1px;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data li.struct_table_row:nth-child(odd){
-  background-color: var(--dirty-white);
+  background-color: var(--background-color);
 }
-
 #userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row {
   display: flex;
   flex-flow: row wrap;
   align-items: flex-start;
-  padding: 2px 0px;
-  margin: 1px 0px;
+  padding: 3px 0px;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data li.struct_table_row:hover,
 #userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data li.struct_table_row.open {
   background-color: var(--lightgrey-color);
 }
-
 #userAdmin #searchForm #searchoutput .struct_table .column_arrow {
   flex: 0 0 20px;
   text-align: center;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table li.struct_table_row .column_arrow {
   transition: transform 0.5s linear;
   transform: rotate(0deg);
   content: "\f0da";
-  }
-
+ }
   #userAdmin #searchForm #searchoutput .struct_table li.struct_table_row.open .column_arrow {
   transition: transform 0.5s linear;
   transform: rotate(90deg);
 }
-
 #userAdmin #searchForm #searchoutput .struct_table .column_active {
   flex: 0 0 25px;
   text-align: center;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table .column_active .fa-user-slash {
   color: red;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table .column_name {
   flex: 1 0 150px;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table .column_firstname{
   flex: 1 0 100px;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table .column_email{
   flex: 1 0 350px;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table .column_roles {
   flex: 2 0 120px;
 }
