@@ -59,20 +59,54 @@
   font-size: 15px;
   line-height: 16px;
 }
-#userEditForm .formWrapper input[type=text] {
+#userEditForm .formWrapper input[type=text],
+#userEditForm .formWrapper .select2UserAdminSelection {
   padding: 8px 10px;
   border: none;
   background-color: var(--background-color);
+  border-radius: 0px;
+  height: 39px;
 }
 #userEditForm .formWrapper input[type=text]:focus,
-#userEditForm .formWrapper select:focus {
+#userEditForm .formWrapper .select2UserAdminSelection:focus {
   outline:none;
   border-bottom: 2px solid var(--accent-color);
 }
-#userEditForm .formWrapper select {
-  padding: 8px 10px;
-  border: none;
-  background-color: var(--background-color);
+/* select2 customisings*/
+#userAdminEdit .select2UserAdminSelection {
+  display: flex;
+  width: 100%;
+  position: relative;
+}
+#userEditForm .select2-selection__rendered {
+  padding: 0px;
+  color: black;
+  line-height: 23px;
+}
+#userEditForm .select2-selection__arrow {
+  display: none;
+}
+#userEditForm .select2UserAdminSelection::after {
+  font-family: 'FontAwesome';
+  content: "\f078";
+  position: absolute;
+  right: 15px;
+  top: 8px;
+  line-height: 23px;
+  font-size: 16px;
+}
+body .select2-container .select2UserAdminDropdown {
+  border: 1px solid var(--accent-color);
+  border-radius: 0px;
+}
+body .select2-container .select2UserAdminDropdown .select2-results__option {
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 23px;
+  padding: 6px 10px;
+}
+body .select2-container .select2UserAdminDropdown .select2-results__option--highlighted[aria-selected] {
+  background-color: var(--accent-color);
 }
 #userEditForm .submitaction, 
 #userEditForm .cancelaction {

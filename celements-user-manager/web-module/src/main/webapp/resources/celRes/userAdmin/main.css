@@ -50,7 +50,7 @@
 #userAdminEdit input:not(input[type="checkbox"]),
 #userAdmin label,
 #userAdminEdit label,
-#userAdminEdit select {
+#userAdminEdit .select2UserAdminSelection {
   font-family: var(--font);
   font-size: 16px;
   line-height: 23px;
