@@ -43,6 +43,9 @@
   transform: rotate(0deg);
   content: "\f0da";
  }
+ #userAdmin #searchForm #searchoutput .struct_table li.struct_table_row .column_arrow:hover {
+  cursor: pointer;
+}
   #userAdmin #searchForm #searchoutput .struct_table li.struct_table_row.open .column_arrow {
   transition: transform 0.5s linear;
   transform: rotate(90deg);

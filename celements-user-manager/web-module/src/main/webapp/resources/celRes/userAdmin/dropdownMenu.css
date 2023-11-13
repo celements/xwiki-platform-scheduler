@@ -15,6 +15,9 @@
   margin-bottom: 1px;
   background-color: #e9f6fb;
 }
+#userAdminActionMenu .dropbtn:hover {
+  cursor: pointer;
+}
 #userAdminActionMenu .dropbtn .fa-ellipsis {
   font-size: 20px;
   line-height: 26px;
@@ -42,4 +45,5 @@
 }
 #userAdminActionMenu .dropdown-content a:hover {
   background-color: var(--lightgrey-color);
+  cursor: pointer;
 }
