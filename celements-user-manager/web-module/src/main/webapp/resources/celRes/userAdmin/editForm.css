@@ -22,12 +22,12 @@
   width: 100%;
   gap: 5px;
 }
-#userEditForm .formWrapper #groups {
+#userEditForm #groups {
   display: flex;
   flex-flow: row wrap;
   padding: 3px 0px 12px;
 }
-#userEditForm .formWrapper #groups .checkboxWrapper {
+#userEditForm #groups .checkboxWrapper {
   display: flex;
   flex-flow: row;
   flex: 0 0 200px;
