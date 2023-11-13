@@ -33,7 +33,7 @@
   flex: 0 0 200px;
   gap: 8px;
 }
-#userEditForm .formWrapper .checkboxWrapper input[type="checkbox"] {
+#userEditForm .checkboxWrapper input[type="checkbox"] {
   appearance: none;
   position: relative;
   width: 16px !important;
@@ -43,11 +43,11 @@
   border-radius: 0px;
   align-self: center;
 }
-#userEditForm .formWrapper .checkboxWrapper input[type="checkbox"]:checked {
+#userEditForm .checkboxWrapper input[type="checkbox"]:checked {
   border: none;
   background-color: var(--accent-color);
 }
-#userEditForm .formWrapper .checkboxWrapper input[type="checkbox"]:checked::before {
+#userEditForm .checkboxWrapper input[type="checkbox"]:checked::before {
   font-family: 'FontAwesome';
   content: "\f00c";
   display: block;
@@ -60,9 +60,8 @@
   line-height: 16px;
 }
 #userEditForm .formWrapper input[type=text] {
-  padding: 5px 10px;
+  padding: 8px 10px;
   border: none;
-  border-bottom: 1px solid var(--accent-color);
   background-color: var(--background-color);
 }
 #userEditForm .formWrapper input[type=text]:focus,
@@ -71,10 +70,9 @@
   border-bottom: 2px solid var(--accent-color);
 }
 #userEditForm .formWrapper select {
-  padding: 5px 10px;
+  padding: 8px 10px;
   border: none;
   background-color: var(--background-color);
-  border-bottom: 1px solid var(--accent-color);
 }
 #userEditForm .submitaction, 
 #userEditForm .cancelaction {
