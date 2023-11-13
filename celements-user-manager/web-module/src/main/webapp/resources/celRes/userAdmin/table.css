@@ -66,38 +66,36 @@
 #userAdmin #searchForm #searchoutput .struct_table .column_email{
   flex: 1 0 350px;
 }
-#userAdmin #searchForm #searchoutput .struct_table .column_roles {
-  flex: 2 0 120px;
+#userAdmin #searchForm #searchoutput .struct_table .column_company {
+  flex: 1 0 150px;
 }
-
+#userAdmin #searchForm #searchoutput .struct_table .column_language {
+  flex: 1 0 30px;
+}
 #userAdmin #searchForm #searchoutput .struct_table .column_edit, 
 #userAdmin #searchForm #searchoutput .struct_table .column_delete {
   flex: 0 0 25px;
   text-align: center;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table .column_edit a.icon-link, 
 #userAdmin #searchForm #searchoutput .struct_table .column_delete a.icon-link {
   text-decoration: none;
   color: black;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table .column_edit a.icon-link:hover, 
 #userAdmin #searchForm #searchoutput .struct_table .column_delete a.icon-link:hover {
   color: var(--accent-color);
 }
-
 #userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE {
 	display: flex;
-  flex-flow: row;
-  flex: 1 1 100%;
+  flex-flow: column;
   max-height: 0;
   padding: 0 0px;
   margin-left: 40px;
   transition: max-height 0.3s ease-out;
   overflow: hidden;
+  width: 100%;
 }
-
 #userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row.open .editContentRTE {
   margin-left: 22px;
   margin-right: 50px;
@@ -105,26 +103,10 @@
   margin-top: 4px;
   max-height: 1000px;
   transition: max-height 0.8s ease-in;
-  border-top: 1px solid darkgray;
+  border-top: 1px solid var(--accent-color);
   padding: 3px 15px;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper, 
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .languageWrapper {
-  display: flex;
-  flex-flow: row wrap;
-  padding: 0px 10px;
-}
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper {
-  flex: 0 0 200px;
-}
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .languageWrapper {
-  flex: 0 0 80px;
-}
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper .companyLabel, 
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .languageWrapper .languageLabel {
-  flex: 0 0 20px;
+#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .groupLabel {
+  font-weight: bold;
+  text-transform: uppercase;
 }
