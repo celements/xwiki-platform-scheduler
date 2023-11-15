@@ -1,13 +1,13 @@
 @charset "UTF-8";
-#userAdmin #searchForm {
+#searchGroup {
   display: flex;
   flex-flow: column;
 }
-#userAdmin #searchForm #searchWrapper {
+#searchGroup #searchWrapper {
   position: relative;
   width: 100%;
 }
-#userAdmin #searchForm #searchWrapper::before {
+#searchGroup #searchWrapper::before {
   font-family: 'FontAwesome';
   content: "\f002";
   font-size: 16px;
@@ -16,13 +16,13 @@
   left: 10px;
   color: var(--accent-color);
 }
-#userAdmin #searchForm #searchWrapper input {
+#searchGroup #searchWrapper input {
   width: 100%;
   padding: 10px 40px;
   border: none;
   border-bottom: 2px solid var(--accent-color);
 }
-  #userAdmin #searchForm #searchWrapper input:focus {
+ #searchGroup #searchWrapper input:focus {
   outline:none;
   border-bottom: 2px solid black;
 }

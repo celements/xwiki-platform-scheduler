@@ -59,6 +59,9 @@
   font-size: 15px;
   line-height: 16px;
 }
+#userEditForm .formWrapper select {
+  visibility: hidden;
+}
 #userEditForm .formWrapper input[type=text],
 #userEditForm .formWrapper .select2UserAdminSelection {
   padding: 8px 10px;

@@ -62,7 +62,7 @@
   flex-flow: column;
   gap: 20px;
 }
-#userAdmin #searchForm,
+#userAdmin #searchGroup,
 #userAdminEdit #editUser{
   margin: 0px 20px;
 }
