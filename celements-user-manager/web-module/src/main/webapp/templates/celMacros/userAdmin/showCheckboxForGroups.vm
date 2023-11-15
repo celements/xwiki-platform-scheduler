@@ -2,7 +2,7 @@
 #set($groupsDocRefList = $services.group.getAllLocalGroups())
 #set($dev = $groupsDocRefList.remove($xwikiAllGroupDocRef))
 #foreach($groupDocRef in $groupsDocRefList)
-  #set($hasEditRight = $services.rightAccess.hasAccessLevel($groupDocRef, 'edit'))
+  #set($hasEditRight = $services.rightsAccess.hasAccessLevel($groupDocRef, 'edit'))
   #set($groupDoc = $services.modelAccess.getDocument($groupDocRef))
   #set($prettyName = $services.group.getGroupPrettyName($groupDocRef))
   #set($objNb = $groupDoc.getObject('XWiki.XWikiGroups', 'member', "$doc").number)
