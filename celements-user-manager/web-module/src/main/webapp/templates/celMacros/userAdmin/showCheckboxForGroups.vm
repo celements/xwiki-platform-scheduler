@@ -2,11 +2,10 @@
 #set($groupsDocRefList = $services.group.getAllLocalGroups())
 #set($dev = $groupsDocRefList.remove($xwikiAllGroupDocRef))
 #foreach($groupDocRef in $groupsDocRefList)
-  #set($hasEditRight = $services.rightsAccess.hasAccessLevel($groupDocRef, $services.rightsAccess.getAccessLevel('edit')))
   #set($groupDoc = $services.modelAccess.getDocument($groupDocRef))
   #set($prettyName = $services.group.getGroupPrettyName($groupDocRef))
   #set($isMember = $xwiki.getUser($!{services.reference.serialize($doc.documentReference)}).isUserInGroup($groupDocRef.name))
-  #if($hasEditRight || $isAdmin)
+  #if($isAdmin)
     #set($objNb = $groupDoc.getObject('XWiki.XWikiGroups', 'member', "$doc").number)
     #if(!$objNb)
       #set($objNb = $groupDoc.getObject('XWiki.XWikiGroups', 'member', '').number)
@@ -20,7 +19,7 @@
       <input type='hidden' value='' name='$!{inputName}'>
       <label for='$!{inputName}'>$!prettyName</label>
     </div>
-  #elseif(!$hasEditRight && $isMember)
+  #elseif($isMember)
     <div class='checkboxWrapper'>
       <input type='checkbox' value='$!{services.reference.serialize($doc.documentReference)}' name='$!{doc}' #if($isMember) checked #end disabled>
       <input type='hidden' value='' name='$!{doc}'>
