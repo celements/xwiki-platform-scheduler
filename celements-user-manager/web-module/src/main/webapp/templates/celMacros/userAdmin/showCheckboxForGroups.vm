@@ -15,15 +15,15 @@
     #end
     <div class='checkboxWrapper'>
       #set($inputName = "$!{services.reference.serialize($groupDocRef, 'local')}_XWiki.XWikiGroups_$!{objNb}_member")
-      <input type='checkbox' value='$!{services.reference.serialize($doc.documentReference)}' name='$!{inputName}' #if($isMember) checked #end>
+      #set($idAndLabel = "$!services.reference.serialize($groupDocRef, 'local')")
+      <input id='$!idAndLabel' type='checkbox' value='$!{services.reference.serialize($doc.documentReference)}' name='$!{inputName}' #if($isMember) checked #end>
       <input type='hidden' value='' name='$!{inputName}'>
-      <label for='$!{inputName}'>$!prettyName</label>
+      <label for='$!idAndLabel'>$!prettyName</label>
     </div>
   #elseif($isMember)
     <div class='checkboxWrapper'>
-      <input type='checkbox' value='$!{services.reference.serialize($doc.documentReference)}' name='$!{doc}' #if($isMember) checked #end disabled>
-      <input type='hidden' value='' name='$!{doc}'>
-      <label for='$!{inputName}'>$!prettyName</label>
+      <input type='checkbox' value='$!{services.reference.serialize($doc.documentReference)}' #if($isMember) checked #end disabled>
+      <label>$!prettyName</label>
      </div>
   #else
     ##in other cases we do not display the group and the checkbox
