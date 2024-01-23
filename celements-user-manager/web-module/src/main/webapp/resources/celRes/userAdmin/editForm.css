@@ -136,6 +136,8 @@ body .select2-container .select2UserAdminDropdown .select2-results__option--high
 }
 #userEditForm .submitaction a, 
 #userEditForm .cancelaction a {
+  display: block;
+  width: 100%;
   text-decoration: none;
   color: white;
   text-transform: uppercase;
