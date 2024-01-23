@@ -43,9 +43,16 @@
   border-radius: 0px;
   align-self: center;
 }
+#userEditForm .checkboxWrapper input[type="checkbox"]:disabled {
+  border: 2px solid darkgrey;
+}
 #userEditForm .checkboxWrapper input[type="checkbox"]:checked {
   border: none;
   background-color: var(--accent-color);
+}
+#userEditForm .checkboxWrapper input[type="checkbox"]:checked:disabled {
+  border: none;
+  background-color: darkgray;
 }
 #userEditForm .checkboxWrapper input[type="checkbox"]:checked::before {
   font-family: 'FontAwesome';
