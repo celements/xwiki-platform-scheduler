@@ -38,6 +38,9 @@
   border: 1px solid var(--accent-color);
   z-index: 1000;
 }
+.dropdown-content div:not(div:first-child) {
+  display: none;
+}
 #userAdminActionMenu .dropdown-content div + div {
   border-top: 1px solid var(--accent-color);
 }

@@ -3,6 +3,9 @@
   display: flex;
   flex-flow: column;
 }
+#searchGroup #searchForm {
+  display: none;
+}
 #searchGroup #searchWrapper {
   position: relative;
   width: 100%;
