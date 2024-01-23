@@ -3,6 +3,7 @@
   display: flex;
   flex-flow: column;
   gap: 3px;
+  min-width: 900px;
 }
 #searchoutput .struct_table ul.struct_table_header, 
 #searchoutput .struct_table ul.struct_table_data {
@@ -29,6 +30,7 @@
   flex-flow: row wrap;
   align-items: flex-start;
   padding: 3px 0px;
+  gap: 0px 3px;
 }
 #searchoutput .struct_table ul.struct_table_data li.struct_table_row:hover,
 #searchoutput .struct_table ul.struct_table_data li.struct_table_row.open {
