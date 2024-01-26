@@ -1,140 +1,115 @@
 @charset "UTF-8";
-#userAdmin #searchForm #searchoutput .struct_table {
+#searchoutput .struct_table {
   display: flex;
   flex-flow: column;
+  gap: 3px;
+  min-width: 900px;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_header, 
-#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data {
+#searchoutput .struct_table ul.struct_table_header, 
+#searchoutput .struct_table ul.struct_table_data {
   list-style-type: none;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_header {
-  padding: 5px 0px;
+#searchoutput .struct_table ul.struct_table_header {
+  padding: 0px 0px;
   margin: 0px 0px;
   font-weight: bold;
+  text-transform: uppercase;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data {
+#searchoutput .struct_table ul.struct_table_data {
   display: flex;
   flex-flow: column;
   padding: 0px 0px;
   margin: 0px 0px;
+  gap: 1px;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data li.struct_table_row:nth-child(odd){
-  background-color: var(--dirty-white);
+#searchoutput .struct_table ul.struct_table_data li.struct_table_row:nth-child(odd){
+  background-color: var(--background-color);
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row {
+#searchoutput .struct_table ul li.struct_table_row {
   display: flex;
   flex-flow: row wrap;
   align-items: flex-start;
-  padding: 2px 0px;
-  margin: 1px 0px;
+  padding: 3px 0px;
+  gap: 0px 3px;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data li.struct_table_row:hover,
-#userAdmin #searchForm #searchoutput .struct_table ul.struct_table_data li.struct_table_row.open {
+#searchoutput .struct_table ul.struct_table_data li.struct_table_row:hover,
+#searchoutput .struct_table ul.struct_table_data li.struct_table_row.open {
   background-color: var(--lightgrey-color);
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_arrow {
+#searchoutput .struct_table .column_arrow {
   flex: 0 0 20px;
   text-align: center;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table li.struct_table_row .column_arrow {
+#searchoutput .struct_table li.struct_table_row .column_arrow {
   transition: transform 0.5s linear;
   transform: rotate(0deg);
   content: "\f0da";
-  }
-
-  #userAdmin #searchForm #searchoutput .struct_table li.struct_table_row.open .column_arrow {
+ }
+#searchoutput .struct_table li.struct_table_row .column_arrow:hover {
+  cursor: pointer;
+  color: var(--accent-color);
+}
+#searchoutput .struct_table li.struct_table_row.open .column_arrow {
   transition: transform 0.5s linear;
   transform: rotate(90deg);
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_active {
+#searchoutput .struct_table .column_active {
   flex: 0 0 25px;
   text-align: center;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_active .fa-user-slash {
+#searchoutput .struct_table .column_active .fa-user-slash {
   color: red;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_name {
+#searchoutput .struct_table .column_name {
   flex: 1 0 150px;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_firstname{
+#searchoutput .struct_table .column_firstname{
   flex: 1 0 100px;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_email{
+#searchoutput .struct_table .column_email{
   flex: 1 0 350px;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_roles {
-  flex: 2 0 120px;
+#searchoutput .struct_table .column_company {
+  flex: 1 0 150px;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_edit, 
-#userAdmin #searchForm #searchoutput .struct_table .column_delete {
+#searchoutput .struct_table .column_language {
+  flex: 1 0 30px;
+}
+#searchoutput .struct_table .column_edit, 
+#searchoutput .struct_table .column_delete {
   flex: 0 0 25px;
   text-align: center;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_edit a.icon-link, 
-#userAdmin #searchForm #searchoutput .struct_table .column_delete a.icon-link {
+#searchoutput .struct_table .column_edit a.icon-link, 
+#searchoutput .struct_table .column_delete a.icon-link {
   text-decoration: none;
   color: black;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table .column_edit a.icon-link:hover, 
-#userAdmin #searchForm #searchoutput .struct_table .column_delete a.icon-link:hover {
+#searchoutput .struct_table .column_edit a.icon-link:hover, 
+#searchoutput .struct_table .column_delete a.icon-link:hover {
   color: var(--accent-color);
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE {
+#searchoutput .struct_table ul li.struct_table_row .editContentRTE {
 	display: flex;
-  flex-flow: row;
-  flex: 1 1 100%;
+  flex-flow: column;
   max-height: 0;
   padding: 0 0px;
   margin-left: 40px;
   transition: max-height 0.3s ease-out;
   overflow: hidden;
+  width: 100%;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row.open .editContentRTE {
+#searchoutput .struct_table ul li.struct_table_row.open .editContentRTE {
   margin-left: 22px;
   margin-right: 50px;
   margin-bottom: 2px;
   margin-top: 4px;
   max-height: 1000px;
   transition: max-height 0.8s ease-in;
-  border-top: 1px solid darkgray;
+  border-top: 1px solid var(--accent-color);
   padding: 3px 15px;
 }
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper, 
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .languageWrapper {
-  display: flex;
-  flex-flow: row wrap;
-  padding: 0px 10px;
-}
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper {
-  flex: 0 0 200px;
-}
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .languageWrapper {
-  flex: 0 0 80px;
-}
-
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .companyWrapper .companyLabel, 
-#userAdmin #searchForm #searchoutput .struct_table ul li.struct_table_row .editContentRTE .languageWrapper .languageLabel {
-  flex: 0 0 20px;
+#searchoutput .struct_table ul li.struct_table_row .editContentRTE .groupLabel {
+  font-weight: bold;
+  text-transform: uppercase;
 }

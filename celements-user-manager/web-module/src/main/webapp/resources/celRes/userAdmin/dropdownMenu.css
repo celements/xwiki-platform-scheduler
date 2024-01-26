@@ -1,46 +1,56 @@
+#menu {
+  align-self: flex-end;
+  padding-top: 40px;
+}
 #userAdminActionMenu  {
   display: block;
-  width: 60px;
-  float: right;
+  width: 50px;
   position: relative;
-  margin: 15px 0px 0px;
 }
-
 #userAdminActionMenu .dropbtn {
-  display: block;
+  display: flex;
   border: 2px solid var(--accent-color);
   color: var(--accent-color);
-  font-size: 14px;
-  text-align: center;
-  font-weight: bolder;
-  padding: 0px 0px 6px;
-  margin: 1px 0px;
+  justify-content: center;
+  margin-bottom: 1px;
+  background-color: #e9f6fb;
+  font-family: Arial;
+  font-size: 36px;
+  line-height: 5px;
+  align-content: center;
+  height: 30px;
 }
-
+#userAdminActionMenu .dropbtn:hover {
+  cursor: pointer;
+}
+#userAdminActionMenu .dropbtn p {
+  margin: 0px;
+}
 #userAdminActionMenu .dropdown-content.open {
   display: block;
 }
-
 #userAdminActionMenu .dropdown-content {
   display: none;
-  background-color: var(--dirty-white);
+  background-color: var(--background-color);
   min-width: 160px;
   position: absolute;
   right: 0;
-  border-left: 0.5px solid black;
-  border-right: 0.5px solid black;
-  border-bottom: 0.5px solid black;
+  border: 1px solid var(--accent-color);
   z-index: 1000;
 }
-
+.dropdown-content div:not(div:first-child) {
+  display: none;
+}
+#userAdminActionMenu .dropdown-content div + div {
+  border-top: 1px solid var(--accent-color);
+}
 #userAdminActionMenu .dropdown-content a {
   display: block;
   text-decoration: none;
   color: black;
   padding: 5px;
-  border-top: 0.5px solid black;
 }
-
 #userAdminActionMenu .dropdown-content a:hover {
   background-color: var(--lightgrey-color);
+  cursor: pointer;
 }
