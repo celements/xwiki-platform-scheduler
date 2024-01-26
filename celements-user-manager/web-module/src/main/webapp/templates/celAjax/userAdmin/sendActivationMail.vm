@@ -1,0 +1,28 @@
+  ## user selected?
+ ## if no user is given in the request show the user itself
+ ## show allways the user itself if the user is no Administrator
+ #if(!$isAdmin || ("$!request.get('user')" == ''))
+   #set($show_user = true)
+   #set($user = $context.getUser())
+ #elseif(("$!request.get('user')" != '') && ("$!request.get('user')" != '---'))
+   #set($show_user = true)
+   #set($user = $!request.get("user"))
+ #else
+   #set($show_user = false)
+ #end
+ #if($show_user && $xwiki.exists($user))
+  #set($xredirectURL = $!{doc.getURL('view',"xpage=overlay&conf=UserAdmin&user=$user")})
+   #set($cel_user_doc = $xwiki.getDocument($user))
+   #set($user_obj = $cel_user_doc.getObject('XWiki.XWikiUsers'))
+   #set($sendValidationUserURL = "$!{xredirectURL}&sendNewValidation=1")
+   <a style="float:right;margin-right:10px;" href="$sendValidationUserURL">$adminMsg.get('cel_useradmin_send_new_validation')</a><br/>
+   #if("$!request.sendNewValidation" == '1')
+    #set($emailAddress = "$!user_obj.getProperty('email').getValue()")
+    ## new service: $services.authentication.sendValidationEmail("$!emailAddress", "email")
+    #if($xwiki.celementsweb.sendNewValidation("$!emailAddress", "email"))
+      <p>$adminMsg.get('cel_useradmin_send_new_validation_confirm', ["$!emailAddress"])</p>
+    #else
+      <p>$adminMsg.get('cel_useradmin_send_new_validation_failed', ["$!emailAddress"])</p>
+    #end
+   #end
+ #end
