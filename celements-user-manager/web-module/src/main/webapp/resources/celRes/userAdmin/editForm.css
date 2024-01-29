@@ -10,6 +10,11 @@
   flex-flow: row;
   gap: 40px;
 }
+@media(max-width: 768px) {
+  #userEditForm .formWrapper {
+    flex-flow: column;
+  }
+}
 #userEditForm .formWrapper .formPartWrapper {
   width: 100%;
   display: flex;
@@ -21,6 +26,11 @@
   flex-flow: column;
   width: 100%;
   gap: 5px;
+}
+#userEditForm #actSuspWrapper{
+  display: flex;
+  flex-flow: row;
+  gap: 20px;
 }
 #userEditForm #groups {
   display: flex;
