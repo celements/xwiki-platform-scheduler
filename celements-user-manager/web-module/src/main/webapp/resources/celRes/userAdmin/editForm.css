@@ -70,6 +70,7 @@
   visibility: hidden;
 }
 #userEditForm .formWrapper input[type=text],
+#userEditForm .formWrapper input[type=password],
 #userEditForm .formWrapper .select2UserAdminSelection {
   padding: 8px 10px;
   border: none;
@@ -78,6 +79,7 @@
   height: 39px;
 }
 #userEditForm .formWrapper input[type=text]:focus,
+#userEditForm .formWrapper input[type=password]:focus,
 #userEditForm .formWrapper .select2UserAdminSelection:focus {
   outline:none;
   border-bottom: 2px solid var(--accent-color);
