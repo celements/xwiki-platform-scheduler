@@ -1,48 +1,32 @@
-## user selected?
-## if no user is given in the request show the user itself
-## show allways the user itself if the user is no Administrator
-#if(!$isAdmin || ("$!request.get('user')" == ''))
-  #set($show_user = true)
-  #set($user = $context.getUser())
-#elseif(("$!request.get('user')" != '') && ("$!request.get('user')" != '---'))
-  #set($show_user = true)
-  #set($user = $!request.get("user"))
-#else
-  #set($show_user = false)
-#end
+#if($isAdmin)
+  #set($userDocRef = $services.reference.resolveDocRef($!request.get("user")))
+  #if($services.modelAccess.exists($userDocRef))
+    #set($user_obj = $services.modelAccess.getObject($userDocRef, $services.model.createDocumentReference('', 'XWiki', 'XWikiUsers')))
+    #set($emailAddress = "$!user_obj.getProperty('email').getValue()")
+    #set($successful = $services.authentication.sendValidationEmail("$!emailAddress", "email"))
+    #if($successful)
+      #set($message = $adminMsg.get('cel_useradmin_send_new_validation_confirm', ["$!emailAddress"])) 
+    #else
+      #set($message = $adminMsg.get('cel_useradmin_send_new_validation_failed', ["$!emailAddress"]))
+    #end
 
-#if($show_user && $xwiki.exists($user))
-#set($xredirectURL = $!{doc.getURL('view',"xpage=overlay&conf=UserAdmin&user=$user")})
-  #set($cel_user_doc = $xwiki.getDocument($user)) ##$doc.getObject('XWiki.XWikiUsers')
-  #set($user_obj = $cel_user_doc.getObject('XWiki.XWikiUsers')) ##$doc.getObject('XWiki.XWikiUsers') $services.modelAcess
-  #set($sendValidationUserURL = "$!{xredirectURL}&sendNewValidation=1")
-  <a style="float:right;margin-right:10px;" href="$sendValidationUserURL">$adminMsg.get('cel_useradmin_send_new_validation')</a><br/>
-  #if("$!request.sendNewValidation" == '1')
-  #set($emailAddress = "$!user_obj.getProperty('email').getValue()")
-  ## new service: $services.authentication.sendValidationEmail("$!emailAddress", "email")
-  #if($xwiki.celementsweb.sendNewValidation("$!emailAddress", "email"))
-    <p>$adminMsg.get('cel_useradmin_send_new_validation_confirm', ["$!emailAddress"])</p>
+    #set($jsonBuilder = $services.json.newBuilder())
+    $jsonBuilder.openDictionary()
+    $jsonBuilder.addProperty("successful", $successful)
+    $jsonBuilder.addProperty("message", $message)
+    $jsonBuilder.closeDictionary()
+    $jsonBuilder.getJSON()
   #else
-    <p>$adminMsg.get('cel_useradmin_send_new_validation_failed', ["$!emailAddress"])</p>
+    #set($jsonBuilder = $services.json.newBuilder())
+    $jsonBuilder.openDictionary()
+    $jsonBuilder.addProperty("message", $adminMsg.get('cel_useradmin_send_validation_no_user'))
+    $jsonBuilder.closeDictionary()
+    $jsonBuilder.getJSON()
   #end
-  #end
-#end
-
-##start new Skript
-#set($userDocRef = $!request.get("user"))
-#set($user_obj = $services.modelAccess.getObject($userDocRef, $services.model.createDocumentReference('', 'XWiki', 'XWikiUsers')))
-#set($emailAddress = "$!user_obj.getProperty('email').getValue()")
-#set($jsonBuilder = $services.json.newBuilder())
-$jsonBuilder.openDictionary()
-
-#if($services.authentication.sendValidationEmail("$!emailAddress", "email"))
-  #set($message = $adminMsg.get('cel_useradmin_send_new_validation_confirm', ["$!emailAddress"]))
-  $jsonBuilder.addProperty("successful", true)
-  $jsonBuilder.addProperty("message", $message)
 #else
-  #set($message = $adminMsg.get('cel_useradmin_send_new_validation_failed', ["$!emailAddress"]))
-  $jsonBuilder.addProperty("successful", false)
-  $jsonBuilder.addProperty("message", $message)
+  #set($jsonBuilder = $services.json.newBuilder())
+  $jsonBuilder.openDictionary()
+  $jsonBuilder.addProperty("message", $adminMsg.get('cel_useradmin_send_validation_no_rights'))
+  $jsonBuilder.closeDictionary()
+  $jsonBuilder.getJSON()
 #end
-$jsonBuilder.closeDictionary()
-$jsonBuilder.getJSON()
