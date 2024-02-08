@@ -11,6 +11,6 @@
 <a class="icon-link" href="$!url"><i class="icon $!{iconDeleteCssClass}" title="delete"></i></a>
 
 ##neu
-#set($userFN = $services.reference.serialize($rowdoc.documentReference))
+#set($userFN = $services.reference.serialize($doc.getDocumentReference()))
 #set($url = "/UserAdmin?xpage=celements_ajax&ajax_mode=userAdmin/sendActivationMail&user=$userFN")
 <a class="icon-link" href="$!url"><i class="icon $!{iconSendMailCssClass}" title="send mail"></i></a>
