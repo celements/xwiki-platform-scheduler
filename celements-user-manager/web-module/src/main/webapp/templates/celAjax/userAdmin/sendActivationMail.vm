@@ -1,6 +1,7 @@
 #if($isAdmin)
   #set($userDocRef = $services.reference.resolveDocRef($!request.get("user")))
-  #if($services.modelAccess.exists($userDocRef))
+  #set($userExists = $services.modelAccess.exists($userDocRef))
+  #if($userExists)
     #set($user_obj = $services.modelAccess.getObject($userDocRef, $services.model.createDocumentReference('', 'XWiki', 'XWikiUsers')))
     #set($emailAddress = "$!user_obj.getProperty('email').getValue()")
     #set($successful = $services.authentication.sendValidationEmail("$!emailAddress", "email"))
@@ -19,7 +20,7 @@
   #else
     #set($jsonBuilder = $services.json.newBuilder())
     $jsonBuilder.openDictionary()
-    $jsonBuilder.addProperty("message", $adminMsg.get('cel_useradmin_send_validation_no_user'))
+    $jsonBuilder.addProperty("message", $userExists)
     $jsonBuilder.closeDictionary()
     $jsonBuilder.getJSON()
   #end
