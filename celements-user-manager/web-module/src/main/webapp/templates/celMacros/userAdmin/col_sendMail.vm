@@ -12,5 +12,5 @@
 
 ##neu
 #set($userFN = $services.reference.serialize($rowdoc.documentReference))
-#set($url = "/UserAdmin?xpage=celements_ajax&ajax_mode=sendActivationMail&user=$userFN")
+#set($url = "/UserAdmin?xpage=celements_ajax&ajax_mode=userAdmin/sendActivationMail&user=$userFN")
 <a class="icon-link" href="$!url"><i class="icon $!{iconSendMailCssClass}" title="send mail"></i></a>
