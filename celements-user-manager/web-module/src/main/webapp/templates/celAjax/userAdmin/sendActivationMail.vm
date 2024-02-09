@@ -10,24 +10,16 @@
     #else
       #set($message = $adminMsg.get('cel_useradmin_send_new_validation_failed', ["$!emailAddress"]))
     #end
-
-    #set($jsonBuilder = $services.json.newBuilder())
-    $jsonBuilder.openDictionary()
-    $jsonBuilder.addProperty("successful", $successful)
-    $jsonBuilder.addProperty("message", $message)
-    $jsonBuilder.closeDictionary()
-    $jsonBuilder.getJSON()
   #else
-    #set($jsonBuilder = $services.json.newBuilder())
-    $jsonBuilder.openDictionary()
-    $jsonBuilder.addProperty("message", $userExists)
-    $jsonBuilder.closeDictionary()
-    $jsonBuilder.getJSON()
+    #set($message = $userExists)
   #end
 #else
-  #set($jsonBuilder = $services.json.newBuilder())
-  $jsonBuilder.openDictionary()
-  $jsonBuilder.addProperty("message", $adminMsg.get('cel_useradmin_send_validation_no_rights'))
-  $jsonBuilder.closeDictionary()
-  $jsonBuilder.getJSON()
+  #set($message = $adminMsg.get('cel_useradmin_send_validation_no_rights'))
 #end
+
+#set($jsonBuilder = $services.json.newBuilder())
+$jsonBuilder.openDictionary()
+$jsonBuilder.addProperty("successful", $successful)
+$jsonBuilder.addProperty("message", $message)
+$jsonBuilder.closeDictionary()
+$jsonBuilder.getJSON()
