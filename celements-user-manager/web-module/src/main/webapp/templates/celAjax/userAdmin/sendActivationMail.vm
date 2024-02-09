@@ -4,7 +4,7 @@
   #if($userExists)
     #set($user_obj = $services.modelAccess.getObject($userDocRef, $services.model.createDocumentReference('', 'XWiki', 'XWikiUsers')))
     #set($emailAddress = "$!user_obj.getProperty('email').getValue()")
-    #set($successful = $services.authentication.sendValidationEmail("$!emailAddress", "email"))
+    #set($successful = $services.authentication.sendNewValidation("$!emailAddress", "email"))
     #if($successful)
       #set($message = $adminMsg.get('cel_useradmin_send_new_validation_confirm', ["$!emailAddress"])) 
     #else
