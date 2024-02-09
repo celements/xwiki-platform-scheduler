@@ -13,7 +13,7 @@ async function sendActivationMail(url) {
 }
 
 
-/* normale Aktion des a-Tags unterdrücken und einen Alert anzeigen */
+/* normale Aktion des a-Tags unterdrücken */
 function stopDefaultAction(event) {
     event.preventDefault();
     sendActivationMail(event.currentTarget.href);
