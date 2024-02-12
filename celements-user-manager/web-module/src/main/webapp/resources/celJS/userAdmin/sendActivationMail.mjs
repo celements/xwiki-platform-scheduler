@@ -19,7 +19,7 @@ async function sendActivationMail(event, url) {
 function stopDefaultAction(event) {
     event.preventDefault();
     event.target.classList.add("fa-spinner", "fa-spin");
-    sendActivationMail(event.currentTarget.href);
+    sendActivationMail(event, event.currentTarget.href);
 }
 
 /* EventListener für a Tags registrieren */
