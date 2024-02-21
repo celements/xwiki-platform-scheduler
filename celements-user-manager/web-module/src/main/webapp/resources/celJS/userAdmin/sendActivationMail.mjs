@@ -26,6 +26,7 @@ class SendMailButton {
         throw new Error('response status: ' + response.status + ' ' + response.statusText + ' for url: ' + url);
       }
       const data = await response.json();
+      console.log('successful: ' + data.successful + ' message: ' + data.message);
       this.#showOutput(data.message);
     } catch (error) { 
       console.error('Error during fetch operation:', error);
