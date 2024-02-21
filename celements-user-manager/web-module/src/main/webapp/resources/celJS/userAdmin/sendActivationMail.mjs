@@ -42,35 +42,3 @@ class SendMailButton {
 }
 
 document.querySelectorAll("a.sendMailAction").forEach((a) => new SendMailButton(a).register());
-
-
-
-
-/*___________________________________________________________
-
-async function sendActivationMail(event, url) {
-  try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('response status: ' + response.status + ' ' + response.statusText + ' for url: ' + url);
-      }
-      const data = await response.json();
-      alert(data.message);
-      event.target.classList.remove("fa-spinner", "fa-spin");
-  } catch (error) { 
-    console.error('Error during fetch operation:', error);
-    alert("Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut." + '\nresponse status: ' + response.status + ' ' + response.statusText);
-    event.target.classList.remove("fa-spinner", "fa-spin");
-  }
-}
-
-function stopDefaultAction(event) {
-    event.preventDefault();
-    event.target.classList.add("fa-spinner", "fa-spin");
-    sendActivationMail(event, event.currentTarget.href);
-}
-
-document.querySelectorAll("a.sendMailAction").forEach(a => {
-    a.addEventListener('click', stopDefaultAction);
-});
-*/
