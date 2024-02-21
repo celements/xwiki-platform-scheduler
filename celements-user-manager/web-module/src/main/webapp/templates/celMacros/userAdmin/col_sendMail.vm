@@ -1,16 +1,3 @@
-## alt
-#if ("$!xredirect" == '')
-  #set($xredirect = "$!request.xredirect")
-#end
-#if ("$!xredirect" == '')
-  #set($xredirect = $services.url.getURL())
-#end
-#set($xredirect = $escapetool.url($xredirect))
-#set($url = $services.url.getURL($rowdoc.documentReference, 'delete', "xredirect=${xredirect}"))
-#if("$!iconCreateCssClass" == '') #set($iconCreateCssClass = "halflings icon-plus") #end
-<a class="icon-link" href="$!url"><i class="icon $!{iconDeleteCssClass}" title="delete"></i></a>
-
-##neu
 #set($userFN = $services.reference.serialize($doc.getDocumentReference()))
 #set($url = "/UserAdmin?xpage=celements_ajax&ajax_mode=userAdmin/sendActivationMail&user=$userFN")
-<a class="icon-link" href="$!url"><i class="icon $!{iconSendMailCssClass}" title="send mail"></i></a>
+<a class="icon-link sendMailAction" href="$!url"><i class="icon $!{iconSendMailCssClass}" title="send mail"></i></a>
