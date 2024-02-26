@@ -87,6 +87,11 @@
   background-color: var(--background-color);
   border-radius: 0px;
   height: 39px;
+  width: 100%;
+}
+#password a {
+  color: var(--accent-color);
+  line-height: 39px;
 }
 #userEditForm .formWrapper input[type=text]:focus,
 #userEditForm .formWrapper input[type=password]:focus,
