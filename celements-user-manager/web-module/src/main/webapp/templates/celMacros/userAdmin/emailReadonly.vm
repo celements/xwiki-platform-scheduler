@@ -1,0 +1,4 @@
+#set($currentUser = $doc.getObject('XWiki.XWikiUsers'))
+
+<label for="emailReadonly">$adminMsg.get("XWiki.XWikiUsers_email")</label>
+<input id="emailReadonly" type="text" value='$currentUser.getProperty('email').getValue()' #if($isAdmin) class='isAdmin' #end disabled>
