@@ -10,6 +10,11 @@
   flex-flow: row;
   gap: 40px;
 }
+@media(max-width: 768px) {
+  #userEditForm .formWrapper {
+    flex-flow: column;
+  }
+}
 #userEditForm .formWrapper .formPartWrapper {
   width: 100%;
   display: flex;
@@ -21,6 +26,11 @@
   flex-flow: column;
   width: 100%;
   gap: 5px;
+}
+#userEditForm #actSuspWrapper{
+  display: flex;
+  flex-flow: row;
+  gap: 20px;
 }
 #userEditForm #groups {
   display: flex;
@@ -70,14 +80,21 @@
   visibility: hidden;
 }
 #userEditForm .formWrapper input[type=text],
+#userEditForm .formWrapper input[type=password],
 #userEditForm .formWrapper .select2UserAdminSelection {
   padding: 8px 10px;
   border: none;
   background-color: var(--background-color);
   border-radius: 0px;
   height: 39px;
+  width: 100%;
+}
+#password a {
+  color: var(--accent-color);
+  line-height: 39px;
 }
 #userEditForm .formWrapper input[type=text]:focus,
+#userEditForm .formWrapper input[type=password]:focus,
 #userEditForm .formWrapper .select2UserAdminSelection:focus {
   outline:none;
   border-bottom: 2px solid var(--accent-color);
