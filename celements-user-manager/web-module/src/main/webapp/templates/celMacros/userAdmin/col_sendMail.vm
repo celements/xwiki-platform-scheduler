@@ -1,3 +1,4 @@
 #set($userFN = $services.reference.serialize($doc.getDocumentReference()))
-#set($url = "/UserAdmin?xpage=celements_ajax&ajax_mode=userAdmin/sendActivationMail&user=$userFN")
-<a class="icon-link sendMailAction" href="$!url"><i class="icon $!{iconSendMailCssClass}" title="send mail"></i></a>
+#set($userAdminDocRef = $services.reference.create().space('Content').doc('UserAdmin').build())
+#set($params = "xpage=celements_ajax&ajax_mode=userAdmin/sendActivationMail&user=$userFN")
+<a class="icon-link sendMailAction" href="$services.url.getURL($userAdminDocRef, 'view', $params)"><i class="icon $!{iconSendMailCssClass}" title="send mail"></i></a>
