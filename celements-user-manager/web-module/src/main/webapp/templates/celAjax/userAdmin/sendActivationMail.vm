@@ -2,7 +2,7 @@
   #set($userDocRef = $services.reference.resolveDocRef($!request.get("user")))
   #set($userExists = $services.modelAccess.exists($userDocRef))
   #if($userExists)
-    #set($user_obj = $services.modelAccess.getObject($userDocRef, $services.model.createDocumentReference('', 'XWiki', 'XWikiUsers')))
+    #set($user_obj = $services.modelAccess.getObject($userDocRef, $services.reference.create().space('XWiki').doc('XWikiUsers').build()))
     #set($emailAddress = "$!user_obj.getProperty('email').getValue()")
     #set($successful = $services.authentication.sendNewValidation("$!emailAddress", "email"))
     #if($successful)
