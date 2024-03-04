@@ -8,10 +8,10 @@ class SendMailButton {
 
   register() {
     console.log('registering event listener for ' + this.#htmlElemA);
-    this.#htmlElemA.addEventListener('click', (ev) => this.#stopDefaultAction(ev));
+    this.#htmlElemA.addEventListener('click', (ev) => this.#sendActivationMailHandler(ev));
   }
 
-  #stopDefaultAction(event) {
+  #sendActivationMailHandler(event) {
     console.log('stopDefaultAction');
     event.preventDefault();
     this.#iconElem.classList.add("fa-spinner", "fa-spin");
