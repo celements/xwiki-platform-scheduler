@@ -27,6 +27,9 @@
   width: 100%;
   gap: 5px;
 }
+#userEditForm .formWrapper .inputWrapper:has(#emailReadonly.isAdmin) {
+  display: none;
+}
 #userEditForm #actSuspWrapper{
   display: flex;
   flex-flow: row;
