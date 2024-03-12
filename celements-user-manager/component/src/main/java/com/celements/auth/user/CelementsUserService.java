@@ -53,6 +53,7 @@ import com.celements.web.classes.oldcore.XWikiUsersClass;
 import com.celements.web.plugin.cmd.PasswordRecoveryAndEmailValidationCommand;
 import com.celements.web.plugin.cmd.SendValidationFailedException;
 import com.celements.web.service.IWebUtilsService;
+import com.celements.web.token.TokenLDAPAuthServiceImpl;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.xpn.xwiki.XWikiException;
@@ -73,6 +74,7 @@ public class CelementsUserService implements UserService {
   static final String XWIKI_ALL_GROUP_FN = "XWiki.XWikiAllGroup";
   static final String XWIKI_ADMIN_GROUP_FN = "XWiki.XWikiAdminGroup";
 
+  private final TokenLDAPAuthServiceImpl tokenAuthImpl = new TokenLDAPAuthServiceImpl();
   private final ClassDefinition usersClass;
   private final QueryManager queryManager;
   private final IQueryExecutionServiceRole queryExecService;
@@ -350,6 +352,11 @@ public class CelementsUserService implements UserService {
       LOGGER.error("sendValidationMail - failed  for [{}]", user, exc);
       return false;
     }
+  }
+
+  @Override
+  public String getUsernameForToken(String userToken) throws XWikiException {
+    return tokenAuthImpl.getUsernameForToken(userToken, context.getXWikiContext());
   }
 
   private class UserClassFieldFilter implements Predicate<String> {
