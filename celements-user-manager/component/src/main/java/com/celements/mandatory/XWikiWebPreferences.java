@@ -1,4 +1,4 @@
-package com.celements.migrator;
+package com.celements.mandatory;
 
 import java.util.List;
 
