@@ -150,9 +150,10 @@ public class CelementsUser implements User {
   }
 
   /**
-   * @deprecated since 5.9 instead use {@link #getAdminLang()}
+   * @deprecated instead use {@link #getAdminLang()}
+   * @since 5.9
    */
-  @Deprecated
+  @Deprecated(since = "5.9", forRemoval = true)
   @Override
   public com.google.common.base.Optional<String> getAdminLanguage() {
     return com.google.common.base.Optional.fromJavaUtil(getAdminLang());
