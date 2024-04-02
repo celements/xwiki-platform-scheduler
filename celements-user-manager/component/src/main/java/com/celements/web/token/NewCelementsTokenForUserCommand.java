@@ -167,7 +167,7 @@ public class NewCelementsTokenForUserCommand {
   }
 
   /**
-   * @deprecated instead use {@link IAuthenticationServiceRole#getUniqueValidationKey()}
+   * @deprecated since 2.95 instead use {@link IAuthenticationServiceRole#getUniqueValidationKey()}
    */
   @Deprecated
   public String getUniqueValidationKey(XWikiContext context) throws XWikiException {
