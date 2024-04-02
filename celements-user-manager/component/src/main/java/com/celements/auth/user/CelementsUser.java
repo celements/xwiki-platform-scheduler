@@ -84,6 +84,7 @@ public class CelementsUser implements User {
     return getUserFieldValue(XWikiUsersClass.FIELD_EMAIL);
   }
 
+  // @deprecate since 5.9
   @Deprecated
   @Override
   public com.google.common.base.Optional<String> getFirstName() {
@@ -95,6 +96,7 @@ public class CelementsUser implements User {
     return getUserFieldValue(XWikiUsersClass.FIELD_FIRST_NAME);
   }
 
+  // @deprecate since 5.9
   @Deprecated
   @Override
   public com.google.common.base.Optional<String> getLastName() {
@@ -106,6 +108,7 @@ public class CelementsUser implements User {
     return getUserFieldValue(XWikiUsersClass.FIELD_LAST_NAME);
   }
 
+  // @deprecate since 5.9
   @Deprecated
   @Override
   public com.google.common.base.Optional<String> getPrettyName() {
@@ -133,6 +136,7 @@ public class CelementsUser implements User {
     return getUserFieldValue(XWikiUsersClass.FIELD_ACTIVE).orElse(false);
   }
 
+  // @deprecate since 5.9
   @Deprecated
   @Override
   public com.google.common.base.Optional<String> getAdminLanguage() {
