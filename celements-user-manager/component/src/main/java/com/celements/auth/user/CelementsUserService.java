@@ -74,7 +74,6 @@ public class CelementsUserService implements UserService {
   static final String XWIKI_ALL_GROUP_FN = "XWiki.XWikiAllGroup";
   static final String XWIKI_ADMIN_GROUP_FN = "XWiki.XWikiAdminGroup";
 
-  private final TokenLDAPAuthServiceImpl tokenAuthImpl = new TokenLDAPAuthServiceImpl();
   private final ClassDefinition usersClass;
   private final QueryManager queryManager;
   private final IQueryExecutionServiceRole queryExecService;
@@ -356,7 +355,7 @@ public class CelementsUserService implements UserService {
 
   @Override
   public String getUsernameForToken(String userToken) throws XWikiException {
-    return tokenAuthImpl.getUsernameForToken(userToken, context.getXWikiContext());
+    return new TokenLDAPAuthServiceImpl().getUsernameForToken(userToken, context.getXWikiContext());
   }
 
   private class UserClassFieldFilter implements Predicate<String> {
