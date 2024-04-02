@@ -73,7 +73,11 @@ public class CelementsUser implements User {
     return new XWikiUser(modelUtils.serializeRefLocal(getDocRef()), isGlobal());
   }
 
-  @Deprecated
+  /**
+   * @deprecated instead use {@link #email()}
+   * @since 5.9
+   */
+  @Deprecated(since = "5.9", forRemoval = true)
   @Override
   public com.google.common.base.Optional<String> getEmail() {
     return com.google.common.base.Optional.fromJavaUtil(email());
@@ -84,8 +88,11 @@ public class CelementsUser implements User {
     return getUserFieldValue(XWikiUsersClass.FIELD_EMAIL);
   }
 
-  // @deprecate since 5.9
-  @Deprecated
+  /**
+   * @deprecated instead use {@link #firstName()}
+   * @since 5.9
+   */
+  @Deprecated(since = "5.9", forRemoval = true)
   @Override
   public com.google.common.base.Optional<String> getFirstName() {
     return com.google.common.base.Optional.fromJavaUtil(firstName());
@@ -96,8 +103,11 @@ public class CelementsUser implements User {
     return getUserFieldValue(XWikiUsersClass.FIELD_FIRST_NAME);
   }
 
-  // @deprecate since 5.9
-  @Deprecated
+  /**
+   * @deprecated instead use {@link #lastName()}
+   * @since 5.9
+   */
+  @Deprecated(since = "5.9", forRemoval = true)
   @Override
   public com.google.common.base.Optional<String> getLastName() {
     return com.google.common.base.Optional.fromJavaUtil(lastName());
@@ -108,8 +118,11 @@ public class CelementsUser implements User {
     return getUserFieldValue(XWikiUsersClass.FIELD_LAST_NAME);
   }
 
-  // @deprecate since 5.9
-  @Deprecated
+  /**
+   * @deprecated instead use {@link #prettyName()}
+   * @since 5.9
+   */
+  @Deprecated(since = "5.9", forRemoval = true)
   @Override
   public com.google.common.base.Optional<String> getPrettyName() {
     return com.google.common.base.Optional.fromJavaUtil(prettyName());
@@ -136,7 +149,9 @@ public class CelementsUser implements User {
     return getUserFieldValue(XWikiUsersClass.FIELD_ACTIVE).orElse(false);
   }
 
-  // @deprecate since 5.9
+  /**
+   * @deprecated since 5.9 instead use {@link #getAdminLang()}
+   */
   @Deprecated
   @Override
   public com.google.common.base.Optional<String> getAdminLanguage() {
