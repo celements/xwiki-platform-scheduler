@@ -1,8 +1,8 @@
 #set($currentUser = $doc.getObject('XWiki.XWikiUsers'))
-#if($isAdmin)
-  <label>$adminMsg.get("XWiki.XWikiUsers_email")</label>
-  <input name="XWiki.XWikiUsers_0_email" type="text" value="$currentUser.getProperty('email').getValue()">
+#if($currentUser)
+  #set($objNb = $currentUser.number)
 #else
-  <label for="email">$adminMsg.get("XWiki.XWikiUsers_email")</label>
-  <input id="email" type="text" value="$currentUser.getProperty('email').getValue()" disabled>
+  #set($objNb = -1)
 #end
+<label for="email">$adminMsg.get("XWiki.XWikiUsers_email")</label>
+<input id="email" #if($isAdmin) name="XWiki.XWikiUsers_$!{objNb}_email" #else disabled #end type="text" value="$!currentUser.getProperty('email').getValue()">
