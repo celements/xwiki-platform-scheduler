@@ -2,11 +2,13 @@ package com.celements.mandatory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.model.reference.RefBuilder;
 import com.xpn.xwiki.XWikiConstant;
 
+@Component
 public class XWikiUsersClassRights extends AbstractXWikiClassRights {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(XWikiUsersClassRights.class);
