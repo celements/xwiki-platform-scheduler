@@ -1,2 +1,6 @@
+#if($isAdmin)
 #set($layoutSpaceRef = $services.reference.resolveSpaceRef("UserAdmin"))
 $!services.layout.renderPageLayout($layoutSpaceRef)
+#else
+<p>You have no access rights for this page.</p>
+#end
