@@ -202,4 +202,4 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,windows,eclipse,visualstudiocode,java,maven
 
-/.apt_generated_tests/
+**/.apt_generated_tests/
