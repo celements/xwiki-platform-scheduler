@@ -1,2 +1,2 @@
 #set($structDataEditorSpace = "UserAdminEdit")
-#parse('celTemplates/StructuredDataEditorView.vm')
+#parse('celTemplates/StructuredDataEditorCheckUnsavedView.vm')
