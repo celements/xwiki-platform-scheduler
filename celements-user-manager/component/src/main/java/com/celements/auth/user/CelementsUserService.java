@@ -256,7 +256,7 @@ public class CelementsUserService implements UserService {
     }
   }
 
-  private Optional<User> checkIdentifiersForExistingUser(Map<String, String> userData) {
+  public Optional<User> checkIdentifiersForExistingUser(Map<String, String> userData) {
     final Set<String> possibleLogins = getPossibleLoginFields();
     return EntryStream.of(userData)
         .mapKeys(String::trim)
