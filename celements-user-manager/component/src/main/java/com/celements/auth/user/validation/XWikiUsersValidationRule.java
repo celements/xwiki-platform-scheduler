@@ -55,7 +55,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     }
 
     // check if email exists already in database
-    if (!isEmailUnique("")) {
+    if (false && !isEmailUnique("")) {
       // add entry to validationResults with dictionary key for suitable error message and add
       // dictionary entries to celements dictionary if necessary
     }
@@ -69,8 +69,8 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     // String>). If it is not unique return false. If a user is updated and the email hasn't
     // changed, the email exists already.
     Map<String, String> userData = new HashMap<>();
-
-    return userService.checkIdentifiersForExistingUser(userData).isPresent();
+    userService.checkIdentifiersForExistingUser(userData);
+    return true;
   }
 
 }
