@@ -40,12 +40,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     // run validation only on Userdocs
 
     // filter params for email field (XWiki.XWikiUsers_0_email)
-    Optional<DocFormRequestParam> emailParam = params.stream()
-        .filter(p -> p.getKey().getType().equals(DocFormRequestKey.Type.OBJ_FIELD))
-        .filter(p -> p.getKey().getClassRef()
-            .equals(new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class)))
-        .filter(p -> p.getKey().getFieldName().equals("email"))
-        .findFirst();
+    Optional<DocFormRequestParam> emailParam = getEmailParam(params);
 
     // check if email is a valid string
     if (emailParam.isPresent()
@@ -55,21 +50,34 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     }
 
     // check if email exists already in database
-    if (false && !isEmailUnique("")) {
+    if (emailParam.isPresent() && !isEmailUnique(emailParam.get())) {
       // add entry to validationResults with dictionary key for suitable error message and add
       // dictionary entries to celements dictionary if necessary
+      validationResults
+          .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailNotUnique"));
     }
 
     return validationResults;
   }
 
-  private boolean isEmailUnique(String email) {
+  private Optional<DocFormRequestParam> getEmailParam(List<DocFormRequestParam> params) {
+    return params.stream()
+        .filter(p -> p.getKey().getType().equals(DocFormRequestKey.Type.OBJ_FIELD))
+        .filter(p -> p.getKey().getClassRef()
+            .equals(new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class)))
+        .filter(p -> p.getKey().getFieldName().equals("email"))
+        .findFirst();
+  }
+
+  private boolean isEmailUnique(DocFormRequestParam emailParam) {
     // Email has to be unique in database. If possible, reuse
     // com.celements.auth.user.CelementsUserService.checkIdentifiersForExistingUser(Map<String,
-    // String>). If it is not unique return false. If a user is updated and the email hasn't
-    // changed, the email exists already.
+    // String>). If it is not unique return false.
+    // If a user is updated and the email hasn't changed, the email exists already. --> maybe check
+    // if the DocRef of the returned user is the same as the DocRef of the DocFormRequestKey of the
+    // EmailParam.
     Map<String, String> userData = new HashMap<>();
-    userService.checkIdentifiersForExistingUser(userData);
+    userService.checkIdentifiersForExistingUser(userData).isPresent();
     return true;
   }
 
