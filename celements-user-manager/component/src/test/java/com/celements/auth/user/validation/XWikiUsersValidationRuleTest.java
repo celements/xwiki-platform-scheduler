@@ -5,12 +5,14 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
 
+import com.celements.auth.user.UserService;
 import com.celements.common.test.AbstractComponentTest;
 import com.celements.docform.DocFormRequestKey;
 import com.celements.docform.DocFormRequestParam;
@@ -25,7 +27,7 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   @Before
   public void prepare() throws Exception {
-    registerComponentMocks(IMailSenderRole.class);
+    registerComponentMocks(IMailSenderRole.class, UserService.class);
     rule = getBeanFactory().getBean(XWikiUsersValidationRule.class);
   }
 
@@ -46,6 +48,25 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     assertEquals(1, results.size());
     assertEquals(ValidationType.ERROR, results.get(0).getType());
     assertEquals("cel_useradmin_emailInvalid", results.get(0).getMessage());
+  }
+
+  @Test
+  public void test_validate_allOk() {
+    List<DocFormRequestParam> params = new ArrayList<>();
+    DocFormRequestParam emailParam = new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
+        "XWiki.XWikiUsers_0_email", new DocumentReference("wiki", "XWiki", "321adfawer"),
+        new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class), 0, "email"),
+        List.of("abc+test@synventis.com"));
+    params.add(emailParam);
+    expect(getMock(IMailSenderRole.class).isValidEmail("abc+test@synventis.com")).andReturn(true);
+    expect(getMock(UserService.class).getPossibleUserForLoginField("abc+test@synventis.com", null))
+        .andReturn(Optional.empty());
+
+    replayDefault();
+    List<ValidationResult> results = rule.validate(params);
+    verifyDefault();
+
+    assertEquals(0, results.size());
   }
 
 }
