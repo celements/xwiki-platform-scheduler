@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.constraints.NotNull;
@@ -256,8 +257,7 @@ public class CelementsUserService implements UserService {
     }
   }
 
-  @Override
-  public Optional<User> checkIdentifiersForExistingUser(Map<String, String> userData) {
+  private Optional<User> checkIdentifiersForExistingUser(Map<String, String> userData) {
     final Set<String> possibleLogins = getPossibleLoginFields();
     return EntryStream.of(userData)
         .mapKeys(String::trim)
@@ -273,31 +273,18 @@ public class CelementsUserService implements UserService {
     return getUserForLoginField(login, getPossibleLoginFields());
   }
 
+  /**
+   * @deprecated instead use {@link #getPossibleUserForLoginField} with
+   *             {@link User#isSuspended()}
+   * @since 6.5
+   */
+  @Deprecated(since = "6.5", forRemoval = true)
   @Override
   public com.google.common.base.Optional<User> getUserForLoginField(String login,
       Collection<String> possibleLoginFields) {
-    login = Strings.nullToEmpty(login).trim();
-    checkArgument(!login.isEmpty());
-    possibleLoginFields = Optional.ofNullable(possibleLoginFields)
-        .map(Collection::stream).orElseGet(Stream::empty)
-        .filter(new UserClassFieldFilter())
-        .collect(toImmutableSet());
-    if (possibleLoginFields.isEmpty()) {
-      possibleLoginFields = Set.of(DEFAULT_LOGIN_FIELD);
-    }
-    User user = null;
-    if (possibleLoginFields.contains(DEFAULT_LOGIN_FIELD)) {
-      try {
-        user = getUser(resolveUserDocRef(login));
-      } catch (UserInstantiationException exc) {
-        LOGGER.debug("getUserForData - login [{}] is not valid user name", login, exc);
-      }
-    }
-    if (user == null) {
-      user = loadUniqueUserForQuery(login, possibleLoginFields);
-    }
-    return com.google.common.base.Optional.fromJavaUtil(java.util.Optional.ofNullable(user)
-        .filter(not(User::isSuspended)));
+    Optional<User> user = getPossibleUserForLoginField(login, possibleLoginFields);
+
+    return com.google.common.base.Optional.fromJavaUtil(user.filter(not(User::isSuspended)));
   }
 
   private User loadUniqueUserForQuery(String login, Collection<String> possibleLoginFields) {
@@ -379,6 +366,32 @@ public class CelementsUserService implements UserService {
 
   private String getMessage(String key) {
     return webUtils.getAdminMessageTool().get(key);
+  }
+
+  @Override
+  public Optional<User> getPossibleUserForLoginField(@NotNull String login,
+      @Nullable Collection<String> possibleLoginFields) {
+    login = Strings.nullToEmpty(login).trim();
+    checkArgument(!login.isEmpty());
+    possibleLoginFields = Optional.ofNullable(possibleLoginFields)
+        .map(Collection::stream).orElseGet(Stream::empty)
+        .filter(new UserClassFieldFilter())
+        .collect(toImmutableSet());
+    if (possibleLoginFields.isEmpty()) {
+      possibleLoginFields = Set.of(DEFAULT_LOGIN_FIELD);
+    }
+    User user = null;
+    if (possibleLoginFields.contains(DEFAULT_LOGIN_FIELD)) {
+      try {
+        user = getUser(resolveUserDocRef(login));
+      } catch (UserInstantiationException exc) {
+        LOGGER.debug("getUserForData - login [{}] is not valid user name", login, exc);
+      }
+    }
+    if (user == null) {
+      user = loadUniqueUserForQuery(login, possibleLoginFields);
+    }
+    return Optional.of(user);
   }
 
 }
