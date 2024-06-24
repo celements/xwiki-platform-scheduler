@@ -77,7 +77,8 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     // if the DocRef of the returned user is the same as the DocRef of the DocFormRequestKey of the
     // EmailParam.
 
-    Optional<User> user = userService.getPossibleUserForLoginField(email, null);
+    Optional<User> user = userService.getPossibleUserForLoginField(email,
+        userService.getPossibleLoginFields());
 
     return user.isEmpty() || user.get().getDocRef().equals(emailParam.getKey().getDocRef());
   }
