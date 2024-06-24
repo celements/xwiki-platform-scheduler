@@ -391,7 +391,7 @@ public class CelementsUserService implements UserService {
     if (user == null) {
       user = loadUniqueUserForQuery(login, possibleLoginFields);
     }
-    return Optional.of(user);
+    return Optional.ofNullable(user);
   }
 
 }
