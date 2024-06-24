@@ -1,9 +1,7 @@
 package com.celements.auth.user.validation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -12,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 import org.xwiki.model.reference.ClassReference;
 
+import com.celements.auth.user.User;
 import com.celements.auth.user.UserService;
 import com.celements.docform.DocFormRequestKey;
 import com.celements.docform.DocFormRequestParam;
@@ -41,16 +40,17 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
     // filter params for email field (XWiki.XWikiUsers_0_email)
     Optional<DocFormRequestParam> emailParam = getEmailParam(params);
+    // get email from emailParam
+    String email = emailParam.get().getValues().get(0);
 
     // check if email is a valid string
-    if (emailParam.isPresent()
-        && !mailSenderService.isValidEmail(emailParam.get().getValues().get(0))) {
+    if (emailParam.isPresent() && !mailSenderService.isValidEmail(email)) {
       validationResults
           .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailInvalid"));
     }
 
     // check if email exists already in database
-    if (emailParam.isPresent() && !isEmailUnique(emailParam.get())) {
+    if (emailParam.isPresent() && !isEmailUnique(email, emailParam.get())) {
       // add entry to validationResults with dictionary key for suitable error message and add
       // dictionary entries to celements dictionary if necessary
       validationResults
@@ -69,16 +69,17 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         .findFirst();
   }
 
-  private boolean isEmailUnique(DocFormRequestParam emailParam) {
+  private boolean isEmailUnique(String email, DocFormRequestParam emailParam) {
     // Email has to be unique in database. If possible, reuse
     // com.celements.auth.user.CelementsUserService.checkIdentifiersForExistingUser(Map<String,
     // String>). If it is not unique return false.
     // If a user is updated and the email hasn't changed, the email exists already. --> maybe check
     // if the DocRef of the returned user is the same as the DocRef of the DocFormRequestKey of the
     // EmailParam.
-    Map<String, String> userData = new HashMap<>();
-    userService.checkIdentifiersForExistingUser(userData).isPresent();
-    return true;
+
+    Optional<User> user = userService.getPossibleUserForLoginField(email, null);
+
+    return user.isEmpty() || user.get().getDocRef().equals(emailParam.getKey().getDocRef());
   }
 
 }
