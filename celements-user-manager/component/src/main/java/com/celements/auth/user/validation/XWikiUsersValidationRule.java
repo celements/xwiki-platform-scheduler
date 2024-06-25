@@ -61,7 +61,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         .findFirst();
   }
 
-  private Optional<ValidationResult> checkEmailValidity(String email) {
+  Optional<ValidationResult> checkEmailValidity(String email) {
     if (mailSenderService.isValidEmail(email)) {
       return Optional.empty();
     }
@@ -69,7 +69,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailInvalid"));
   }
 
-  private Optional<ValidationResult> checkUniqueEmail(String email,
+  Optional<ValidationResult> checkUniqueEmail(String email,
       DocFormRequestParam emailParam) {
     Optional<User> user = userService.getPossibleUserForLoginField(email,
         userService.getPossibleLoginFields());

@@ -46,28 +46,24 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
   }
 
   @Test
-  public void test_validate_invalidEmail() {
-    List<DocFormRequestParam> params = createEmailParam("abc");
-    expect(getMock(IMailSenderRole.class).isValidEmail("abc")).andReturn(false);
-    expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
-    expect(getMock(UserService.class)
-        .getPossibleUserForLoginField("abc", new HashSet<String>()))
-            .andReturn(Optional.empty());
+  public void test_checkEmailValidity_invalidEmail() {
+    String email = "abc";
+    expect(getMock(IMailSenderRole.class).isValidEmail(email)).andReturn(false);
 
     replayDefault();
-    List<ValidationResult> results = rule.validate(params);
+    Optional<ValidationResult> result = rule.checkEmailValidity(email);
     verifyDefault();
 
-    assertEquals(1, results.size());
-    assertEquals(ValidationType.ERROR, results.get(0).getType());
-    assertEquals("cel_useradmin_emailInvalid", results.get(0).getMessage());
+    assertTrue(result.isPresent());
+    assertEquals(ValidationType.ERROR, result.get().getType());
+    assertEquals("cel_useradmin_emailInvalid", result.get().getMessage());
   }
 
   @Test
-  public void test_validate_emailNotUnique() {
-    List<DocFormRequestParam> params = createEmailParam("abc+test@synventis.com");
+  public void test_checkUniqueEmail_emailNotUnique() {
+    String email = "abc+test@synventis.com";
+    DocFormRequestParam emailParam = createEmailParam(email);
     DocumentReference userDocRef2 = new DocumentReference("wiki", "XWiki", "a65e4rafgoij");
-    expect(getMock(IMailSenderRole.class).isValidEmail("abc+test@synventis.com")).andReturn(true);
     User user = createDefaultMock(User.class);
     expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
     expect(getMock(UserService.class)
@@ -76,17 +72,18 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     expect(user.getDocRef()).andReturn(userDocRef2);
 
     replayDefault();
-    List<ValidationResult> results = rule.validate(params);
+    Optional<ValidationResult> result = rule.checkUniqueEmail(email, emailParam);
     verifyDefault();
 
-    assertEquals(1, results.size());
-    assertEquals(ValidationType.ERROR, results.get(0).getType());
-    assertEquals("cel_useradmin_emailNotUnique", results.get(0).getMessage());
+    assertTrue(result.isPresent());
+    assertEquals(ValidationType.ERROR, result.get().getType());
+    assertEquals("cel_useradmin_emailNotUnique", result.get().getMessage());
   }
 
   @Test
   public void test_validate_allOk() {
-    List<DocFormRequestParam> params = createEmailParam("abc+test@synventis.com");
+    List<DocFormRequestParam> params = new ArrayList<>();
+    params.add(createEmailParam("abc+test@synventis.com"));
     expect(getMock(IMailSenderRole.class).isValidEmail("abc+test@synventis.com")).andReturn(true);
     expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
     expect(getMock(UserService.class)
@@ -100,14 +97,12 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     assertEquals(0, results.size());
   }
 
-  private List<DocFormRequestParam> createEmailParam(String email) {
-    List<DocFormRequestParam> params = new ArrayList<>();
+  private DocFormRequestParam createEmailParam(String email) {
     DocFormRequestParam emailParam = new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
         "XWiki.XWikiUsers_0_email", userDocRef1,
         new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class), 0, "email"),
         List.of(email));
-    params.add(emailParam);
-    return params;
+    return emailParam;
 
   }
 
