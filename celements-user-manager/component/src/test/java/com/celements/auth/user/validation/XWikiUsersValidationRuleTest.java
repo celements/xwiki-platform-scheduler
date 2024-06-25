@@ -35,6 +35,17 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
   }
 
   @Test
+  public void test_validate_noEmailParam() {
+    List<DocFormRequestParam> params = new ArrayList<>();
+
+    replayDefault();
+    List<ValidationResult> results = rule.validate(params);
+    verifyDefault();
+
+    assertEquals(0, results.size());
+  }
+
+  @Test
   public void test_validate_invalidEmail() {
     List<DocFormRequestParam> params = createEmailParam("abc");
     expect(getMock(IMailSenderRole.class).isValidEmail("abc")).andReturn(false);

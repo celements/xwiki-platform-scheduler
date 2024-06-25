@@ -37,7 +37,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
     Stream<ValidationResult> validationResults = Stream.empty();
     validationResults = Stream.concat(validationResults,
-        getEmailParam(params).map(emailParam -> validate(emailParam)).get());
+        getEmailParam(params).map(emailParam -> validate(emailParam)).orElse(Stream.empty()));
 
     return validationResults.collect(Collectors.toList());
   }
