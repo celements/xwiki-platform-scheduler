@@ -42,8 +42,9 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
         List.of("abc"));
     params.add(emailParam);
     expect(getMock(IMailSenderRole.class).isValidEmail("abc")).andReturn(false);
-    expect(getMock(UserService.class).getPossibleUserForLoginField("abc+test@synventis.com", null))
-        .andReturn(Optional.empty());
+    expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
+    expect(getMock(UserService.class).getPossibleUserForLoginField("abc",
+        new HashSet<String>())).andReturn(Optional.empty());
 
     replayDefault();
     List<ValidationResult> results = rule.validate(params);
@@ -66,8 +67,10 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     params.add(emailParam);
     expect(getMock(IMailSenderRole.class).isValidEmail("abc+test@synventis.com")).andReturn(true);
     User user = createDefaultMock(User.class);
-    expect(getMock(UserService.class).getPossibleUserForLoginField("abc+test@synventis.com", null))
-        .andReturn(Optional.of(user));
+    expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
+    expect(getMock(UserService.class).getPossibleUserForLoginField("abc+test@synventis.com",
+        new HashSet<String>()))
+            .andReturn(Optional.of(user));
     expect(user.getDocRef()).andReturn(userDocRef2);
 
     replayDefault();
@@ -90,8 +93,9 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     params.add(emailParam);
     expect(getMock(IMailSenderRole.class).isValidEmail("abc+test@synventis.com")).andReturn(true);
     expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
-    expect(getMock(UserService.class).getPossibleUserForLoginField("abc+test@synventis.com", null))
-        .andReturn(Optional.empty());
+    expect(getMock(UserService.class).getPossibleUserForLoginField("abc+test@synventis.com",
+        new HashSet<String>()))
+            .andReturn(Optional.empty());
 
     replayDefault();
     List<ValidationResult> results = rule.validate(params);
