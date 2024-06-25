@@ -26,6 +26,7 @@ import com.celements.validation.ValidationType;
 public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   private XWikiUsersValidationRule rule;
+  private DocumentReference userDocRef1 = new DocumentReference("wiki", "XWiki", "321adfawer");
 
   @Before
   public void prepare() throws Exception {
@@ -35,16 +36,12 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   @Test
   public void test_validate_invalidEmail() {
-    List<DocFormRequestParam> params = new ArrayList<>();
-    DocFormRequestParam emailParam = new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
-        "XWiki.XWikiUsers_0_email", new DocumentReference("wiki", "XWiki", "321adfawer"),
-        new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class), 0, "email"),
-        List.of("abc"));
-    params.add(emailParam);
+    List<DocFormRequestParam> params = createEmailParam("abc");
     expect(getMock(IMailSenderRole.class).isValidEmail("abc")).andReturn(false);
     expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
-    expect(getMock(UserService.class).getPossibleUserForLoginField("abc",
-        new HashSet<String>())).andReturn(Optional.empty());
+    expect(getMock(UserService.class)
+        .getPossibleUserForLoginField("abc", new HashSet<String>()))
+            .andReturn(Optional.empty());
 
     replayDefault();
     List<ValidationResult> results = rule.validate(params);
@@ -57,19 +54,13 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   @Test
   public void test_validate_emailNotUnique() {
-    List<DocFormRequestParam> params = new ArrayList<>();
-    DocumentReference userDocRef1 = new DocumentReference("wiki", "XWiki", "321adfawer");
+    List<DocFormRequestParam> params = createEmailParam("abc+test@synventis.com");
     DocumentReference userDocRef2 = new DocumentReference("wiki", "XWiki", "a65e4rafgoij");
-    DocFormRequestParam emailParam = new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
-        "XWiki.XWikiUsers_0_email", userDocRef1,
-        new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class), 0, "email"),
-        List.of("abc+test@synventis.com"));
-    params.add(emailParam);
     expect(getMock(IMailSenderRole.class).isValidEmail("abc+test@synventis.com")).andReturn(true);
     User user = createDefaultMock(User.class);
     expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
-    expect(getMock(UserService.class).getPossibleUserForLoginField("abc+test@synventis.com",
-        new HashSet<String>()))
+    expect(getMock(UserService.class)
+        .getPossibleUserForLoginField("abc+test@synventis.com", new HashSet<String>()))
             .andReturn(Optional.of(user));
     expect(user.getDocRef()).andReturn(userDocRef2);
 
@@ -84,17 +75,11 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   @Test
   public void test_validate_allOk() {
-    List<DocFormRequestParam> params = new ArrayList<>();
-    DocumentReference userDocRef1 = new DocumentReference("wiki", "XWiki", "321adfawer");
-    DocFormRequestParam emailParam = new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
-        "XWiki.XWikiUsers_0_email", userDocRef1,
-        new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class), 0, "email"),
-        List.of("abc+test@synventis.com"));
-    params.add(emailParam);
+    List<DocFormRequestParam> params = createEmailParam("abc+test@synventis.com");
     expect(getMock(IMailSenderRole.class).isValidEmail("abc+test@synventis.com")).andReturn(true);
     expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
-    expect(getMock(UserService.class).getPossibleUserForLoginField("abc+test@synventis.com",
-        new HashSet<String>()))
+    expect(getMock(UserService.class)
+        .getPossibleUserForLoginField("abc+test@synventis.com", new HashSet<String>()))
             .andReturn(Optional.empty());
 
     replayDefault();
@@ -102,6 +87,17 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     verifyDefault();
 
     assertEquals(0, results.size());
+  }
+
+  private List<DocFormRequestParam> createEmailParam(String email) {
+    List<DocFormRequestParam> params = new ArrayList<>();
+    DocFormRequestParam emailParam = new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
+        "XWiki.XWikiUsers_0_email", userDocRef1,
+        new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class), 0, "email"),
+        List.of(email));
+    params.add(emailParam);
+    return params;
+
   }
 
 }
