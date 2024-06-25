@@ -1,8 +1,9 @@
 package com.celements.auth.user.validation;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -34,23 +35,21 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   @Override
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
-    List<ValidationResult> validationResults = new ArrayList<>();
+    Stream<ValidationResult> validationResults = Stream.empty();
+    validationResults = Stream.concat(validationResults,
+        getEmailParam(params).map(emailParam -> validate(emailParam)).get());
 
-    // run validation only on Userdocs?
+    return validationResults.collect(Collectors.toList());
+  }
 
-    Optional<DocFormRequestParam> emailParam = getEmailParam(params);
-    String email = emailParam.get().getValues().get(0);
-
-    if (emailParam.isPresent() && !mailSenderService.isValidEmail(email)) {
-      validationResults
-          .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailInvalid"));
-    }
-    if (emailParam.isPresent() && !isEmailUnique(email, emailParam.get())) {
-      validationResults
-          .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailNotUnique"));
-    }
-
+  private Stream<ValidationResult> validate(DocFormRequestParam emailParam) {
+    Stream<ValidationResult> validationResults = Stream.empty();
+    String email = emailParam.getValues().get(0);
+    validationResults = Stream.concat(validationResults, checkEmailValidity(email).stream());
+    validationResults = Stream.concat(validationResults,
+        checkUniqueEmail(email, emailParam).stream());
     return validationResults;
+
   }
 
   private Optional<DocFormRequestParam> getEmailParam(List<DocFormRequestParam> params) {
@@ -62,10 +61,23 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         .findFirst();
   }
 
-  private boolean isEmailUnique(String email, DocFormRequestParam emailParam) {
+  private Optional<ValidationResult> checkEmailValidity(String email) {
+    if (mailSenderService.isValidEmail(email)) {
+      return Optional.empty();
+    }
+    return Optional
+        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailInvalid"));
+  }
+
+  private Optional<ValidationResult> checkUniqueEmail(String email,
+      DocFormRequestParam emailParam) {
     Optional<User> user = userService.getPossibleUserForLoginField(email,
         userService.getPossibleLoginFields());
-    return user.isEmpty() || user.get().getDocRef().equals(emailParam.getKey().getDocRef());
+    if (user.isEmpty() || user.get().getDocRef().equals(emailParam.getKey().getDocRef())) {
+      return Optional.empty();
+    }
+    return Optional
+        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailNotUnique"));
   }
 
 }
