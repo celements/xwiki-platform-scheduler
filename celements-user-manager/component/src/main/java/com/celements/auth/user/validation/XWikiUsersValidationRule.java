@@ -80,4 +80,14 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailNotUnique"));
   }
 
+  Optional<ValidationResult> checkRegisterAccessRights() {
+    // check if the logged in user has register or admin rights. Other users are not allowed to
+    // create new users. The check is only needed for creating new users, updating existing users do
+    // not need that check.
+    // Use IRightsAccessFacadeRole hasAccessLevel(docRef, EAccessLevel) and isAdmin(). They will get
+    // the logged in user themselves. Return a message "not allowed to create users"
+
+    return Optional.empty();
+  }
+
 }
