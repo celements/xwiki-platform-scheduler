@@ -36,23 +36,16 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
     List<ValidationResult> validationResults = new ArrayList<>();
 
-    // run validation only on Userdocs
+    // run validation only on Userdocs?
 
-    // filter params for email field (XWiki.XWikiUsers_0_email)
     Optional<DocFormRequestParam> emailParam = getEmailParam(params);
-    // get email from emailParam
     String email = emailParam.get().getValues().get(0);
 
-    // check if email is a valid string
     if (emailParam.isPresent() && !mailSenderService.isValidEmail(email)) {
       validationResults
           .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailInvalid"));
     }
-
-    // check if email exists already in database
     if (emailParam.isPresent() && !isEmailUnique(email, emailParam.get())) {
-      // add entry to validationResults with dictionary key for suitable error message and add
-      // dictionary entries to celements dictionary if necessary
       validationResults
           .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailNotUnique"));
     }
@@ -70,16 +63,8 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   }
 
   private boolean isEmailUnique(String email, DocFormRequestParam emailParam) {
-    // Email has to be unique in database. If possible, reuse
-    // com.celements.auth.user.CelementsUserService.checkIdentifiersForExistingUser(Map<String,
-    // String>). If it is not unique return false.
-    // If a user is updated and the email hasn't changed, the email exists already. --> maybe check
-    // if the DocRef of the returned user is the same as the DocRef of the DocFormRequestKey of the
-    // EmailParam.
-
     Optional<User> user = userService.getPossibleUserForLoginField(email,
         userService.getPossibleLoginFields());
-
     return user.isEmpty() || user.get().getDocRef().equals(emailParam.getKey().getDocRef());
   }
 
