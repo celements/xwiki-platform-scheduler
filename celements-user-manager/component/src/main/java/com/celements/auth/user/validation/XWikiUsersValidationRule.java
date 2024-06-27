@@ -80,20 +80,13 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   }
 
   Optional<ValidationResult> checkRegisterAccessRights(DocFormRequestParam emailParam) {
-    // check if the logged in user has register or admin rights. Other users are not allowed to
-    // create new users. The check is only needed for creating new users, updating existing users do
-    // not need that check.
-    // Use IRightsAccessFacadeRole hasAccessLevel(docRef, EAccessLevel) and isAdmin(). They will get
-    // the logged in user themselves. Return a message "not allowed to create users"
-
-    // check emailParam for new users: objNr == -1
-
     if (checkForNewUser(emailParam).isEmpty()
         || rightsAccess.isAdmin()
         || rightsAccess.hasAccessLevel(emailParam.getDocRef(), EAccessLevel.REGISTER)) {
-      return Optional.of(new ValidationResult(ValidationType.WARNING, null, "rights check passed"));
+      return Optional.empty();
     }
-    return Optional.of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_noRights"));
+    return Optional
+        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_noRegisterRights"));
   }
 
   private Optional<DocFormRequestParam> getEmailParam(List<DocFormRequestParam> params) {
