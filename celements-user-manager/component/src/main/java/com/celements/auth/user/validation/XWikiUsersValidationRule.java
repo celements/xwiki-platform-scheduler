@@ -102,4 +102,6 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     return Optional.of(emailParam).filter(p -> p.getKey().getObjNb() == -1);
   }
 
+  // XWiki Space prüfen: XWiki Space auf User Doc!!! --> DocRef des users filtern und dann prüfen ob
+  // Space = XWiki
 }
