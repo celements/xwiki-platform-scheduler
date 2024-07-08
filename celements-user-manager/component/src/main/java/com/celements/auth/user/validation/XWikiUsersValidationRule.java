@@ -43,7 +43,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
     Stream<ValidationResult> validationResults = Stream.empty();
     validationResults = Stream.concat(validationResults,
-        getEmailParam(params).map(emailParam -> validate(emailParam)).orElse(Stream.empty()));
+        getEmailParam(params).map(this::validate).orElse(Stream.empty()));
 
     return validationResults.collect(Collectors.toList());
   }
@@ -56,6 +56,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         checkUniqueEmail(email, emailParam).stream());
     validationResults = Stream.concat(validationResults,
         checkRegisterAccessRights(emailParam).stream());
+    validationResults = Stream.concat(validationResults, checkXWikiSpace(emailParam).stream());
     return validationResults;
 
   }
@@ -104,4 +105,15 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   // XWiki Space prüfen: XWiki Space auf User Doc!!! --> DocRef des users filtern und dann prüfen ob
   // Space = XWiki
+  Optional<ValidationResult> checkXWikiSpace(DocFormRequestParam emailParam) {
+    if (isXWikiSpace(emailParam)) {
+      return Optional.empty();
+    }
+    return Optional
+        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_notXwikiSpace"));
+  }
+
+  private boolean isXWikiSpace(DocFormRequestParam emailParam) {
+    return emailParam.getDocRef().getLastSpaceReference().getName().equals("XWiki");
+  }
 }
