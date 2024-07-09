@@ -22,6 +22,7 @@ import com.celements.validation.IRequestValidationRule;
 import com.celements.validation.ValidationResult;
 import com.celements.validation.ValidationType;
 import com.celements.web.classes.oldcore.XWikiUsersClass;
+import com.xpn.xwiki.XWikiConstant;
 
 @Component
 public class XWikiUsersValidationRule implements IRequestValidationRule {
@@ -112,7 +113,8 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   }
 
   private boolean isXWikiSpace(DocFormRequestParam emailParam) {
-    return emailParam.getDocRef().getLastSpaceReference().getName().equals("XWiki");
+    return emailParam.getDocRef().getLastSpaceReference().getName()
+        .equals(XWikiConstant.XWIKI_SPACE);
   }
 
   private Optional<DocFormRequestParam> getEmailParam(List<DocFormRequestParam> params) {
