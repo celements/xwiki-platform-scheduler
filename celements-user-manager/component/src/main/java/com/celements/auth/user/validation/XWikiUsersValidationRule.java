@@ -24,6 +24,13 @@ import com.celements.validation.ValidationType;
 import com.celements.web.classes.oldcore.XWikiUsersClass;
 import com.xpn.xwiki.XWikiConstant;
 
+/**
+ * This class validates params with the ClassReference XWiki.XWikiUsers. It only handles one
+ * user per request and one email per user. Other requests will be invalid. An email may not be
+ * null, nor an empty String.
+ *
+ * @author cpichler
+ */
 @Component
 public class XWikiUsersValidationRule implements IRequestValidationRule {
 
