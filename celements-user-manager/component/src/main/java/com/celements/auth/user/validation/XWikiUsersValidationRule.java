@@ -42,11 +42,8 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   @Override
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
-    // ändern: alle params darauf prüfen, ob sie eine ClassReference XWiki.XWikiUsers haben. Wenn
-    // ja, müssen diese params validiert werden
-    return getEmailParam(params)
-        .map(this::validate)
-        .orElse(Stream.empty())
+    return findParamsWithXWikiUsersClassRef(params)
+        .flatMap(this::validate)
         .collect(Collectors.toList());
   }
 
@@ -117,10 +114,15 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         .equals(XWikiConstant.XWIKI_SPACE);
   }
 
-  private Optional<DocFormRequestParam> getEmailParam(List<DocFormRequestParam> params) {
+  private Stream<DocFormRequestParam> findParamsWithXWikiUsersClassRef(
+      List<DocFormRequestParam> params) {
     return params.stream()
         .filter(p -> p.getKey().getType().equals(DocFormRequestKey.Type.OBJ_FIELD))
-        .filter(p -> p.getKey().getClassRef().equals(XWikiUsersClass.CLASS_REF))
+        .filter(p -> p.getKey().getClassRef().equals(XWikiUsersClass.CLASS_REF));
+  }
+
+  private Optional<DocFormRequestParam> getEmailParam(Stream<DocFormRequestParam> params) {
+    return params
         .filter(p -> p.getKey().getFieldName().equals("email"))
         .findFirst();
   }
