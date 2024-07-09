@@ -1,5 +1,6 @@
 package com.celements.auth.user.validation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,26 +42,36 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   @Override
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
+    // ändern: alle params darauf prüfen, ob sie eine ClassReference XWiki.XWikiUsers haben. Wenn
+    // ja, müssen diese params validiert werden
     return getEmailParam(params)
         .map(this::validate)
         .orElse(Stream.empty())
         .collect(Collectors.toList());
   }
 
+  // TODO neue Validierung ergänzen: alle Params mit der ClassReference XWiki.XWikiUsers müssen die
+  // gleiche Objektnummer und die gleiche DocRef haben. Den Case, dass mehrere User in einem Request
+  // sind, decken wir momentan nicht ab. Im Javadoc festhalten!!!
+
   private Stream<ValidationResult> validate(DocFormRequestParam emailParam) {
-    Stream<ValidationResult> validationResults = Stream.empty();
-    String email = emailParam.getValues().get(0);
-    validationResults = Stream.concat(validationResults, checkEmailValidity(email).stream());
-    validationResults = Stream.concat(validationResults,
-        checkUniqueEmail(email, emailParam).stream());
-    validationResults = Stream.concat(validationResults,
-        checkRegisterAccessRights(emailParam).stream());
-    validationResults = Stream.concat(validationResults, checkXWikiSpace(emailParam).stream());
-    return validationResults;
+    List<ValidationResult> validationResults = new ArrayList<>();
+    Stream<String> emails = emailParam.getValues().stream();
+    // checkEmailValidity(email).ifPresent(validationResults::add);
+    // checkUniqueEmail(email, emailParam).ifPresent(validationResults::add);
+    checkRegisterAccessRights(emailParam).ifPresent(validationResults::add);
+    checkXWikiSpace(emailParam).ifPresent(validationResults::add);
+    return validationResults.stream();
 
   }
 
+  // TODO wenn im Request mehrere EmailParams für die gleiche DocRef vorhanden sind, ist das für den
+  // Moment ein ungültiger Request
+
   Optional<ValidationResult> checkEmailValidity(String email) {
+    // TODO darf nicht null sein, darf kein EmptyString sein, muss valides Format haben.
+    // evtl. 2 verschiedene Validationmessages ausliefern
+
     if (mailSenderService.isValidEmail(email)) {
       return Optional.empty();
     }
@@ -89,15 +100,6 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_noRegisterRights"));
   }
 
-  private Optional<DocFormRequestParam> getEmailParam(List<DocFormRequestParam> params) {
-    return params.stream()
-        .filter(p -> p.getKey().getType().equals(DocFormRequestKey.Type.OBJ_FIELD))
-        .filter(p -> p.getKey().getClassRef()
-            .equals(new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class)))
-        .filter(p -> p.getKey().getFieldName().equals("email"))
-        .findFirst();
-  }
-
   private Optional<DocFormRequestParam> checkForNewUser(DocFormRequestParam emailParam) {
     return Optional.of(emailParam).filter(p -> p.getKey().getObjNb() == -1);
   }
@@ -112,5 +114,14 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   private boolean isXWikiSpace(DocFormRequestParam emailParam) {
     return emailParam.getDocRef().getLastSpaceReference().getName().equals("XWiki");
+  }
+
+  private Optional<DocFormRequestParam> getEmailParam(List<DocFormRequestParam> params) {
+    return params.stream()
+        .filter(p -> p.getKey().getType().equals(DocFormRequestKey.Type.OBJ_FIELD))
+        .filter(p -> p.getKey().getClassRef()
+            .equals(new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class)))
+        .filter(p -> p.getKey().getFieldName().equals("email"))
+        .findFirst();
   }
 }
