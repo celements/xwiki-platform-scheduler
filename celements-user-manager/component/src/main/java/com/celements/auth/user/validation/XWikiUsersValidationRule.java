@@ -52,15 +52,16 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
     List<DocFormRequestParam> paramsToValidate = findParamsWithXWikiUsersClassRef(params);
     if (!paramsToValidate.isEmpty()) {
-      if (!checkIsSameUser(paramsToValidate)) {
+      if (!checkIsSameUser(paramsToValidate) || checkHasSeveralEmailParams(paramsToValidate)) {
         return List
             .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_invalidRequest"));
       }
+      return paramsToValidate.stream().flatMap(this::validateParam).collect(Collectors.toList());
     }
     return List.of();
   }
 
-  private boolean checkIsSameUser(List<DocFormRequestParam> params) {
+  boolean checkIsSameUser(List<DocFormRequestParam> params) {
     int objNb = params.get(0).getKey().getObjNb();
     boolean isSameUser = true;
     DocumentReference userDocRef = params.get(0).getDocRef();
@@ -69,6 +70,10 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
           && param.getDocRef().equals(userDocRef);
     }
     return isSameUser;
+  }
+
+  boolean checkHasSeveralEmailParams(List<DocFormRequestParam> params) {
+    return getEmailParams(params.stream()).count() > 1;
   }
 
   private Stream<ValidationResult> validateParam(DocFormRequestParam param) {
@@ -81,9 +86,6 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     return validationResults.stream();
 
   }
-
-  // TODO wenn im Request mehrere EmailParams für die gleiche DocRef vorhanden sind, ist das für den
-  // Moment ein ungültiger Request
 
   Optional<ValidationResult> checkEmailValidity(String email) {
     // TODO darf nicht null sein, darf kein EmptyString sein, muss valides Format haben.
@@ -142,9 +144,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         .collect(Collectors.toList());
   }
 
-  private Optional<DocFormRequestParam> getEmailParam(Stream<DocFormRequestParam> params) {
-    return params
-        .filter(p -> p.getKey().getFieldName().equals("email"))
-        .findFirst();
+  private Stream<DocFormRequestParam> getEmailParams(Stream<DocFormRequestParam> params) {
+    return params.filter(p -> p.getKey().getFieldName().equals("email"));
   }
 }
