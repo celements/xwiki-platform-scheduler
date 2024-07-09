@@ -10,19 +10,18 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
-import org.xwiki.model.reference.ClassReference;
 
 import com.celements.auth.user.User;
 import com.celements.auth.user.UserService;
 import com.celements.docform.DocFormRequestKey;
 import com.celements.docform.DocFormRequestParam;
 import com.celements.mailsender.IMailSenderRole;
-import com.celements.model.reference.RefBuilder;
 import com.celements.rights.access.EAccessLevel;
 import com.celements.rights.access.IRightsAccessFacadeRole;
 import com.celements.validation.IRequestValidationRule;
 import com.celements.validation.ValidationResult;
 import com.celements.validation.ValidationType;
+import com.celements.web.classes.oldcore.XWikiUsersClass;
 
 @Component
 public class XWikiUsersValidationRule implements IRequestValidationRule {
@@ -119,8 +118,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   private Optional<DocFormRequestParam> getEmailParam(List<DocFormRequestParam> params) {
     return params.stream()
         .filter(p -> p.getKey().getType().equals(DocFormRequestKey.Type.OBJ_FIELD))
-        .filter(p -> p.getKey().getClassRef()
-            .equals(new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class)))
+        .filter(p -> p.getKey().getClassRef().equals(XWikiUsersClass.CLASS_REF))
         .filter(p -> p.getKey().getFieldName().equals("email"))
         .findFirst();
   }
