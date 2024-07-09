@@ -41,10 +41,10 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   @Override
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
-    Stream<ValidationResult> validationResults = Stream.empty();
-    validationResults = Stream.concat(validationResults,
-        getEmailParam(params).map(this::validate).orElse(Stream.empty()));
-    return validationResults.collect(Collectors.toList());
+    return getEmailParam(params)
+        .map(this::validate)
+        .orElse(Stream.empty())
+        .collect(Collectors.toList());
   }
 
   private Stream<ValidationResult> validate(DocFormRequestParam emailParam) {
