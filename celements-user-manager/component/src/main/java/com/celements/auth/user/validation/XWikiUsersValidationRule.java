@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
+import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.auth.user.User;
 import com.celements.auth.user.UserService;
@@ -49,22 +50,34 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   @Override
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
-    return findParamsWithXWikiUsersClassRef(params)
-        .flatMap(this::validate)
-        .collect(Collectors.toList());
+    List<DocFormRequestParam> paramsToValidate = findParamsWithXWikiUsersClassRef(params);
+    if (!paramsToValidate.isEmpty()) {
+      if (!checkIsSameUser(paramsToValidate)) {
+        return List
+            .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_invalidRequest"));
+      }
+    }
+    return List.of();
   }
 
-  // TODO neue Validierung ergänzen: alle Params mit der ClassReference XWiki.XWikiUsers müssen die
-  // gleiche Objektnummer und die gleiche DocRef haben. Den Case, dass mehrere User in einem Request
-  // sind, decken wir momentan nicht ab. Im Javadoc festhalten!!!
+  private boolean checkIsSameUser(List<DocFormRequestParam> params) {
+    int objNb = params.get(0).getKey().getObjNb();
+    boolean isSameUser = true;
+    DocumentReference userDocRef = params.get(0).getDocRef();
+    for (DocFormRequestParam param : params) {
+      isSameUser = isSameUser && (param.getKey().getObjNb() == objNb)
+          && param.getDocRef().equals(userDocRef);
+    }
+    return isSameUser;
+  }
 
-  private Stream<ValidationResult> validate(DocFormRequestParam emailParam) {
+  private Stream<ValidationResult> validateParam(DocFormRequestParam param) {
     List<ValidationResult> validationResults = new ArrayList<>();
-    Stream<String> emails = emailParam.getValues().stream();
+    Stream<String> emails = param.getValues().stream();
     // checkEmailValidity(email).ifPresent(validationResults::add);
     // checkUniqueEmail(email, emailParam).ifPresent(validationResults::add);
-    checkRegisterAccessRights(emailParam).ifPresent(validationResults::add);
-    checkXWikiSpace(emailParam).ifPresent(validationResults::add);
+    checkRegisterAccessRights(param).ifPresent(validationResults::add);
+    checkXWikiSpace(param).ifPresent(validationResults::add);
     return validationResults.stream();
 
   }
@@ -108,24 +121,25 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     return Optional.of(emailParam).filter(p -> p.getKey().getObjNb() == -1);
   }
 
-  Optional<ValidationResult> checkXWikiSpace(DocFormRequestParam emailParam) {
-    if (isXWikiSpace(emailParam)) {
+  Optional<ValidationResult> checkXWikiSpace(DocFormRequestParam param) {
+    if (isXWikiSpace(param)) {
       return Optional.empty();
     }
     return Optional
-        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_notXwikiSpace"));
+        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_invalidRequest"));
   }
 
-  private boolean isXWikiSpace(DocFormRequestParam emailParam) {
-    return emailParam.getDocRef().getLastSpaceReference().getName()
+  private boolean isXWikiSpace(DocFormRequestParam param) {
+    return param.getDocRef().getLastSpaceReference().getName()
         .equals(XWikiConstant.XWIKI_SPACE);
   }
 
-  private Stream<DocFormRequestParam> findParamsWithXWikiUsersClassRef(
+  private List<DocFormRequestParam> findParamsWithXWikiUsersClassRef(
       List<DocFormRequestParam> params) {
     return params.stream()
         .filter(p -> p.getKey().getType().equals(DocFormRequestKey.Type.OBJ_FIELD))
-        .filter(p -> p.getKey().getClassRef().equals(XWikiUsersClass.CLASS_REF));
+        .filter(p -> p.getKey().getClassRef().equals(XWikiUsersClass.CLASS_REF))
+        .collect(Collectors.toList());
   }
 
   private Optional<DocFormRequestParam> getEmailParam(Stream<DocFormRequestParam> params) {
