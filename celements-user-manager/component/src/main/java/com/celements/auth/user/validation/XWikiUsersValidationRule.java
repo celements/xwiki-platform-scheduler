@@ -26,9 +26,9 @@ import com.celements.validation.ValidationType;
 @Component
 public class XWikiUsersValidationRule implements IRequestValidationRule {
 
-  private IMailSenderRole mailSenderService;
-  private UserService userService;
-  private IRightsAccessFacadeRole rightsAccess;
+  private final IMailSenderRole mailSenderService;
+  private final UserService userService;
+  private final IRightsAccessFacadeRole rightsAccess;
 
   @Inject
   public XWikiUsersValidationRule(IMailSenderRole mailSenderService,
