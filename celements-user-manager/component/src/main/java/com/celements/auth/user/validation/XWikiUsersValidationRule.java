@@ -44,7 +44,6 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     Stream<ValidationResult> validationResults = Stream.empty();
     validationResults = Stream.concat(validationResults,
         getEmailParam(params).map(this::validate).orElse(Stream.empty()));
-
     return validationResults.collect(Collectors.toList());
   }
 

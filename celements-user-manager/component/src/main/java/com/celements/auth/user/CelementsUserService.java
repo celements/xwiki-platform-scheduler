@@ -283,7 +283,6 @@ public class CelementsUserService implements UserService {
   public com.google.common.base.Optional<User> getUserForLoginField(String login,
       Collection<String> possibleLoginFields) {
     Optional<User> user = getPossibleUserForLoginField(login, possibleLoginFields);
-
     return com.google.common.base.Optional.fromJavaUtil(user.filter(not(User::isSuspended)));
   }
 
