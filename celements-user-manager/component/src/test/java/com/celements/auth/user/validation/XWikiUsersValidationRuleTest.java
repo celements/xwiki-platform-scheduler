@@ -130,7 +130,7 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
     assertTrue(result.isPresent());
     assertEquals(ValidationType.ERROR, result.get().getType());
-    assertEquals("cel_useradmin_notXwikiSpace", result.get().getMessage());
+    assertEquals("cel_useradmin_invalidRequest", result.get().getMessage());
 
   }
 
