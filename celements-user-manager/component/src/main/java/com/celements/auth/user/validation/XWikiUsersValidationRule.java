@@ -39,9 +39,20 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   private final UserService userService;
   private final IRightsAccessFacadeRole rightsAccess;
 
+  private static final ValidationResult INVALID_REQUEST = new ValidationResult(ValidationType.ERROR,
+      "invalid request", "cel_useradmin_invalidRequest");
+  private static final ValidationResult INVALID_EMAIL = new ValidationResult(ValidationType.ERROR,
+      "invalid email", "cel_useradmin_emailInvalid");
+  private static final ValidationResult MISSING_EMAIL = new ValidationResult(ValidationType.ERROR,
+      "missing email", "cel_useradmin_missingEmail");
+  private static final ValidationResult EMAIL_NOT_UNIQUE = new ValidationResult(
+      ValidationType.ERROR, "email not unique", "cel_useradmin_emailNotUnique");
+  private static final ValidationResult NO_REGISTER_RIGHTS = new ValidationResult(
+      ValidationType.ERROR, "no register rights", "cel_useradmin_noRegisterRights");
+
   @Inject
-  public XWikiUsersValidationRule(IMailSenderRole mailSenderService,
-      UserService userService,
+  public XWikiUsersValidationRule(
+      IMailSenderRole mailSenderService, UserService userService,
       IRightsAccessFacadeRole rightsAccess) {
     this.mailSenderService = mailSenderService;
     this.userService = userService;
@@ -51,14 +62,13 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   @Override
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
     List<DocFormRequestParam> paramsToValidate = findParamsWithXWikiUsersClassRef(params);
-    if (!paramsToValidate.isEmpty()) {
-      if (isRequestInvalid(paramsToValidate)) {
-        return List
-            .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_invalidRequest"));
-      }
+    if (paramsToValidate.isEmpty()) {
+      return List.of();
+    }
+    if (!isRequestInvalid(paramsToValidate)) {
       return validateParams(paramsToValidate);
     }
-    return List.of();
+    return List.of(INVALID_REQUEST);
   }
 
   private boolean isRequestInvalid(List<DocFormRequestParam> paramsToValidate) {
@@ -68,6 +78,8 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   }
 
   private boolean isNotSameUser(List<DocFormRequestParam> params) {
+    // probieren mit Streams: map auf ObjNb und getDocRef. dann distinct. Stream muss Grösse 1
+    // haben, evtl. auch 2 Methoden
     int objNb = params.get(0).getKey().getObjNb();
     boolean isSameUser = true;
     DocumentReference userDocRef = params.get(0).getDocRef();
@@ -91,25 +103,29 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     List<ValidationResult> validationResults = new ArrayList<>();
     Optional<DocFormRequestParam> emailParam = getEmailParams(params).findAny();
     validationResults.addAll(checkEmailValidity(emailParam));
+    // Liste von Params übergeben an checkRegisterAccessRights
     checkRegisterAccessRights(params.get(0)).ifPresent(validationResults::add);
     return validationResults;
   }
 
+  // kein Optional übergeben, sondern ganze Liste. wenn nur noch ein validationResult returned wird,
+  // mit Optionals arbeiten, statt mit List
   List<ValidationResult> checkEmailValidity(Optional<DocFormRequestParam> emailParam) {
+    //
     List<ValidationResult> validationResults = new ArrayList<>();
     // DocFormRequestParam turns null values into empty Strings and deletes those from the list of
     // values. You should always get a list but it might be empty.
+    // if Block umkehren, wenn kein EmailParam vorhanden, gleich returnen
     if (emailParam.isPresent() || !emailParam.get().getValues().isEmpty()) {
       String email = emailParam.get().getValues().get(0);
       if (mailSenderService.isValidEmail(email)) {
+        // umdrehen: wenn Email ungültig, returnen
         checkUniqueEmail(email, emailParam.get()).ifPresent(validationResults::add);
       } else {
-        validationResults
-            .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailInvalid"));
+        validationResults.add(INVALID_EMAIL);
       }
     } else {
-      validationResults
-          .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_missingEmail"));
+      validationResults.add(MISSING_EMAIL);
     }
     return validationResults;
   }
@@ -121,8 +137,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     if (user.isEmpty() || user.get().getDocRef().equals(emailParam.getDocRef())) {
       return Optional.empty();
     }
-    return Optional
-        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailNotUnique"));
+    return Optional.of(EMAIL_NOT_UNIQUE);
   }
 
   Optional<ValidationResult> checkRegisterAccessRights(DocFormRequestParam emailParam) {
@@ -131,8 +146,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         || rightsAccess.hasAccessLevel(emailParam.getDocRef(), EAccessLevel.REGISTER)) {
       return Optional.empty();
     }
-    return Optional
-        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_noRegisterRights"));
+    return Optional.of(NO_REGISTER_RIGHTS);
   }
 
   private Optional<DocFormRequestParam> checkForNewUser(DocFormRequestParam emailParam) {
