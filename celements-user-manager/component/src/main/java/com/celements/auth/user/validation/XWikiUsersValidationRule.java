@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
-import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.auth.user.User;
 import com.celements.auth.user.UserService;
@@ -72,22 +71,21 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   }
 
   private boolean isRequestInvalid(List<DocFormRequestParam> paramsToValidate) {
-    return isNotSameUser(paramsToValidate)
+    return !isSameUser(paramsToValidate)
         || hasSeveralEmailParams(paramsToValidate)
         || isNotXWikiSpace(paramsToValidate);
   }
 
-  private boolean isNotSameUser(List<DocFormRequestParam> params) {
-    // probieren mit Streams: map auf ObjNb und getDocRef. dann distinct. Stream muss Grösse 1
-    // haben, evtl. auch 2 Methoden
-    int objNb = params.get(0).getKey().getObjNb();
-    boolean isSameUser = true;
-    DocumentReference userDocRef = params.get(0).getDocRef();
-    for (DocFormRequestParam param : params) {
-      isSameUser = isSameUser && (param.getKey().getObjNb() == objNb)
-          && param.getDocRef().equals(userDocRef);
-    }
-    return !isSameUser;
+  private boolean isSameUser(List<DocFormRequestParam> params) {
+    return hasSameDocRef(params) && hasSameObjNb(params);
+  }
+
+  private boolean hasSameDocRef(List<DocFormRequestParam> params) {
+    return params.stream().map(p -> p.getDocRef()).distinct().count() == 1;
+  }
+
+  private boolean hasSameObjNb(List<DocFormRequestParam> params) {
+    return params.stream().map(p -> p.getKey().getObjNb()).distinct().count() == 1;
   }
 
   private boolean hasSeveralEmailParams(List<DocFormRequestParam> params) {
