@@ -53,16 +53,16 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   @Test
   public void test_checkEmailValidity_invalidEmail() {
-    String email = "abc";
-    expect(getMock(IMailSenderRole.class).isValidEmail(email)).andReturn(false);
+    Optional<DocFormRequestParam> emailParam = Optional.of(createEmailParam("abc", 0, userDocRef1));
+    expect(getMock(IMailSenderRole.class).isValidEmail("abc")).andReturn(false);
 
     replayDefault();
-    Optional<ValidationResult> result = rule.checkEmailValidity(email);
+    List<ValidationResult> result = rule.checkEmailValidity(emailParam);
     verifyDefault();
 
-    assertTrue(result.isPresent());
-    assertEquals(ValidationType.ERROR, result.get().getType());
-    assertEquals("cel_useradmin_emailInvalid", result.get().getMessage());
+    assertEquals(1, result.size());
+    assertEquals(ValidationType.ERROR, result.get(0).getType());
+    assertEquals("cel_useradmin_emailInvalid", result.get(0).getMessage());
   }
 
   @Test
