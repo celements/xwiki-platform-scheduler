@@ -24,6 +24,7 @@ import com.celements.rights.access.EAccessLevel;
 import com.celements.rights.access.IRightsAccessFacadeRole;
 import com.celements.validation.ValidationResult;
 import com.celements.validation.ValidationType;
+import com.celements.web.classes.oldcore.XWikiUsersClass;
 
 public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
@@ -39,6 +40,24 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
         User.class,
         IRightsAccessFacadeRole.class);
     rule = getBeanFactory().getBean(XWikiUsersValidationRule.class);
+  }
+
+  @Test
+  public void test_validate_noXWikiUsersInRequest() {
+    List<DocFormRequestParam> params = new ArrayList<>();
+    params.add(new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
+        "XWiki.blabla_0_test",
+        new DocumentReference("wiki", "bellis", "aoiueelkt34q53u"),
+        new RefBuilder().space("XWiki").doc("blabla").build(ClassReference.class),
+        0,
+        "test"),
+        List.of("adflkj")));
+
+    replayDefault();
+    List<ValidationResult> result = rule.validate(params);
+    verifyDefault();
+
+    assertTrue(result.isEmpty());
   }
 
   @Test
@@ -189,7 +208,7 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     DocFormRequestParam emailParam = new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
         "XWiki.XWikiUsers_" + objNb + "_email",
         userDocRef,
-        new RefBuilder().space("XWiki").doc("XWikiUsers").build(ClassReference.class),
+        XWikiUsersClass.CLASS_REF,
         objNb,
         "email"),
         List.of(email));
