@@ -73,7 +73,17 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   @Test
   public void test_validate_severalEmailParamsInRequest() {
+    List<DocFormRequestParam> params = new ArrayList<>();
+    params.add(createEmailParam(correctEmail, 0, userDocRef1));
+    params.add(createEmailParam("def@synventis.com", 0, userDocRef1));
 
+    replayDefault();
+    List<ValidationResult> result = rule.validate(params);
+    verifyDefault();
+
+    assertEquals(1, result.size());
+    assertEquals(ValidationType.ERROR, result.get(0).getType());
+    assertEquals("cel_useradmin_invalidRequest", result.get(0).getMessage());
   }
 
   @Test
