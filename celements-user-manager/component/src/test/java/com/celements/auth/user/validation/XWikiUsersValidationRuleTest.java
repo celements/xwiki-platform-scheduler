@@ -41,7 +41,33 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
   }
 
   @Test
+  public void test_validate_severalUsersInRequest() {
+
+  }
+
+  @Test
+  public void test_validate_severalEmailParamsInRequest() {
+
+  }
+
+  @Test
+  public void test_validate_wrongSpace() {
+    DocumentReference wrongUserDocRef = new RefBuilder().wiki("wiki").space("bla").doc("adju34n35n")
+        .build(DocumentReference.class);
+    DocFormRequestParam emailParam = createEmailParam(correctEmail, 0, wrongUserDocRef);
+
+    replayDefault();
+    List<ValidationResult> result = rule.validate(List.of(emailParam));
+    verifyDefault();
+
+    assertEquals(1, result.size());
+    assertEquals(ValidationType.ERROR, result.get(0).getType());
+    assertEquals("cel_useradmin_invalidRequest", result.get(0).getMessage());
+  }
+
+  @Test
   public void test_validate_noEmailParam() {
+    // TODO fix test
     List<DocFormRequestParam> params = new ArrayList<>();
 
     replayDefault();
@@ -49,6 +75,11 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     verifyDefault();
 
     assertEquals(0, results.size());
+  }
+
+  @Test
+  public void test_checkEmailValidity_emailParamWithEmptyValues() {
+
   }
 
   @Test
@@ -116,21 +147,6 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     assertTrue(result.isPresent());
     assertEquals(ValidationType.ERROR, result.get().getType());
     assertEquals("cel_useradmin_noRegisterRights", result.get().getMessage());
-  }
-
-  @Test
-  public void test_validate_wrongSpace() {
-    DocumentReference wrongUserDocRef = new RefBuilder().wiki("wiki").space("bla").doc("adju34n35n")
-        .build(DocumentReference.class);
-    DocFormRequestParam emailParam = createEmailParam(correctEmail, 0, wrongUserDocRef);
-
-    replayDefault();
-    List<ValidationResult> result = rule.validate(List.of(emailParam));
-    verifyDefault();
-
-    assertEquals(1, result.size());
-    assertEquals(ValidationType.ERROR, result.get(0).getType());
-    assertEquals("cel_useradmin_invalidRequest", result.get(0).getMessage());
   }
 
   private DocFormRequestParam createEmailParam(String email, int objNb,
