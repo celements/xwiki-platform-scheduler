@@ -52,16 +52,22 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   public @NotNull List<ValidationResult> validate(@NotNull List<DocFormRequestParam> params) {
     List<DocFormRequestParam> paramsToValidate = findParamsWithXWikiUsersClassRef(params);
     if (!paramsToValidate.isEmpty()) {
-      if (!checkIsSameUser(paramsToValidate) || checkHasSeveralEmailParams(paramsToValidate)) {
+      if (isRequestInvalid(paramsToValidate)) {
         return List
             .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_invalidRequest"));
       }
-      return paramsToValidate.stream().flatMap(this::validateParam).collect(Collectors.toList());
+      return validateParams(paramsToValidate);
     }
     return List.of();
   }
 
-  boolean checkIsSameUser(List<DocFormRequestParam> params) {
+  private boolean isRequestInvalid(List<DocFormRequestParam> paramsToValidate) {
+    return isNotSameUser(paramsToValidate)
+        || hasSeveralEmailParams(paramsToValidate)
+        || isNotXWikiSpace(paramsToValidate);
+  }
+
+  boolean isNotSameUser(List<DocFormRequestParam> params) {
     int objNb = params.get(0).getKey().getObjNb();
     boolean isSameUser = true;
     DocumentReference userDocRef = params.get(0).getDocRef();
@@ -69,40 +75,51 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
       isSameUser = isSameUser && (param.getKey().getObjNb() == objNb)
           && param.getDocRef().equals(userDocRef);
     }
-    return isSameUser;
+    return !isSameUser;
   }
 
-  boolean checkHasSeveralEmailParams(List<DocFormRequestParam> params) {
-    return getEmailParams(params.stream()).count() > 1;
+  boolean hasSeveralEmailParams(List<DocFormRequestParam> params) {
+    return getEmailParams(params).count() > 1;
   }
 
-  private Stream<ValidationResult> validateParam(DocFormRequestParam param) {
+  boolean isNotXWikiSpace(List<DocFormRequestParam> params) {
+    DocFormRequestParam param = params.get(0);
+    return !param.getDocRef().getLastSpaceReference().getName().equals(XWikiConstant.XWIKI_SPACE);
+  }
+
+  private List<ValidationResult> validateParams(List<DocFormRequestParam> params) {
     List<ValidationResult> validationResults = new ArrayList<>();
-    Stream<String> emails = param.getValues().stream();
-    // checkEmailValidity(email).ifPresent(validationResults::add);
-    // checkUniqueEmail(email, emailParam).ifPresent(validationResults::add);
-    checkRegisterAccessRights(param).ifPresent(validationResults::add);
-    checkXWikiSpace(param).ifPresent(validationResults::add);
-    return validationResults.stream();
-
+    Optional<DocFormRequestParam> emailParam = getEmailParams(params).findAny();
+    validationResults.addAll(checkEmailValidity(emailParam));
+    checkRegisterAccessRights(params.get(0)).ifPresent(validationResults::add);
+    return validationResults;
   }
 
-  Optional<ValidationResult> checkEmailValidity(String email) {
-    // TODO darf nicht null sein, darf kein EmptyString sein, muss valides Format haben.
-    // evtl. 2 verschiedene Validationmessages ausliefern
-
-    if (mailSenderService.isValidEmail(email)) {
-      return Optional.empty();
+  List<ValidationResult> checkEmailValidity(Optional<DocFormRequestParam> emailParam) {
+    List<ValidationResult> validationResults = new ArrayList<>();
+    // DocFormRequestParam turns null values into empty Strings and deletes those from the list of
+    // values. You should always get a list but it might be empty.
+    if (emailParam.isPresent() || !emailParam.get().getValues().isEmpty()) {
+      // prüfen ob Email gültig
+      String email = emailParam.get().getValues().get(0);
+      if (mailSenderService.isValidEmail(email)) {
+        checkUniqueEmail(email, emailParam.get()).ifPresent(validationResults::add);
+      } else {
+        validationResults
+            .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailInvalid"));
+      }
+    } else {
+      validationResults
+          .add(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_missingEmail"));
     }
-    return Optional
-        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_emailInvalid"));
+    return validationResults;
   }
 
   Optional<ValidationResult> checkUniqueEmail(String email,
       DocFormRequestParam emailParam) {
     Optional<User> user = userService.getPossibleUserForLoginField(email,
         userService.getPossibleLoginFields());
-    if (user.isEmpty() || user.get().getDocRef().equals(emailParam.getKey().getDocRef())) {
+    if (user.isEmpty() || user.get().getDocRef().equals(emailParam.getDocRef())) {
       return Optional.empty();
     }
     return Optional
@@ -123,19 +140,6 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     return Optional.of(emailParam).filter(p -> p.getKey().getObjNb() == -1);
   }
 
-  Optional<ValidationResult> checkXWikiSpace(DocFormRequestParam param) {
-    if (isXWikiSpace(param)) {
-      return Optional.empty();
-    }
-    return Optional
-        .of(new ValidationResult(ValidationType.ERROR, null, "cel_useradmin_invalidRequest"));
-  }
-
-  private boolean isXWikiSpace(DocFormRequestParam param) {
-    return param.getDocRef().getLastSpaceReference().getName()
-        .equals(XWikiConstant.XWIKI_SPACE);
-  }
-
   private List<DocFormRequestParam> findParamsWithXWikiUsersClassRef(
       List<DocFormRequestParam> params) {
     return params.stream()
@@ -144,7 +148,8 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         .collect(Collectors.toList());
   }
 
-  private Stream<DocFormRequestParam> getEmailParams(Stream<DocFormRequestParam> params) {
-    return params.filter(p -> p.getKey().getFieldName().equals("email"));
+  private Stream<DocFormRequestParam> getEmailParams(List<DocFormRequestParam> params) {
+    return params.stream().filter(p -> p.getKey().getFieldName().equals("email"));
   }
+
 }
