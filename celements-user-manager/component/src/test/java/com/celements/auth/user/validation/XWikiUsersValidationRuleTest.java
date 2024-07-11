@@ -29,6 +29,7 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   private XWikiUsersValidationRule rule;
   private DocumentReference userDocRef1 = new DocumentReference("wiki", "XWiki", "321adfawer");
+  private DocumentReference userDocRef2 = new DocumentReference("wiki", "XWiki", "a65e4rafgoij");
   private String correctEmail = "abc+test@synventis.com";
 
   @Before
@@ -41,8 +42,18 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
   }
 
   @Test
-  public void test_validate_severalUsersInRequest() {
+  public void test_validate_differentUserDocRefsInRequest() {
+    List<DocFormRequestParam> params = new ArrayList<>();
+    params.add(createEmailParam(correctEmail, 0, userDocRef1));
+    params.add(createEmailParam(correctEmail, 0, userDocRef2));
 
+    replayDefault();
+    List<ValidationResult> result = rule.validate(params);
+    verifyDefault();
+
+    assertEquals(1, result.size());
+    assertEquals(ValidationType.ERROR, result.get(0).getType());
+    assertEquals("cel_useradmin_invalidRequest", result.get(0).getMessage());
   }
 
   @Test
@@ -99,7 +110,6 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
   @Test
   public void test_checkUniqueEmail_emailNotUnique() {
     DocFormRequestParam emailParam = createEmailParam(correctEmail, 0, userDocRef1);
-    DocumentReference userDocRef2 = new DocumentReference("wiki", "XWiki", "a65e4rafgoij");
     User user = createDefaultMock(User.class);
     expect(getMock(UserService.class).getPossibleLoginFields()).andReturn(new HashSet<String>());
     expect(getMock(UserService.class)
