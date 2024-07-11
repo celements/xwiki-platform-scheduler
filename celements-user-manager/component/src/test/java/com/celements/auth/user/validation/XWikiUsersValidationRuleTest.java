@@ -119,19 +119,18 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
   }
 
   @Test
-  public void test_checkXwikiSpace_wrongSpace() {
+  public void test_validate_wrongSpace() {
     DocumentReference wrongUserDocRef = new RefBuilder().wiki("wiki").space("bla").doc("adju34n35n")
         .build(DocumentReference.class);
     DocFormRequestParam emailParam = createEmailParam(correctEmail, 0, wrongUserDocRef);
 
     replayDefault();
-    Optional<ValidationResult> result = rule.checkXWikiSpace(emailParam);
+    List<ValidationResult> result = rule.validate(List.of(emailParam));
     verifyDefault();
 
-    assertTrue(result.isPresent());
-    assertEquals(ValidationType.ERROR, result.get().getType());
-    assertEquals("cel_useradmin_invalidRequest", result.get().getMessage());
-
+    assertEquals(1, result.size());
+    assertEquals(ValidationType.ERROR, result.get(0).getType());
+    assertEquals("cel_useradmin_invalidRequest", result.get(0).getMessage());
   }
 
   private DocFormRequestParam createEmailParam(String email, int objNb,
