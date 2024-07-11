@@ -67,7 +67,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
         || isNotXWikiSpace(paramsToValidate);
   }
 
-  boolean isNotSameUser(List<DocFormRequestParam> params) {
+  private boolean isNotSameUser(List<DocFormRequestParam> params) {
     int objNb = params.get(0).getKey().getObjNb();
     boolean isSameUser = true;
     DocumentReference userDocRef = params.get(0).getDocRef();
@@ -78,11 +78,11 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     return !isSameUser;
   }
 
-  boolean hasSeveralEmailParams(List<DocFormRequestParam> params) {
+  private boolean hasSeveralEmailParams(List<DocFormRequestParam> params) {
     return getEmailParams(params).count() > 1;
   }
 
-  boolean isNotXWikiSpace(List<DocFormRequestParam> params) {
+  private boolean isNotXWikiSpace(List<DocFormRequestParam> params) {
     DocFormRequestParam param = params.get(0);
     return !param.getDocRef().getLastSpaceReference().getName().equals(XWikiConstant.XWIKI_SPACE);
   }
@@ -100,7 +100,6 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     // DocFormRequestParam turns null values into empty Strings and deletes those from the list of
     // values. You should always get a list but it might be empty.
     if (emailParam.isPresent() || !emailParam.get().getValues().isEmpty()) {
-      // prüfen ob Email gültig
       String email = emailParam.get().getValues().get(0);
       if (mailSenderService.isValidEmail(email)) {
         checkUniqueEmail(email, emailParam.get()).ifPresent(validationResults::add);
