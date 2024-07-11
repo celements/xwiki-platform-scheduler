@@ -84,16 +84,16 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   @Test
   public void test_checkEmailValidity_invalidEmail() {
-    Optional<DocFormRequestParam> emailParam = Optional.of(createEmailParam("abc", 0, userDocRef1));
+    List<DocFormRequestParam> params = List.of(createEmailParam("abc", 0, userDocRef1));
     expect(getMock(IMailSenderRole.class).isValidEmail("abc")).andReturn(false);
 
     replayDefault();
-    List<ValidationResult> result = rule.checkEmailValidity(emailParam);
+    Optional<ValidationResult> result = rule.checkEmailValidity(params);
     verifyDefault();
 
-    assertEquals(1, result.size());
-    assertEquals(ValidationType.ERROR, result.get(0).getType());
-    assertEquals("cel_useradmin_emailInvalid", result.get(0).getMessage());
+    assertTrue(result.isPresent());
+    assertEquals(ValidationType.ERROR, result.get().getType());
+    assertEquals("cel_useradmin_emailInvalid", result.get().getMessage());
   }
 
   @Test
@@ -135,13 +135,13 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
 
   @Test
   public void test_checkRegisterAccessRights_noRights() {
-    DocFormRequestParam emailParam = createEmailParam(correctEmail, -1, userDocRef1);
+    List<DocFormRequestParam> params = List.of(createEmailParam(correctEmail, -1, userDocRef1));
     expect(getMock(IRightsAccessFacadeRole.class).isAdmin()).andReturn(false);
     expect(getMock(IRightsAccessFacadeRole.class)
-        .hasAccessLevel(emailParam.getDocRef(), EAccessLevel.REGISTER)).andReturn(false);
+        .hasAccessLevel(params.get(0).getDocRef(), EAccessLevel.REGISTER)).andReturn(false);
 
     replayDefault();
-    Optional<ValidationResult> result = rule.checkRegisterAccessRights(emailParam);
+    Optional<ValidationResult> result = rule.checkRegisterAccessRights(params);
     verifyDefault();
 
     assertTrue(result.isPresent());
