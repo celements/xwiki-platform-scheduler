@@ -102,7 +102,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     Optional<DocFormRequestParam> emailParam = getEmailParams(params).findAny();
     validationResults.addAll(checkEmailValidity(emailParam));
     // Liste von Params übergeben an checkRegisterAccessRights
-    checkRegisterAccessRights(params.get(0)).ifPresent(validationResults::add);
+    checkRegisterAccessRights(params).ifPresent(validationResults::add);
     return validationResults;
   }
 
@@ -138,17 +138,18 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     return Optional.of(EMAIL_NOT_UNIQUE);
   }
 
-  Optional<ValidationResult> checkRegisterAccessRights(DocFormRequestParam emailParam) {
-    if (checkForNewUser(emailParam).isEmpty()
+  Optional<ValidationResult> checkRegisterAccessRights(List<DocFormRequestParam> params) {
+    DocFormRequestParam param = params.get(0);
+    if (isNewUser(param)
         || rightsAccess.isAdmin()
-        || rightsAccess.hasAccessLevel(emailParam.getDocRef(), EAccessLevel.REGISTER)) {
+        || rightsAccess.hasAccessLevel(param.getDocRef(), EAccessLevel.REGISTER)) {
       return Optional.empty();
     }
     return Optional.of(NO_REGISTER_RIGHTS);
   }
 
-  private Optional<DocFormRequestParam> checkForNewUser(DocFormRequestParam emailParam) {
-    return Optional.of(emailParam).filter(p -> p.getKey().getObjNb() == -1);
+  private boolean isNewUser(DocFormRequestParam param) {
+    return param.getKey().getObjNb() == -1;
   }
 
   private List<DocFormRequestParam> findParamsWithXWikiUsersClassRef(
