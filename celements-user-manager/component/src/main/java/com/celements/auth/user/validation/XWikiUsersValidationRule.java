@@ -130,7 +130,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   Optional<ValidationResult> checkRegisterAccessRights(List<DocFormRequestParam> params) {
     DocFormRequestParam param = params.get(0);
-    if (isNewUser(param)
+    if (isNotNewUser(param)
         || rightsAccess.isAdmin()
         || rightsAccess.hasAccessLevel(param.getDocRef(), EAccessLevel.REGISTER)) {
       return Optional.empty();
@@ -138,8 +138,8 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     return Optional.of(NO_REGISTER_RIGHTS);
   }
 
-  private boolean isNewUser(DocFormRequestParam param) {
-    return param.getKey().getObjNb() == -1;
+  private boolean isNotNewUser(DocFormRequestParam param) {
+    return param.getKey().getObjNb() != -1;
   }
 
   private List<DocFormRequestParam> findParamsWithXWikiUsersClassRef(
