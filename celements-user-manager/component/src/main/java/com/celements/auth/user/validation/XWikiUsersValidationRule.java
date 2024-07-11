@@ -99,33 +99,23 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   private List<ValidationResult> validateParams(List<DocFormRequestParam> params) {
     List<ValidationResult> validationResults = new ArrayList<>();
-    Optional<DocFormRequestParam> emailParam = getEmailParams(params).findAny();
-    validationResults.addAll(checkEmailValidity(emailParam));
-    // Liste von Params übergeben an checkRegisterAccessRights
+    checkEmailValidity(params).ifPresent(validationResults::add);
     checkRegisterAccessRights(params).ifPresent(validationResults::add);
     return validationResults;
   }
 
-  // kein Optional übergeben, sondern ganze Liste. wenn nur noch ein validationResult returned wird,
-  // mit Optionals arbeiten, statt mit List
-  List<ValidationResult> checkEmailValidity(Optional<DocFormRequestParam> emailParam) {
-    //
-    List<ValidationResult> validationResults = new ArrayList<>();
+  Optional<ValidationResult> checkEmailValidity(List<DocFormRequestParam> params) {
+    Optional<DocFormRequestParam> emailParam = getEmailParams(params).findAny();
     // DocFormRequestParam turns null values into empty Strings and deletes those from the list of
     // values. You should always get a list but it might be empty.
-    // if Block umkehren, wenn kein EmailParam vorhanden, gleich returnen
-    if (emailParam.isPresent() || !emailParam.get().getValues().isEmpty()) {
-      String email = emailParam.get().getValues().get(0);
-      if (mailSenderService.isValidEmail(email)) {
-        // umdrehen: wenn Email ungültig, returnen
-        checkUniqueEmail(email, emailParam.get()).ifPresent(validationResults::add);
-      } else {
-        validationResults.add(INVALID_EMAIL);
-      }
-    } else {
-      validationResults.add(MISSING_EMAIL);
+    if (emailParam.isEmpty() || emailParam.get().getValues().isEmpty()) {
+      return Optional.of(MISSING_EMAIL);
     }
-    return validationResults;
+    String email = emailParam.get().getValues().get(0);
+    if (!mailSenderService.isValidEmail(email)) {
+      return Optional.of(INVALID_EMAIL);
+    }
+    return checkUniqueEmail(email, emailParam.get());
   }
 
   Optional<ValidationResult> checkUniqueEmail(String email,
