@@ -90,8 +90,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   }
 
   private boolean hasSeveralEmails(List<DocFormRequestParam> params) {
-    return (getEmailParams(params).count() > 1)
-        || (getEmailParams(params).flatMap(p -> p.getValues().stream()).count() > 1);
+    return getEmailParams(params).flatMap(p -> p.getValues().stream()).count() > 1;
   }
 
   private boolean isNotXWikiSpace(List<DocFormRequestParam> params) {
