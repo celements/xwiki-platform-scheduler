@@ -44,8 +44,6 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
       ValidationType.ERROR, "email not unique", "cel_useradmin_emailNotUnique");
   private static final ValidationResult NO_REGISTER_RIGHTS = new ValidationResult(
       ValidationType.ERROR, "no register rights", "cel_useradmin_noRegisterRights");
-  private static final ValidationResult SEVERAL_EMAILS = new ValidationResult(
-      ValidationType.ERROR, "several emails", "cel_useradmin_severalEmails");
 
   private final IMailSenderRole mailSenderService;
   private final UserService userService;
@@ -75,7 +73,7 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
 
   private boolean isRequestInvalid(List<DocFormRequestParam> paramsToValidate) {
     return !isSameUser(paramsToValidate)
-        || hasSeveralEmailParams(paramsToValidate)
+        || hasSeveralEmails(paramsToValidate)
         || isNotXWikiSpace(paramsToValidate);
   }
 
@@ -91,8 +89,9 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     return params.stream().map(p -> p.getKey().getObjNb()).distinct().count() == 1;
   }
 
-  private boolean hasSeveralEmailParams(List<DocFormRequestParam> params) {
-    return getEmailParams(params).count() > 1;
+  private boolean hasSeveralEmails(List<DocFormRequestParam> params) {
+    return (getEmailParams(params).count() > 1)
+        || (getEmailParams(params).flatMap(p -> p.getValues().stream()).count() > 1);
   }
 
   private boolean isNotXWikiSpace(List<DocFormRequestParam> params) {
@@ -113,9 +112,6 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
     // values. You should always get a list but it might be empty.
     if (emailParam.isEmpty() || emailParam.get().getValues().isEmpty()) {
       return Optional.of(MISSING_EMAIL);
-    }
-    if (emailParam.get().getValues().size() > 1) {
-      return Optional.of(SEVERAL_EMAILS);
     }
     String email = emailParam.get().getValues().get(0);
     if (!mailSenderService.isValidEmail(email)) {

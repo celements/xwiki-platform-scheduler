@@ -106,6 +106,26 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
   }
 
   @Test
+  public void test_validate_emailParamWithSeveralValues() {
+    List<DocFormRequestParam> params = new ArrayList<>();
+    params.add(new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
+        "XWiki.XWikiUsers_0_email",
+        userDocRef1,
+        XWikiUsersClass.CLASS_REF,
+        0,
+        "email"),
+        List.of("aerölkja@synventis.com", "öliulk@synventis.com")));
+
+    replayDefault();
+    List<ValidationResult> results = rule.validate(params);
+    verifyDefault();
+
+    assertEquals(1, results.size());
+    assertEquals(ValidationType.ERROR, results.get(0).getType());
+    assertEquals("cel_useradmin_invalidRequest", results.get(0).getMessage());
+  }
+
+  @Test
   public void test_validate_wrongSpace() {
     DocumentReference wrongUserDocRef = new RefBuilder().wiki("wiki").space("bla").doc("adju34n35n")
         .build(DocumentReference.class);
@@ -158,26 +178,6 @@ public class XWikiUsersValidationRuleTest extends AbstractComponentTest {
     assertTrue(result.isPresent());
     assertEquals(ValidationType.ERROR, result.get().getType());
     assertEquals("cel_useradmin_missingEmail", result.get().getMessage());
-  }
-
-  @Test
-  public void test_checkEmailValidity_emailParamWithSeveralValues() {
-    List<DocFormRequestParam> params = new ArrayList<>();
-    params.add(new DocFormRequestParam(DocFormRequestKey.createObjFieldKey(
-        "XWiki.XWikiUsers_0_email",
-        userDocRef1,
-        XWikiUsersClass.CLASS_REF,
-        0,
-        "email"),
-        List.of("aerölkja@synventis.com", "öliulk@synventis.com")));
-
-    replayDefault();
-    Optional<ValidationResult> result = rule.checkEmailValidity(params);
-    verifyDefault();
-
-    assertTrue(result.isPresent());
-    assertEquals(ValidationType.ERROR, result.get().getType());
-    assertEquals("cel_useradmin_severalEmails", result.get().getMessage());
   }
 
   @Test
