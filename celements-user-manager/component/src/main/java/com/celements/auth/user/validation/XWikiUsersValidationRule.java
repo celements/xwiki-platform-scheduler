@@ -34,10 +34,6 @@ import com.xpn.xwiki.XWikiConstant;
 @Component
 public class XWikiUsersValidationRule implements IRequestValidationRule {
 
-  private final IMailSenderRole mailSenderService;
-  private final UserService userService;
-  private final IRightsAccessFacadeRole rightsAccess;
-
   private static final ValidationResult INVALID_REQUEST = new ValidationResult(ValidationType.ERROR,
       "invalid request", "cel_useradmin_invalidRequest");
   private static final ValidationResult INVALID_EMAIL = new ValidationResult(ValidationType.ERROR,
@@ -51,9 +47,14 @@ public class XWikiUsersValidationRule implements IRequestValidationRule {
   private static final ValidationResult SEVERAL_EMAILS = new ValidationResult(
       ValidationType.ERROR, "several emails", "cel_useradmin_severalEmails");
 
+  private final IMailSenderRole mailSenderService;
+  private final UserService userService;
+  private final IRightsAccessFacadeRole rightsAccess;
+
   @Inject
   public XWikiUsersValidationRule(
-      IMailSenderRole mailSenderService, UserService userService,
+      IMailSenderRole mailSenderService,
+      UserService userService,
       IRightsAccessFacadeRole rightsAccess) {
     this.mailSenderService = mailSenderService;
     this.userService = userService;
