@@ -7,12 +7,13 @@ import com.celements.model.classes.AbstractClassDefinition;
 import com.celements.model.classes.fields.ClassField;
 import com.celements.model.classes.fields.LargeStringField;
 import com.celements.model.classes.fields.StringField;
+import com.xpn.xwiki.XWikiConstant;
 
 @Component(SchedulerJobClass.CLASS_DEF_HINT)
-public class SchedulerJobClass extends AbstractClassDefinition {
+public class SchedulerJobClass extends AbstractClassDefinition implements SchedulerJobClassRole {
 
   public static final String DOC_NAME = "SchedulerJobClass";
-  public static final String XWIKI_SPACE = "XWiki";
+  public static final String XWIKI_SPACE = XWikiConstant.XWIKI_SPACE;
   public static final String CLASS_DEF_HINT = XWIKI_SPACE + "." + DOC_NAME;
   public static final ClassReference CLASS_REF = new ClassReference(XWIKI_SPACE, DOC_NAME);
 
@@ -41,7 +42,6 @@ public class SchedulerJobClass extends AbstractClassDefinition {
 
   @Override
   public boolean isInternalMapping() {
-    // TODO Auto-generated method stub
     return false;
   }
 
