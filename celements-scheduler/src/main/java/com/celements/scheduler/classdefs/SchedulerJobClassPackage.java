@@ -10,18 +10,18 @@ import org.springframework.stereotype.Component;
 
 import com.celements.model.classes.AbstractClassPackage;
 import com.celements.model.classes.ClassDefinition;
-import com.celements.scheduler.classdefs.SchedulerJobClassRole;
+import com.celements.scheduler.classdefs.SchedulerJobClassDefinition;
 
 @Component
 public class SchedulerJobClassPackage extends AbstractClassPackage {
 
   public static final String NAME = "scheduler";
 
-  private final List<SchedulerJobClassRole> classDefs;
+  private final List<SchedulerJobClassDefinition> classDefs;
 
   @Inject
   public SchedulerJobClassPackage(ListableBeanFactory beanFactory) {
-    this.classDefs = List.copyOf(beanFactory.getBeansOfType(SchedulerJobClassRole.class).values());
+    this.classDefs = List.copyOf(beanFactory.getBeansOfType(SchedulerJobClassDefinition.class).values());
   }
 
   @Override

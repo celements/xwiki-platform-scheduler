@@ -10,7 +10,7 @@ import com.celements.model.classes.fields.StringField;
 import com.xpn.xwiki.XWikiConstant;
 
 @Component(SchedulerJobClass.CLASS_DEF_HINT)
-public class SchedulerJobClass extends AbstractClassDefinition implements SchedulerJobClassRole {
+public class SchedulerJobClass extends AbstractClassDefinition implements SchedulerJobClassDefinition {
 
   public static final String DOC_NAME = "SchedulerJobClass";
   public static final String XWIKI_SPACE = XWikiConstant.XWIKI_SPACE;
