@@ -3,8 +3,10 @@ package com.celements.scheduler.classdefs;
 import org.springframework.stereotype.Component;
 import org.xwiki.model.reference.ClassReference;
 
+import com.celements.marshalling.EnumMarshaller;
 import com.celements.model.classes.AbstractClassDefinition;
 import com.celements.model.classes.fields.ClassField;
+import com.celements.model.classes.fields.CustomStringField;
 import com.celements.model.classes.fields.LargeStringField;
 import com.celements.model.classes.fields.StringField;
 import com.xpn.xwiki.XWikiConstant;
@@ -17,6 +19,10 @@ public class SchedulerJobClass extends AbstractClassDefinition
   public static final String XWIKI_SPACE = XWikiConstant.XWIKI_SPACE;
   public static final String CLASS_DEF_HINT = XWIKI_SPACE + "." + DOC_NAME;
   public static final ClassReference CLASS_REF = new ClassReference(XWIKI_SPACE, DOC_NAME);
+
+  public enum Status {
+    NORMAL, NONE
+  }
 
   public static final ClassField<String> FIELD_JOB_NAME = new StringField.Builder(
       CLASS_REF, "jobName")
@@ -37,10 +43,10 @@ public class SchedulerJobClass extends AbstractClassDefinition
           .size(60)
           .build();
 
-  public static final ClassField<String> FIELD_STATUS = new StringField.Builder(
-      CLASS_REF, "status")
-          .prettyName("Status")
+  public static final ClassField<Status> FIELD_STATUS = new CustomStringField.Builder<>(
+      CLASS_REF, "status", new EnumMarshaller<>(Status.class, (e -> e.name().toLowerCase())))
           .size(30)
+          .prettyName("Status")
           .build();
 
   public static final ClassField<String> FIELD_CRON = new StringField.Builder(
