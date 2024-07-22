@@ -13,5 +13,5 @@
 #if("$groupNames" != '')
   $!groupNames
 #else
-  keine Gruppen gefunden
+  $adminMsg.get("cel_useradmin_noGroupdata")
 #end
