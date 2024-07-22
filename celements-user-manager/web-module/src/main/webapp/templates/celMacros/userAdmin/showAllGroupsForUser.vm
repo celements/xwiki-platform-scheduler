@@ -7,7 +7,7 @@
   #if("$groupNames" == '')
     #set($groupNames = "$!services.group.getGroupPrettyName($groupDocRef)")
   #else
-    #set($groupNames = "${groupNames} |  $!services.group.getGroupPrettyName($groupDocRef)")
+    #set($groupNames = "${groupNames} | $!services.group.getGroupPrettyName($groupDocRef)")
   #end
 #end
 #if("$groupNames" != '')
