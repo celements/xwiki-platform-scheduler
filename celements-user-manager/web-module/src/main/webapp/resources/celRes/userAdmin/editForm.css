@@ -146,13 +146,14 @@ body .select2-container .select2UserAdminDropdown .select2-results__option--high
   background-color: var(--accent-color);
   border: none;
   padding: 8px 8px;
-  width: 100%;
+  width: 150px;
 }
 #userEditForm #formActionWrapper {
   display: flex;
-  flex-flow: column;
+  flex-flow: row wrap;
   gap: 15px;
   align-items: center;
+  justify-content: space-evenly;
 }
 #userEditForm .submitaction a, 
 #userEditForm .cancelaction a {
@@ -161,6 +162,7 @@ body .select2-container .select2UserAdminDropdown .select2-results__option--high
   text-decoration: none;
   color: white;
   text-transform: uppercase;
+  font-weight: 600;
 }
 #userEditForm .submitaction:hover, 
 #userEditForm .cancelaction:hover {
