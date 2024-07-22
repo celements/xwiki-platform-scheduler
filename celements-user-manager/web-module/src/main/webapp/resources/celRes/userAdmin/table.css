@@ -104,7 +104,7 @@
 }
 #searchoutput .struct_table ul li.struct_table_row.open .editContentRTE {
   margin-left: 22px;
-  margin-right: 50px;
+  margin-right: 84px;
   margin-bottom: 2px;
   margin-top: 4px;
   max-height: 1000px;
@@ -113,6 +113,5 @@
   padding: 3px 15px;
 }
 #searchoutput .struct_table ul li.struct_table_row .editContentRTE .groupLabel {
-  font-weight: bold;
   text-transform: uppercase;
 }
