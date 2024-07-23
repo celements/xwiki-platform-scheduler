@@ -1,4 +1,5 @@
 package com.celements.scheduler.classdefs;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -8,12 +9,11 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.stereotype.Component;
 
-import com.celements.model.classes.AbstractClassPackage;
+import com.celements.model.classes.AbstractLegacyClassPackage;
 import com.celements.model.classes.ClassDefinition;
-import com.celements.scheduler.classdefs.SchedulerJobClassDefinition;
 
 @Component
-public class SchedulerJobClassPackage extends AbstractClassPackage {
+public class SchedulerJobClassPackage extends AbstractLegacyClassPackage {
 
   public static final String NAME = "scheduler";
 
@@ -21,7 +21,8 @@ public class SchedulerJobClassPackage extends AbstractClassPackage {
 
   @Inject
   public SchedulerJobClassPackage(ListableBeanFactory beanFactory) {
-    this.classDefs = List.copyOf(beanFactory.getBeansOfType(SchedulerJobClassDefinition.class).values());
+    this.classDefs = List
+        .copyOf(beanFactory.getBeansOfType(SchedulerJobClassDefinition.class).values());
   }
 
   @Override
@@ -32,6 +33,11 @@ public class SchedulerJobClassPackage extends AbstractClassPackage {
   @Override
   public @NotNull List<? extends ClassDefinition> getClassDefinitions() {
     return classDefs;
+  }
+
+  @Override
+  public @NotEmpty String getLegacyName() {
+    return NAME;
   }
 
 }
