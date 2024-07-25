@@ -9,6 +9,7 @@ import com.celements.model.classes.fields.ClassField;
 import com.celements.model.classes.fields.CustomStringField;
 import com.celements.model.classes.fields.LargeStringField;
 import com.celements.model.classes.fields.StringField;
+import com.google.common.base.CaseFormat;
 import com.xpn.xwiki.XWikiConstant;
 
 @Component(SchedulerJobClass.CLASS_DEF_HINT)
@@ -21,7 +22,7 @@ public class SchedulerJobClass extends AbstractClassDefinition
   public static final ClassReference CLASS_REF = new ClassReference(XWIKI_SPACE, DOC_NAME);
 
   public enum Status {
-    NORMAL, NONE
+    NORMAL, NONE, PAUSED, BLOCKED, COMPLETE, ERROR
   }
 
   public static final ClassField<String> FIELD_JOB_NAME = new StringField.Builder(
@@ -44,10 +45,11 @@ public class SchedulerJobClass extends AbstractClassDefinition
           .build();
 
   public static final ClassField<Status> FIELD_STATUS = new CustomStringField.Builder<>(
-      CLASS_REF, "status", new EnumMarshaller<>(Status.class, (e -> e.name().toLowerCase())))
-          .size(30)
-          .prettyName("Status")
-          .build();
+      CLASS_REF, "status", new EnumMarshaller<>(
+          Status.class, (e -> CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, e.name()))))
+              .size(30)
+              .prettyName("Status")
+              .build();
 
   public static final ClassField<String> FIELD_CRON = new StringField.Builder(
       CLASS_REF, "cron")
