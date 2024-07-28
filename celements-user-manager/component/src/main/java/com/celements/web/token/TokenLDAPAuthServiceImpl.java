@@ -23,14 +23,13 @@ import static com.celements.common.lambda.LambdaExceptionUtil.*;
 import static com.celements.logging.LogUtils.*;
 import static com.google.common.base.Strings.*;
 import static com.google.common.collect.ImmutableList.*;
+import static com.xpn.xwiki.user.api.XWikiRightService.*;
 import static java.util.Arrays.*;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xwiki.model.reference.DocumentReference;
 
 import com.celements.auth.user.User;
@@ -48,9 +47,6 @@ import com.xpn.xwiki.web.Utils;
 
 public class TokenLDAPAuthServiceImpl extends XWikiLDAPAuthServiceImpl {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(
-      TokenLDAPAuthServiceImpl.class);
-
   @Override
   public XWikiUser checkAuth(XWikiContext context) throws XWikiException {
     if ((context.getResponse() != null) && !"".equals(context.getWiki().Param("celements.auth.P3P",
@@ -66,6 +62,11 @@ public class TokenLDAPAuthServiceImpl extends XWikiLDAPAuthServiceImpl {
 
   private boolean isNotSuspended(XWikiUser xUser) {
     try {
+      if (xUser.getUser().equals(SUPERADMIN_USER_FULLNAME)
+          || xUser.getUser().equals(GUEST_USER_FULLNAME)) {
+        // superadmin and guest are never suspended
+        return true;
+      }
       User user = getUserService().getUser(getModelUtils().resolveRef(xUser.getUser(),
           DocumentReference.class));
       return !user.isSuspended();

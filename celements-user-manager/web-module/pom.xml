@@ -55,7 +55,7 @@
   <scm>
     <connection>scm:git:git@github.com:celements/celements-features.git</connection>
     <developerConnection>scm:git:git@github.com:celements/celements-features.git</developerConnection>
-    <url>https://github.com/celements/celements-features/celements-user-manager/web-module</url>
+    <url>https://github.com/celements/celements-features</url>
     <tag>HEAD</tag>
   </scm>
 </project>
