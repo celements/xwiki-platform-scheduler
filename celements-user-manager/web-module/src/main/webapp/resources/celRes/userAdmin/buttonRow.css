@@ -1,7 +1,7 @@
 #userAdminActionRow {
   display: flex;
   flex-direction: row-reverse;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   margin-top: 20px;
 }
 
@@ -15,10 +15,6 @@
   text-decoration: none;
 }
 
-#userAdminActionRow .actionButtonLarge a:hover {
-  color: var(--accent-color);
-}
-
 #userAdminActionRow .actionButtonLarge a i {
   width: 30px;
   height: 30px;
@@ -27,7 +23,6 @@
   border-radius: 20px;
   border: 2px solid var(--accent-color);
   color: var(--accent-color);
-  margin-right: 10px;
   font-size: 20px;
 }
 
