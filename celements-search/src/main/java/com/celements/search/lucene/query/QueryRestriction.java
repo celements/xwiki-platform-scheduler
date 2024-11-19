@@ -330,7 +330,9 @@ public class QueryRestriction implements IQueryRestriction {
 
   @Override
   public String toString() {
-    return "QueryRestriction [queryString=" + getQueryString() + "]";
+    return "QueryRestriction [negate=" + negate + ", specifier=" + specifier + ", query=" + query
+        + ", mode=" + mode + ", fuzzy=" + fuzzy + ", proximity=" + proximity + ", boost=" + boost
+        + ", analyzer=" + analyzer + ", queryString=" + getQueryString() + "]";
   }
 
 }
