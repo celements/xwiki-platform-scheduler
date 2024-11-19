@@ -132,7 +132,7 @@ public class IndexExtensionField {
     }
 
     public Builder value(@Nullable String value) {
-      this.value = Jsoup.parse(nullToEmpty(value)).text().toLowerCase();
+      this.value = nullToEmpty(value);
       return this;
     }
 
@@ -172,7 +172,7 @@ public class IndexExtensionField {
 
     public IndexExtensionField build() {
       ExtensionType extType = Optional.ofNullable(extensionType).orElse(ExtensionType.REPLACE);
-      Fieldable field = new Field(name, value,
+      Fieldable field = new Field(name, Jsoup.parse(value).text().toLowerCase(),
           Optional.ofNullable(store).orElse(Field.Store.YES),
           Optional.ofNullable(index).orElseGet(this::determineIndexByNameOrValue));
       field.setBoost(Optional.ofNullable(boost).orElse(1.0f));
