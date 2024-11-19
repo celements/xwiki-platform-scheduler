@@ -175,6 +175,7 @@ public class LuceneSearchService implements ILuceneSearchService {
           .flatMap(a -> tryCast(a, CelAnalyzer.class))
           .ifPresent(restriction::setAnalyzer);
     }
+    LOGGER.trace("createRestriction - {}", restriction);
     return restriction;
   }
 

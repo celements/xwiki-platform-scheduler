@@ -18,6 +18,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.xwiki.model.reference.ClassReference;
 import org.xwiki.model.reference.DocumentReference;
@@ -60,7 +61,7 @@ public class DocumentCelTagsProvider implements CelTagsProvider {
   @Inject
   public DocumentCelTagsProvider(
       QueryManager queryManager,
-      WikiService wikiService,
+      @Lazy WikiService wikiService,
       IModelAccessFacade modelAccess,
       ModelUtils modelUtils) {
     this.wikiService = wikiService;
