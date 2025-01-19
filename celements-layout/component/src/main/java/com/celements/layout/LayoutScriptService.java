@@ -26,17 +26,19 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.component.annotation.Requirement;
+import org.springframework.stereotype.Component;
+import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.SpaceReference;
+import org.xwiki.model.reference.WikiReference;
 import org.xwiki.script.service.ScriptService;
 
-import com.celements.model.context.ModelContext;
+import com.celements.execution.XWikiExecutionProp;
 import com.celements.model.util.ModelUtils;
 import com.celements.pagelayout.LayoutServiceRole;
 import com.celements.rights.access.EAccessLevel;
@@ -52,20 +54,21 @@ public class LayoutScriptService implements ScriptService {
 
   public static final String CELEMENTS_PAGE_LAYOUT_COMMAND = "com.celements.web.PageLayoutCommand";
 
-  @Requirement
-  private LayoutServiceRole layoutService;
+  private final LayoutServiceRole layoutService;
+  private final ModelUtils modelUtils;
+  private final IRightsAccessFacadeRole rightsAccess;
+  private final Execution excecution;
 
-  @Requirement
-  private ModelContext modelContext;
-
-  @Requirement
-  private ModelUtils modelUtils;
-
-  @Requirement
-  private IRightsAccessFacadeRole rightsAccess;
-
-  private XWikiContext getContext() {
-    return modelContext.getXWikiContext();
+  @Inject
+  public LayoutScriptService(
+      LayoutServiceRole layoutService,
+      ModelUtils modelUtils,
+      IRightsAccessFacadeRole rightsAccess,
+      Execution excecution) {
+    this.layoutService = layoutService;
+    this.modelUtils = modelUtils;
+    this.rightsAccess = rightsAccess;
+    this.excecution = excecution;
   }
 
   /**
@@ -139,7 +142,7 @@ public class LayoutScriptService implements ScriptService {
 
   @NotNull
   public List<PageLayoutApi> getLocalLayouts() {
-    return layoutService.streamLayoutsSpaces(modelContext.getWikiRef())
+    return layoutService.streamLayoutsSpaces(getWikiRef())
         .map(PageLayoutApi::new)
         .collect(toImmutableList());
   }
@@ -266,4 +269,13 @@ public class LayoutScriptService implements ScriptService {
     }
     return (PageLayoutCommand) getContext().get(CELEMENTS_PAGE_LAYOUT_COMMAND);
   }
+
+  private XWikiContext getContext() {
+    return excecution.getContext().get(XWikiExecutionProp.XWIKI_CONTEXT).orElseThrow();
+  }
+
+  private WikiReference getWikiRef() {
+    return excecution.getContext().get(XWikiExecutionProp.WIKI).orElseThrow();
+  }
+
 }
