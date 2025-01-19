@@ -7,4 +7,13 @@ public class RenderPartialRequest {
   public String layoutSpace;
   public String startNodeName;
 
+  @Override
+  public String toString() {
+    return "RenderPartialRequest ["
+        + "contextDocSpace=" + contextDocSpace + ", "
+        + "contextDocName=" + contextDocName + ", "
+        + "layoutSpace=" + layoutSpace + ", "
+        + "startNodeName=" + startNodeName + "]";
+  }
+
 }
