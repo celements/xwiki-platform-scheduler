@@ -91,8 +91,7 @@ public class LayoutController {
   @CrossOrigin(origins = "*")
   @GetMapping(
       value = "/partial",
-      produces = MediaType.APPLICATION_XML_VALUE,
-      consumes = MediaType.APPLICATION_JSON_VALUE)
+      produces = MediaType.APPLICATION_XML_VALUE)
   String renderLayoutPartial(@ModelAttribute RenderPartialRequest renderPartialRequest) {
     LOGGER.info("GET ModelAttribute renderLayoutPartial: {}", renderPartialRequest);
     var contextDocRef = buildDocRef(renderPartialRequest.contextDocSpace,
