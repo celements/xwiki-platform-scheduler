@@ -1,5 +1,7 @@
 package com.celements.layout.rest;
 
+import java.util.Optional;
+
 public class RenderPartialRequest {
 
   private String contextDocSpace;
@@ -9,12 +11,12 @@ public class RenderPartialRequest {
   private String language;
 
   public RenderPartialRequest(String contextDocSpace, String contextDocName, String layoutSpace,
-      String startNodeName, String language) {
+      String startNodeName, Optional<String> language) {
     this.contextDocSpace = contextDocSpace;
     this.contextDocName = contextDocName;
     this.layoutSpace = layoutSpace;
     this.startNodeName = startNodeName;
-    this.language = language;
+    this.language = language.orElse(null);
   }
 
   public String getContextDocSpace() {
