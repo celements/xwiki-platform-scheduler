@@ -69,7 +69,7 @@ public class LayoutController {
   // value = "/partial",
   // produces = MediaType.APPLICATION_XML_VALUE)
   // String renderLayoutPartial(String contextDocSpace, String contextDocName, String layoutSpace,
-  // String startNodeName, String language) {
+  // String startNodeName, @RequestParam Optional<String> language) {
   // var renderPartialRequest = new RenderPartialRequest();
   // renderPartialRequest.contextDocSpace = contextDocSpace;
   // renderPartialRequest.contextDocName = contextDocName;
@@ -91,7 +91,8 @@ public class LayoutController {
   @CrossOrigin(origins = "*")
   @GetMapping(
       value = "/partial",
-      produces = MediaType.APPLICATION_XML_VALUE)
+      produces = MediaType.APPLICATION_XML_VALUE,
+      consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
   String renderLayoutPartial(@ModelAttribute RenderPartialRequest renderPartialRequest) {
     LOGGER.info("GET ModelAttribute renderLayoutPartial: {}", renderPartialRequest);
     var contextDocRef = buildDocRef(renderPartialRequest.contextDocSpace,
