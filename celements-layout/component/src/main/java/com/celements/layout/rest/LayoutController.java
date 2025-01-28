@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -67,7 +68,7 @@ public class LayoutController {
   @GetMapping(
       value = "/partial",
       produces = MediaType.APPLICATION_XML_VALUE)
-  String renderLayoutPartial(String contextDocSpace, String contextDocName, String layoutSpace,
+  String renderLayoutPartialGet(String contextDocSpace, String contextDocName, String layoutSpace,
       String startNodeName, String language) {
     var renderPartialRequest = new RenderPartialRequest();
     renderPartialRequest.contextDocSpace = contextDocSpace;
@@ -75,7 +76,25 @@ public class LayoutController {
     renderPartialRequest.layoutSpace = layoutSpace;
     renderPartialRequest.startNodeName = startNodeName;
     renderPartialRequest.language = language;
-    LOGGER.info("renderLayoutPartial: {}", renderPartialRequest);
+    LOGGER.info("GET renderLayoutPartial: {}", renderPartialRequest);
+    var contextDocRef = buildDocRef(renderPartialRequest.contextDocSpace,
+        renderPartialRequest.contextDocName);
+    var layoutNodeRef = buildDocRef(renderPartialRequest.layoutSpace,
+        renderPartialRequest.startNodeName);
+    return modelAccess.getDocumentOpt(contextDocRef)
+        .flatMap((XWikiDocument contextDoc) -> {
+          initialiseContext(contextDoc, renderPartialRequest.language);
+          return layoutService.renderLayoutPartial(layoutNodeRef);
+        }).orElse("");
+  }
+
+  @CrossOrigin(origins = "*")
+  @PostMapping(
+      value = "/partial",
+      produces = MediaType.APPLICATION_XML_VALUE,
+      consumes = MediaType.APPLICATION_JSON_VALUE)
+  String renderLayoutPartialPost(RenderPartialRequest renderPartialRequest) {
+    LOGGER.info("POST renderLayoutPartial: {}", renderPartialRequest);
     var contextDocRef = buildDocRef(renderPartialRequest.contextDocSpace,
         renderPartialRequest.contextDocName);
     var layoutNodeRef = buildDocRef(renderPartialRequest.layoutSpace,
