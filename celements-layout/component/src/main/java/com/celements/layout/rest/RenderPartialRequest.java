@@ -2,30 +2,39 @@ package com.celements.layout.rest;
 
 public class RenderPartialRequest {
 
-  public String contextDocSpace;
-  public String contextDocName;
-  public String layoutSpace;
-  public String startNodeName;
-  public String language;
+  private String contextDocSpace;
+  private String contextDocName;
+  private String layoutSpace;
+  private String startNodeName;
+  private String language;
 
-  public void setContextDocSpace(String contextDocSpace) {
+  public RenderPartialRequest(String contextDocSpace, String contextDocName, String layoutSpace,
+      String startNodeName, String language) {
     this.contextDocSpace = contextDocSpace;
-  }
-
-  public void setContextDocName(String contextDocName) {
     this.contextDocName = contextDocName;
-  }
-
-  public void setLayoutSpace(String layoutSpace) {
     this.layoutSpace = layoutSpace;
-  }
-
-  public void setStartNodeName(String startNodeName) {
     this.startNodeName = startNodeName;
+    this.language = language;
   }
 
-  public void setLanguage(String language) {
-    this.language = language;
+  public String getContextDocSpace() {
+    return contextDocSpace;
+  }
+
+  public String getContextDocName() {
+    return contextDocName;
+  }
+
+  public String getLayoutSpace() {
+    return layoutSpace;
+  }
+
+  public String getStartNodeName() {
+    return startNodeName;
+  }
+
+  public String getLanguage() {
+    return language;
   }
 
   @Override

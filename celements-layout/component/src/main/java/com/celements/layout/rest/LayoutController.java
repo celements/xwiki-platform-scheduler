@@ -64,43 +64,19 @@ public class LayoutController {
     return layoutService.renderLayoutAsJson(layoutRef);
   }
 
-  // @CrossOrigin(origins = "*")
-  // @GetMapping(
-  // value = "/partial",
-  // produces = MediaType.APPLICATION_XML_VALUE)
-  // String renderLayoutPartial(String contextDocSpace, String contextDocName, String layoutSpace,
-  // String startNodeName, @RequestParam Optional<String> language) {
-  // var renderPartialRequest = new RenderPartialRequest();
-  // renderPartialRequest.contextDocSpace = contextDocSpace;
-  // renderPartialRequest.contextDocName = contextDocName;
-  // renderPartialRequest.layoutSpace = layoutSpace;
-  // renderPartialRequest.startNodeName = startNodeName;
-  // renderPartialRequest.language = language;
-  // LOGGER.info("GET renderLayoutPartial: {}", renderPartialRequest);
-  // var contextDocRef = buildDocRef(renderPartialRequest.contextDocSpace,
-  // renderPartialRequest.contextDocName);
-  // var layoutNodeRef = buildDocRef(renderPartialRequest.layoutSpace,
-  // renderPartialRequest.startNodeName);
-  // return modelAccess.getDocumentOpt(contextDocRef)
-  // .flatMap((XWikiDocument contextDoc) -> {
-  // initialiseContext(contextDoc, renderPartialRequest.language);
-  // return layoutService.renderLayoutPartial(layoutNodeRef);
-  // }).orElse("");
-  // }
-
   @CrossOrigin(origins = "*")
   @GetMapping(
       value = "/partial",
       produces = MediaType.APPLICATION_XML_VALUE)
   String renderLayoutPartial(@ModelAttribute RenderPartialRequest renderPartialRequest) {
     LOGGER.info("GET ModelAttribute renderLayoutPartial: {}", renderPartialRequest);
-    var contextDocRef = buildDocRef(renderPartialRequest.contextDocSpace,
-        renderPartialRequest.contextDocName);
-    var layoutNodeRef = buildDocRef(renderPartialRequest.layoutSpace,
-        renderPartialRequest.startNodeName);
+    var contextDocRef = buildDocRef(renderPartialRequest.getContextDocSpace(),
+        renderPartialRequest.getContextDocName());
+    var layoutNodeRef = buildDocRef(renderPartialRequest.getLayoutSpace(),
+        renderPartialRequest.getStartNodeName());
     return modelAccess.getDocumentOpt(contextDocRef)
         .flatMap((XWikiDocument contextDoc) -> {
-          initialiseContext(contextDoc, renderPartialRequest.language);
+          initialiseContext(contextDoc, renderPartialRequest.getLanguage());
           return layoutService.renderLayoutPartial(layoutNodeRef);
         }).orElse("");
   }
