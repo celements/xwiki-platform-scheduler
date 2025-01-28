@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,7 +67,14 @@ public class LayoutController {
   @GetMapping(
       value = "/partial",
       produces = MediaType.APPLICATION_XML_VALUE)
-  public String renderLayoutPartial(@ModelAttribute RenderPartialRequest renderPartialRequest) {
+  String renderLayoutPartial(String contextDocSpace, String contextDocName, String layoutSpace,
+      String startNodeName, String language) {
+    var renderPartialRequest = new RenderPartialRequest();
+    renderPartialRequest.contextDocSpace = contextDocSpace;
+    renderPartialRequest.contextDocName = contextDocName;
+    renderPartialRequest.layoutSpace = layoutSpace;
+    renderPartialRequest.startNodeName = startNodeName;
+    renderPartialRequest.language = language;
     LOGGER.info("renderLayoutPartial: {}", renderPartialRequest);
     var contextDocRef = buildDocRef(renderPartialRequest.contextDocSpace,
         renderPartialRequest.contextDocName);
